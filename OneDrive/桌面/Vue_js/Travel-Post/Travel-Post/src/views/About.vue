@@ -112,7 +112,7 @@ curl -X POST -H "Content-Type: application/json" -d '{"status": "success", "mess
 <template>
   <el-upload
     class="avatar-uploader"
-    action="https://eodk2bhoiulqtnx.m.pipedream.net"
+    action="http://localhost:8080/upload"
     :show-file-list="false"
     :on-success="handleAvatarSuccess"
     :before-upload="beforeAvatarUpload"
