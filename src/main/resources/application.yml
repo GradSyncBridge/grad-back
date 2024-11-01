@@ -1,0 +1,14 @@
+server:
+  port: 8081
+
+spring:
+  profiles:
+    active: dev
+
+logging:
+  file:
+    name: log/log.log
+  level:
+    root: INFO
+    bms.exception: ERROR
+

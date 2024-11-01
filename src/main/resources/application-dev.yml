@@ -1,0 +1,21 @@
+spring:
+  security:
+    user:
+      name: user
+      password: pass
+      enabled: false
+  datasource:
+    url: jdbc:mysql://localhost:3306/bms_sys
+    username: root
+    password: 123456
+    driver-class-name: com.mysql.cj.jdbc.Driver
+  mybatis:
+    mapper-locations: classpath:backend/mapper/*.xml
+    type-aliases-package: backend.model.entity
+    configuration:
+      log-impl: org.apache.ibatis.logging.stdout.StdOutImpl
+
+jwt:
+  secretkey: VHJ1c3R3b3JrT3BhZHVzJTIwU2VjdXJlU2VjcmV0Q29tcGxleEJ0b2xkY29tcGxleENvbmZpZyUyMExhcmdlU2VjcmV0S2V5
+  expiration: 1720000000
+  token-name: Authorization

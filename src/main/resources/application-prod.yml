@@ -1,0 +1,11 @@
+spring:
+  datasource:
+    url: jdbc:mysql://localhost:3306/bms_sys_dev
+    username: root
+    password: Heqinglin2021
+    driver-class-name: com.mysql.cj.jdbc.Driver
+  mybatis:
+    mapper-locations: classpath:backend/mapper/*.xml
+    type-aliases-package: backend.model.entity
+    configuration:
+      log-impl: org.apache.ibatis.logging.stdout.StdOutImpl
