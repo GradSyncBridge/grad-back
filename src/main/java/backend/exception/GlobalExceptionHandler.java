@@ -17,7 +17,7 @@ public class GlobalExceptionHandler {
     @ExceptionHandler
     public ResponseEntity exceptionHandler(BaseException ex){
         System.out.println(ex.getMessage());
-        return ResultEntity.error(ex.getMessage());
+        return ResultEntity.error(ex.getCode(), ex.getMessage());
     }
 
     @ExceptionHandler
