@@ -36,10 +36,15 @@ public class JwtService {
 //        }
 //    }
 
-    @Value("${jwt.expiration}")
-    private int expiration;
+    @Value("${jwt.accessTokenExpiration}")
+    private int accessTokenExpiration;
 
-    public String generateToken(String username) {
+    @Value("${jwt.freshTokenExpiration}")
+    private int freshTokenExpiration;
+
+    public String generateToken(String username, Integer type) {
+        int expiration = type == 1 ? accessTokenExpiration : freshTokenExpiration;
+        System.out.println(expiration);
         Map<String, Object> claims = new HashMap<>();
         return Jwts.builder()
                 .claims()

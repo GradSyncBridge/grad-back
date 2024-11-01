@@ -6,6 +6,7 @@ import backend.exception.model.LoginFailedException;
 import backend.model.DTO.UserDTO;
 import backend.model.converter.UserConverter;
 import backend.model.entity.User;
+import backend.service.UserService;
 import backend.util.ResultEntity;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -23,14 +24,18 @@ public class UserController {
     private UserConverter userConverter;
 
     @Autowired
+    private UserService userService;
+
+    @Autowired
     private JwtService jwtService;
 
     @PostMapping(value = "/login")
     public ResponseEntity<ResultEntity<Object>> login() {
         User user = User.builder().username("Bush").build();
+        userService.updateGrade();
         if (user == null)
             throw new LoginFailedException(HttpStatus.BAD_REQUEST.value(), "Login failed");
-         String token = jwtService.generateToken(user.getUsername());
+         String token = jwtService.generateToken(user.getUsername(), 2);
          return ResultEntity.success(HttpStatus.OK.value(), "ok", Map.of("token", token));
     }
 

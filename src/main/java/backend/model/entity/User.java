@@ -26,6 +26,8 @@ public class User implements UserDetails{
 
     private String email;
 
+    private String grade;
+
     // 1 represent student, 2 represents teacher, 3 represents admin
     private Integer role;
 
