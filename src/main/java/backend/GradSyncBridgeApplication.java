@@ -6,10 +6,9 @@ import org.springframework.boot.autoconfigure.SpringBootApplication;
 
 @SpringBootApplication
 @MapperScan("backend.mapper")
-public class DatebaseProjectApplication {
-
+public class GradSyncBridgeApplication {
     public static void main(String[] args) {
-        SpringApplication.run(DatebaseProjectApplication.class, args);
+        SpringApplication.run(GradSyncBridgeApplication.class, args);
     }
 
 }

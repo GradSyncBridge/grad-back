@@ -11,8 +11,8 @@
     <groupId>backend</groupId>
     <artifactId>grad-back</artifactId>
     <version>0.0.1-SNAPSHOT</version>
-    <name>Datebase_Project</name>
-    <description>Datebase_Project</description>
+    <name>GradSyncBridge</name>
+    <description>GradSyncBridge</description>
     <url/>
     <licenses>
         <license/>
