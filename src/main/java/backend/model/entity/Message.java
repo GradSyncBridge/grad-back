@@ -33,7 +33,7 @@ public class Message {
     private String created;
 
     // 0 -- unread, 1 -- read
-    private Integer is_read;
+    private Integer isRead;
 
     // MessageContent.content
     private String content;

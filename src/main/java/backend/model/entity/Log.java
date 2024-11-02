@@ -22,7 +22,7 @@ public class Log {
     private Integer id;
 
     // user_id -> User.id
-    private Integer user_id;
+    private Integer userId;
 
     private String content;
 
