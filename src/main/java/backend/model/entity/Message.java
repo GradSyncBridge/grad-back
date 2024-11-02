@@ -9,8 +9,8 @@ import lombok.NoArgsConstructor;
 /**
  * 站内信表
  * @field id 主键 int
- * @field from 发件人 int -> User.id
- * @field to 收件人 int -> User.id
+ * @field src 发件人 int -> User.id
+ * @field dst 收件人 int -> User.id
  * @field created 创建时间 DateTime
  * @field is_read 已读/未读 int (1/0)
  * @field content 站内信内容 text -> MessageContent.content
@@ -25,10 +25,10 @@ public class Message {
     private Integer id;
 
     // User.id
-    private Integer from;
+    private Integer src;
 
     // User.id
-    private Integer to;
+    private Integer dst;
 
     private String created;
 
