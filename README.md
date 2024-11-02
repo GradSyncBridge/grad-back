@@ -2,9 +2,9 @@
 
 ## 依赖要求
 
-- Java: JDK 22
+- Java: JDK 22+
 
-- Maven: 3.0+
+- Maven: 3.8.1+
 
 ## 启动指南
 
