@@ -10,6 +10,20 @@ import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.core.userdetails.UserDetails;
 import java.util.Collection;
 
+/**
+ * 用户表
+ * @field id user id int
+ * @field username 用户昵称 unique int
+ * @field name 用户名 string
+ * @field password 用户密码 string
+ * @field email 用户邮箱 string
+ * @field avatar 用户头像 string
+ * @field role 用户角色 int (1 -- student, 2-- teacher)
+ * @field phone 用户电话 string
+ * @field gender 用户性别 string
+ * @field disabled 用户是否被禁用 int (1 -- active, 0 -- disabled)
+ */
+
 @Data
 @AllArgsConstructor
 @NoArgsConstructor
@@ -22,14 +36,23 @@ public class User implements UserDetails{
 
     private String username;
 
+    private String name;
+
     private String password;
 
     private String email;
 
-    private String grade;
+    private String avatar;
 
-    // 1 represent student, 2 represents teacher, 3 represents admin
+    // 1 -- student, 2-- teacher
     private Integer role;
+
+    private String phone;
+
+    private String gender;
+
+    // 1 -- active, 0 -- disabled
+    private Integer disabled;
 
     public static User getAuth(){
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();

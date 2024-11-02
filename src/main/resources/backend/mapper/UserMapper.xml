@@ -4,8 +4,74 @@
         "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
 
 <mapper namespace="backend.mapper.UserMapper">
-    <select id="getUser" resultType="backend.model.entity.User">
-        SELECT id, username, password
-        FROM user WHERE username = #{username}
+
+    <insert id="insertUser">
+
+    </insert>
+
+    <select id="selectUser" resultType="backend.model.entity.User">
+        SELECT
+        <trim prefix="" suffix="" suffixOverrides=",">
+            <if test="scope.username != null and scope.username != '' ">
+                username,
+            </if>
+            <if test="scope.name != null and scope.name != '' ">
+                name,
+            </if>
+            <if test="scope.password != null and scope.password != '' ">
+                password,
+            </if>
+            <if test="scope.email != null and scope.email != '' ">
+                email,
+            </if>
+            <if test="scope.avatar != null and scope.avatar != '' ">
+                avatar,
+            </if>
+            <if test="scope.role != null and scope.role != '' ">
+                role,
+            </if>
+            <if test="scope.phone != null and scope.phone != '' ">
+                phone,
+            </if>
+            <if test="scope.gender != null and scope.gender != '' ">
+                gender,
+            </if>
+            <if test="scope.disabled != null and scope.disabled != '' ">
+                disabled
+            </if>
+        </trim>
+        FROM user
+        WHERE 1=1
+        <if test="user.id != null">
+            AND id = #{user.id}
+        </if>
+        <if test="user.username != null">
+            AND username = #{user.username}
+        </if>
+        <if test="user.name != null">
+            AND name LIKE CONCAT('%', #{user.name}, '%')
+        </if>
+        <if test="user.email != null">
+            AND email = #{user.email}
+        </if>
+        <if test="user.role != null">
+            AND role = #{user.role}
+        </if>
+        <if test="user.phone != null">
+            AND phone = #{user.phone}
+        </if>
+        <if test="user.gender != null">
+            AND gender = #{user.gender}
+        </if>
+        <if test="user.disabled != null">
+            AND disabled = #{user.disabled}
+        </if>
+
     </select>
+
+    <update id="updateUser">
+
+    </update>
+
+
 </mapper>
