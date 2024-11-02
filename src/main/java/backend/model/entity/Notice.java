@@ -5,6 +5,8 @@ import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
+import java.time.LocalDateTime;
+
 /**
  * 公告表
  * @field id 主键 int
@@ -23,7 +25,7 @@ public class Notice {
 
     private String content;
 
-    private String created;
+    private LocalDateTime created;
 
     // 0 -> 有效, 1 -> 无效
     private Integer disabled;

@@ -5,6 +5,8 @@ import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
+import java.time.LocalDateTime;
+
 /**
  * 审查记录
  * @field id 主键 int
@@ -26,5 +28,5 @@ public class Log {
 
     private String content;
 
-    private String created;
+    private LocalDateTime created;
 }

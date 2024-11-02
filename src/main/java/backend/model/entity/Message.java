@@ -6,6 +6,8 @@ import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
+import java.time.LocalDateTime;
+
 /**
  * 站内信表
  * @field id 主键 int
@@ -30,7 +32,7 @@ public class Message {
     // User.id
     private Integer dst;
 
-    private String created;
+    private LocalDateTime created;
 
     // 0 -- unread, 1 -- read
     private Integer isRead;

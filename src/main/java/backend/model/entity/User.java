@@ -49,7 +49,7 @@ public class User implements UserDetails{
 
     private String phone;
 
-    private String gender;
+    private Integer gender;
 
     // 1 -- active, 0 -- disabled
     private Integer disabled;
