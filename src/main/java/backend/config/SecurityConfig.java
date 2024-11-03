@@ -41,11 +41,10 @@ public class SecurityConfig implements WebMvcConfigurer {
     @Bean
     public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
 
-        return http.csrf(customizer -> customizer.disable()).
-                authorizeHttpRequests(request -> request
-                        .requestMatchers("login", "/unauthorized/**").permitAll()
-                        .anyRequest().authenticated()).
-                httpBasic(httpBasic -> httpBasic.disable()) // dev mode, easy for debug by view
+        return http.csrf(customizer -> customizer.disable()).authorizeHttpRequests(request -> request
+                .requestMatchers("login", "/resources/**").permitAll()
+                .anyRequest().authenticated()).httpBasic(httpBasic -> httpBasic.disable()) // dev mode, easy for debug
+                                                                                           // by view
                 // httpBasic(Customizer.withDefaults()) // prod mode, disable view for security
                 .sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
                 .addFilterBefore(jwtFilter, UsernamePasswordAuthenticationFilter.class)
@@ -67,10 +66,8 @@ public class SecurityConfig implements WebMvcConfigurer {
         return null;
     }
 
-
     @Override
-    public void addResourceHandlers(ResourceHandlerRegistry registry)
-    {
+    public void addResourceHandlers(ResourceHandlerRegistry registry) {
         registry.addResourceHandler("/resources/**")
                 .addResourceLocations("classpath:/static/");
     }
