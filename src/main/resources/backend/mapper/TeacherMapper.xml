@@ -4,17 +4,51 @@
         "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
 
 <mapper namespace="backend.mapper.TeacherMapper">
+    <sql id="DynamicFields">
+        <trim suffixOverrides=",">
+            <if test="scope.id == true"> id, </if>
+            <if test="scope.title == true"> title, </if>
+            <if test="scope.description == true"> description, </if>
+            <if test="scope.identity == true"> identity, </if>
+        </trim>
+    </sql>
 
-    <insert id="insertTeacher">
+    <sql id="DynamicWhere">
+        <where>
+            <if test="teacher.id != null"> and id = #{teacher.id} </if>
+            <if test="teacher.title != null"> and title = #{teacher.title} </if>
+            <if test="teacher.description != null"> and description = #{teacher.description} </if>
+            <if test="teacher.identity != null"> and identity = #{teacher.identity} </if>
+        </where>
+    </sql>
 
+    <insert id="insertTeacher" parameterType="backend.model.entity.Teacher" keyColumn="id">
+        insert into Teacher
+        (title, description, identity)
+        values
+        (#{title}, #{description}, #{idendity})
     </insert>
 
     <select id="selectTeacher" resultType="backend.model.entity.Teacher">
-
+        select
+            <include refid="DynamicFields" />
+        from Teacher
+            <include refid="DynamicWhere" />
     </select>
 
     <update id="updateTeacher">
-
+        update Teacher
+        <set>
+            <if test="teacherUpdate.title != null"> title = #{teacherUpdate.title}, </if>
+            <if test="teacherUpdate.description != null"> description = #{teacherUpdate.description}, </if>
+            <if test="teacherUpdate.identity != null"> identity = #{teacherUpdate.identity}, </if>
+        </set>
+        <where>
+            <if test="teacherQuery.id != null"> and id = #{teacherQuery.id} </if>
+            <if test="teacherQuery.title != null"> and title = #{teacherQuery.title} </if>
+            <if test="teacherQuery.description != null"> and description = #{teacherQuery.description} </if>
+            <if test="teacherQuery.identity != null"> and identity = #{teacherQuery.identity} </if>
+        </where>
     </update>
 
 </mapper>
