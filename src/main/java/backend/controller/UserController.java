@@ -4,6 +4,7 @@ import backend.annotation.group.UserGroup.EmailGroup;
 import backend.model.DTO.UserLoginDTO;
 import backend.model.entity.User;
 import backend.service.UserService;
+import backend.util.FileManager;
 import backend.util.ResultEntity;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -31,8 +32,10 @@ public class UserController {
         return ResultEntity.success(HttpStatus.OK.value(), "ok", null);
     }
 
-    @GetMapping(value = "/email")
-    public ResponseEntity<ResultEntity<String>> getEmail(@Validated(EmailGroup.class) @RequestBody User user) {
+    @GetMapping(value = "/user/email")
+    public ResponseEntity<ResultEntity<String>> getEmail(@RequestBody Map<String, String> map) {
+        String image = map.get("image");
+        FileManager.saveBase64Image(image);
         return ResultEntity.success(HttpStatus.OK.value(), "ok");
     }
 

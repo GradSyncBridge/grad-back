@@ -15,19 +15,11 @@ public class FieldsGenerator {
         return requirementMap;
     }
 
-    public static Map<String, Boolean> generateFieldsBindValues(Class<?> className, List<String> requirements, Object object){
-        Map<String, Boolean> requirementMap = generateFields(className, requirements);
-        Map<String, Object> valueMap = new HashMap<>();
+    public static Map<String, Boolean> generateFields(Class<?> className){
+        Field[] fields = className.getDeclaredFields();
 
-        for(String varName: requirements){
-            try{
-                Field field = className.getDeclaredField(varName);
-                field.setAccessible(true);
-                valueMap.put(varName, field.get(object));
-            }catch(Exception e){
-                e.printStackTrace();
-            }
-        }
+        Map<String, Boolean> requirementMap = new HashMap<>();
+        for(Field field: fields) requirementMap.put(field.getName(), true);
 
         return requirementMap;
     }

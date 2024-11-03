@@ -12,6 +12,9 @@
     <select id="selectUser" resultType="backend.model.entity.User">
         SELECT
         <trim prefix="" suffix="" suffixOverrides=",">
+            <if test="scope.id != null and scope.id != '' ">
+                id,
+            </if>
             <if test="scope.username != null and scope.username != '' ">
                 username,
             </if>

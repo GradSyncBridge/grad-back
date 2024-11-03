@@ -57,6 +57,18 @@ public class JWTFilter extends OncePerRequestFilter {
 
                 return;
             }
+        }else{
+            response.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
+            response.setContentType("application/json");
+
+            Map<String, Object> responseMap = new HashMap<>();
+            responseMap.put("code", HttpServletResponse.SC_UNAUTHORIZED);
+            responseMap.put("message", "Token not found");
+
+            String jsonResponse = new ObjectMapper().writeValueAsString(responseMap);
+            response.getWriter().write(jsonResponse);
+
+            return;
         }
 
         if (username != null && SecurityContextHolder.getContext().getAuthentication() == null) {

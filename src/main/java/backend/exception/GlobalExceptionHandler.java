@@ -5,10 +5,12 @@ import backend.util.ResultEntity;
 import jakarta.validation.ConstraintViolationException;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.http.converter.HttpMessageNotReadableException;
 import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
 
+import java.io.IOException;
 import java.sql.SQLIntegrityConstraintViolationException;
 
 @RestControllerAdvice
@@ -16,7 +18,6 @@ public class GlobalExceptionHandler {
 
     @ExceptionHandler
     public ResponseEntity exceptionHandler(BaseException ex){
-        System.out.println(ex.getMessage());
         return ResultEntity.error(ex.getCode(), ex.getMessage());
     }
 
@@ -46,6 +47,12 @@ public class GlobalExceptionHandler {
     @ExceptionHandler
     public ResponseEntity<ResultEntity<String>> handleClassCastException(ClassCastException ex) {
         return ResultEntity.error(HttpStatus.BAD_REQUEST.value(), ex.getMessage());
+    }
+
+    @ExceptionHandler
+    public ResponseEntity<ResultEntity<Object>> handleHttpMessageNotReadable(HttpMessageNotReadableException ex) {
+        String message = "Invalid format: " + (ex.getMessage() != null ? ex.getMessage() : "No message available");
+        return ResultEntity.error(HttpStatus.BAD_REQUEST.value(), message);
     }
 
 }
