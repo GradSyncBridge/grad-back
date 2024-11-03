@@ -5,7 +5,7 @@
 
 <mapper namespace="backend.mapper.EnrollMapper">
 
-    <insert id="insertDeadline">
+    <insert id="insertDeadline" >
 
     </insert>
 

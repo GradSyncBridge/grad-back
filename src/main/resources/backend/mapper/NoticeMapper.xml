@@ -3,18 +3,74 @@
         PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
         "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
 
+<!-- public class Notice {
+
+    private Integer id;
+
+    private String content;
+
+    private LocalDateTime created;
+
+    // 0 -> 有效, 1 -> 无效
+    private Integer disabled;
+}
+ -->
+
 <mapper namespace="backend.mapper.NoticeMapper">
 
-    <insert id="insertNotice">
+    <sql id="DynamicFields">
+        <trim suffixOverrides=",">
+            <if test="scope.id == true"> id, </if>
+            <if test="scope.content == true"> content, </if>
+            <if test="scope.created == true"> created, </if>
+            <if test="scope.disabled == true"> disabled, </if>
+        </trim>
+    </sql>
 
+    <sql id="DynamicWhere">
+        <where>
+            <if test="notice.id != null"> and id = #{notice.id} </if>
+            <if test="notice.content != null"> and content = #{notice.content} </if>
+            <if test="notice.created != null"> and created = #{notice.created} </if>
+            <if test="notice.disabled != null"> and disabled = #{notice.disabled} </if>
+        </where>
+    </sql>
+
+    <insert id="insertNotice">
+        insert into Notice
+        (
+            content,
+            created,
+            disabled
+        )
+        values
+        (
+            #{content},
+            #{created},
+            #{disabled}
+        )
     </insert>
 
     <select id="selectNotice" resultType="backend.model.entity.Notice">
-
+        select
+            <include refid="DynamicFields" />
+        from Notice
+            <include refid="DynamicWhere" />
     </select>
 
     <update id="updateNotice">
-
+        update Notice
+        <set>
+            <if test="noticeUpdate.content != null"> content = #{noticeUpdate.content}, </if>
+            <if test="noticeUpdate.created != null"> created = #{noticeUpdate.created}, </if>
+            <if test="noticeUpdate.disabled != null"> disabled = #{noticeUpdate.disabled}, </if>
+        </set>
+        <where>
+            <if test="noticeQuery.id != null"> and id = #{noticeQuery.id} </if>
+            <if test="noticeQuery.content != null"> and content = #{noticeQuery.content} </if>
+            <if test="noticeQuery.created != null"> and created = #{noticeQuery.created} </if>
+            <if test="noticeQuery.disabled != null"> and disabled = #{noticeQuery.disabled} </if>
+        </where>
     </update>
 
 </mapper>

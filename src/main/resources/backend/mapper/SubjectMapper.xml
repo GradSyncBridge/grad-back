@@ -5,16 +5,59 @@
 
 <mapper namespace="backend.mapper.SubjectMapper">
 
-    <insert id="insertSubject">
+    <sql id="DynamicFields">
+        <trim suffixOverrides=",">
+            <if test="scope.id == true"> id, </if>
+            <if test="scope.sid == true"> sid, </if>
+            <if test="scope.name == true"> name, </if>
+            <if test="scope.type == true"> type, </if>
+        </trim>
+    </sql>
 
+    <sql id="DynamicWhere">
+        <where>
+            <if test="subject.id != null"> and id = #{subject.id} </if>
+            <if test="subject.sid != null"> and sid = #{subject.sid} </if>
+            <if test="subject.name != null"> and name = #{subject.name} </if>
+            <if test="subject.type != null"> and type = #{subject.type} </if>
+        </where>
+    </sql>
+
+    <insert id="insertSubject">
+        insert into Subject
+        (
+            sid,
+            name,
+            type
+        )
+        values
+        (
+            #{sid},
+            #{name},
+            #{type}
+        )
     </insert>
 
     <select id="selectSubject" resultType="backend.model.entity.Subject">
-
+        select
+            <include refid="DynamicFields" /> 
+        from Subject
+            <include refid="DynamicWhere" />
     </select>
 
     <update id="updateSubject">
-
+        update Subject
+        <set>
+            <if test="subjectUpdate.sid != null"> sid = #{subjectUpdate.sid}, </if>
+            <if test="subjectUpdate.name != null"> name = #{subjectUpdate.name}, </if>
+            <if test="subjectUpdate.type != null"> type = #{subjectUpdate.type}, </if>
+        </set>
+        <where>
+            <if test="subjectQuery.id != null"> and id = #{subjectQuery.id} </if>
+            <if test="subjectQuery.sid != null"> and sid = #{subjectQuery.sid} </if>
+            <if test="subjectQuery.name != null"> and name = #{subjectQuery.name} </if>
+            <if test="subjectQuery.type != null"> and type = #{subjectQuery.type} </if>
+        </where>
     </update>
 
 </mapper>
