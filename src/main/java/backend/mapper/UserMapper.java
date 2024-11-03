@@ -25,8 +25,10 @@ public interface UserMapper {
 
     /**
      * 更新用户
-     * @param user 更新值
-     * @param scope 更新的条件
+     * @param userUpdate 更新值
+     * @param userQuery 更新的条件
+     * Note: non-update params are null.
+     *       non-query params are null.
      */
-    void updateUser(User user, Map<String, Boolean> scope);
+    void updateUser(User userUpdate, User userQuery);
 }

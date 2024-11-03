@@ -25,8 +25,8 @@ public interface MajorMapper {
 
     /**
      * 更新专业
-     * @param major 更新值
-     * @param scope 更新的条件
+     * @param majorUpdate 更新值
+     * @param majorQuery 更新的条件
      */
-    void updateMajor(Major major, Map<String, Boolean> scope);
+    void updateMajor(Major majorUpdate, Major majorQuery);
 }

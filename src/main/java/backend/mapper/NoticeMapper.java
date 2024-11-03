@@ -25,7 +25,8 @@ public interface NoticeMapper {
 
     /**
      * 更新公告
-     * @param scope 更新的条件
+     * @param noticeUpdate 更新值
+     * @param noticeQuery 更新的条件
      */
-    void updateNotice(Notice notice, Map<String, Boolean> scope);
+    void updateNotice(Notice noticeUpdate, Notice noticeQuery);
 }
