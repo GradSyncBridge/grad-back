@@ -21,6 +21,7 @@ import lombok.NoArgsConstructor;
  * @field interview 复试科目 JSON
  * @field recommend 推免数 int
  * @field disabled 是否废弃 int
+ * @field department 所属学院 int
  */
 
 @Data
@@ -58,4 +59,6 @@ public class Major {
     private Integer recommend;
 
     private Integer disabled;
+
+    private Integer department;
 }
