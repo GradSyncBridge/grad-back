@@ -6,11 +6,16 @@ import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
+import java.time.LocalDateTime;
+
 /**
  * 站内信内容
  * @field id 主键 int
  * @field content 站内信内容 text
- * @field mid 站内信 ID int mid -> Message.id
+ * @field created 创建时间
+ * @field sender 创建人/发件人 User.id
+ * @field draft 是否为草稿 是 -- 1 否 -- 0
+ * @field disabled 是否删除 删除 -- 0 启用 -- 1
  */
 
 @Data
@@ -23,6 +28,12 @@ public class MessageContent {
 
     private String content;
 
-    // mid -> Message.id
-    private Integer mid;
+    private LocalDateTime created;
+
+    // User.id
+    private Integer sender;
+
+    private Integer draft;
+
+    private Integer disabled;
 }
