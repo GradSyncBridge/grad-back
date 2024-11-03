@@ -1,6 +1,7 @@
 package backend.service.impl;
 
 import backend.config.JwtService;
+import backend.exception.model.user.LoginFailedException;
 import backend.mapper.UserMapper;
 import backend.model.DTO.UserLoginDTO;
 import backend.model.VO.UserLoginVO;
@@ -8,6 +9,7 @@ import backend.model.entity.User;
 import backend.service.UserService;
 import backend.util.FieldsGenerator;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
 
@@ -43,6 +45,6 @@ public class UserServiceImpl implements UserService {
             return UserLoginVO.builder().setToken(userLoginDTO.getUsername(), jwtService).build().getToken();
         }
 
-        return null;
+        throw new LoginFailedException(HttpStatus.FORBIDDEN.value(), "用户名或密码错误");
     }
 }
