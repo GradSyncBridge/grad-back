@@ -1,10 +1,7 @@
 package backend.controller;
 
 import backend.annotation.group.UserGroup.EmailGroup;
-import backend.config.JwtService;
-import backend.exception.model.LoginFailedException;
-import backend.model.DTO.UserDTO;
-import backend.model.converter.UserConverter;
+import backend.model.DTO.UserLoginDTO;
 import backend.model.entity.User;
 import backend.service.UserService;
 import backend.util.ResultEntity;
@@ -21,29 +18,17 @@ import java.util.Map;
 public class UserController {
 
     @Autowired
-    private UserConverter userConverter;
-
-    @Autowired
     private UserService userService;
 
-    @Autowired
-    private JwtService jwtService;
-
     @PostMapping(value = "/login")
-    public ResponseEntity<ResultEntity<Object>> login() {
-        User user = User.builder().username("Bush").build();
-        userService.updateGrade();
-        if (user == null)
-            throw new LoginFailedException(HttpStatus.BAD_REQUEST.value(), "Login failed");
-         String token = jwtService.generateToken(user.getUsername(), 2);
-         return ResultEntity.success(HttpStatus.OK.value(), "ok", Map.of("token", token));
+    public ResponseEntity<ResultEntity<Object>> login(@RequestBody UserLoginDTO userLoginDTO) {
+        Map<String, Object> data = userService.login(userLoginDTO);
+        return ResultEntity.success(HttpStatus.OK.value(), "ok", data);
     }
 
     @GetMapping(value = "/user")
     public ResponseEntity<ResultEntity<Object>> getUser() {
-        User user = User.getAuth();
-        UserDTO userDTO = userConverter.INSTANCE.UserToUserDTO(user);
-        return ResultEntity.success(HttpStatus.OK.value(), "ok", userDTO);
+        return ResultEntity.success(HttpStatus.OK.value(), "ok", null);
     }
 
     @GetMapping(value = "/email")

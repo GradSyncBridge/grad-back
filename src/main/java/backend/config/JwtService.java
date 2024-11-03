@@ -44,7 +44,6 @@ public class JwtService {
 
     public String generateToken(String username, Integer type) {
         int expiration = type == 1 ? accessTokenExpiration : freshTokenExpiration;
-        System.out.println(expiration);
         Map<String, Object> claims = new HashMap<>();
         return Jwts.builder()
                 .claims()

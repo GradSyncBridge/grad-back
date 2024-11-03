@@ -1,41 +1,48 @@
 package backend.service.impl;
 
+import backend.config.JwtService;
 import backend.mapper.UserMapper;
-import backend.model.entity.StudentGrades;
+import backend.model.DTO.UserLoginDTO;
+import backend.model.VO.UserLoginVO;
 import backend.model.entity.User;
 import backend.service.UserService;
-import com.fasterxml.jackson.databind.ObjectMapper;
+import backend.util.FieldsGenerator;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
+
+import java.util.List;
+import java.util.Map;
 
 @Service
 public class UserServiceImpl implements UserService {
     @Autowired
     private UserMapper userMapper;
 
+    @Autowired
+    private BCryptPasswordEncoder passwordEncoder;
+
+    @Autowired
+    private JwtService jwtService;
+
+    /**
+     * 用户注册
+     * @param userLoginDTO 用户信息
+     * @return token
+     */
     @Override
-    public String updateGrade() {
-        User user = User.builder().id(1).build();
-        StudentGrades studentGrades = new StudentGrades();
-        studentGrades.getFirst().setFirst(408, 100);
-        studentGrades.getSecond().setSecond(401, null);
+    public Map<String, Object> login(UserLoginDTO userLoginDTO) {
+        List<String> fields = List.of("username", "password");
 
-        ObjectMapper objectMapper = new ObjectMapper();
-        try {
-            user.setGrade(objectMapper.writeValueAsString(studentGrades));
-            System.out.println("hello world: " + user.getGrade());
-        }catch (Exception e) {
-            e.printStackTrace();
+        Map<String, Boolean> scope = FieldsGenerator.generateFields(User.class, fields);
+
+        User selectUser = User.builder().username(userLoginDTO.getUsername()).build();
+        User targetUser = userMapper.selectUser(selectUser, scope).getFirst();
+
+        if(passwordEncoder.matches(userLoginDTO.getPassword(), targetUser.getPassword())){
+            return UserLoginVO.builder().setToken(userLoginDTO.getUsername(), jwtService).build().getToken();
         }
 
-        StudentGrades studentGradesConvert = null;
-        try {
-            studentGradesConvert = objectMapper.readValue(user.getGrade(), StudentGrades.class);
-            System.out.println(studentGradesConvert);
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
-        System.out.println(studentGradesConvert);
         return null;
     }
 }
