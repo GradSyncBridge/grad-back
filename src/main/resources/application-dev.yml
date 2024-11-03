@@ -17,6 +17,6 @@ spring:
 
 jwt:
   secretkey: VHJ1c3R3b3JrT3BhZHVzJTIwU2VjdXJlU2VjcmV0Q29tcGxleEJ0b2xkY29tcGxleENvbmZpZyUyMExhcmdlU2VjcmV0S2V5
-  freshTokenExpiration: 2592000 #30 days
-  accessTokenExpiration: 259200 # 3 days
+  freshTokenExpiration: 2592000000 #30 days
+  accessTokenExpiration: 259200000 # 3 days
   token-name: Authorization

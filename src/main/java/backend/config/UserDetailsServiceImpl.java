@@ -19,7 +19,10 @@ public class UserDetailsServiceImpl implements UserDetailsService {
     private UserMapper userMapper;
     @Override
     public UserDetails loadUserByUsername(String username) throws UsernameNotFoundException {
-        List<String> fields = List.of("username");
+
+        // Map<String, Boolean> scope = FieldsGenerator.generateFields(User.class);
+
+        List<String> fields = List.of("id", "username", "password");
 
         Map<String, Boolean> scope = FieldsGenerator.generateFields(User.class, fields);
 
