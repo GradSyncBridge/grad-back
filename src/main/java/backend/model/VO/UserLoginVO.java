@@ -4,6 +4,13 @@ import backend.config.JwtService;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
+
+/**
+ * 用户登录VO
+ * @field access: access token
+ * @field refresh: refresh token
+ */
+
 @Data
 @AllArgsConstructor
 @NoArgsConstructor
@@ -24,7 +31,7 @@ public class UserLoginVO {
 
         public Builder setToken(String username, JwtService jwtService) {
             access = jwtService.generateToken(username, 1);
-            refresh = jwtService.generateToken(username, 0);
+            refresh = jwtService.generateToken(username, 2);
             return this;
         }
 

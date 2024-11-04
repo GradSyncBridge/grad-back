@@ -21,6 +21,11 @@ public class UnAuthController {
     @Autowired
     private UserService userService;
 
+    /**
+     * 处理登录请求
+     * @param userLoginDTO 登录信息
+     * @return 登录结果
+     */
     @PostMapping(value = "/user/login")
     public ResponseEntity<ResultEntity<Object>> login(@RequestBody UserLoginDTO userLoginDTO) {
         UserLoginVO data = userService.login(userLoginDTO);

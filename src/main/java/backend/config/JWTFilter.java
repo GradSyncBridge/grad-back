@@ -33,6 +33,14 @@ public class JWTFilter extends OncePerRequestFilter {
     @Value("${jwt.token-name}")
     private String tokenName;
 
+    /**
+     * 过滤器，用于验证token
+     * @param request 请求
+     * @param response 响应
+     * @param filterChain 过滤链
+     * @throws ServletException 异常
+     * @throws IOException 异常
+     */
     @Override
     protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain filterChain)
             throws ServletException, IOException {

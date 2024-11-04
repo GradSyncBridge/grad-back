@@ -50,6 +50,10 @@ public class UserServiceImpl implements UserService {
         throw new LoginFailedException(HttpStatus.FORBIDDEN.value(), "用户名或密码错误");
     }
 
+    /**
+     * 获取用户信息
+     * @return 用户信息
+     */
     @Override
     public UserProfileVO getUser() {
         return UserConverter.INSTANCE.UserToUserProfileVO(User.getAuth());

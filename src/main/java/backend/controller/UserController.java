@@ -23,6 +23,10 @@ public class UserController {
     @Autowired
     private UserService userService;
 
+    /**
+     * 获取用户信息
+     * @return 用户信息
+     */
     @GetMapping(value = "/profile")
     public ResponseEntity<ResultEntity<Object>> getUser() {
         UserProfileVO user = userService.getUser();

@@ -12,5 +12,9 @@ public interface UserService {
      */
     UserLoginVO login(UserLoginDTO userLoginDTO);
 
+    /**
+     * 获取用户信息
+     * @return 用户信息
+     */
     UserProfileVO getUser();
 }

@@ -4,6 +4,15 @@ import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
+/**
+ * 用户信息VO
+ * @field username: 用户名
+ * @field avatar: 头像
+ * @field name: 姓名
+ * @field email： 邮箱
+ * @field gender 性别
+ * @field phone: 电话
+ */
 @Data
 @AllArgsConstructor
 @NoArgsConstructor
