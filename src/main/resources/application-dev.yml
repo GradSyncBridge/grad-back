@@ -20,3 +20,6 @@ jwt:
   freshTokenExpiration: 2592000000 #30 days
   accessTokenExpiration: 259200000 # 3 days
   token-name: Authorization
+
+  # Private token claims
+  uid: uid
