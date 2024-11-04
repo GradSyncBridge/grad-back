@@ -10,7 +10,7 @@ public interface UserConverter {
 
     UserConverter INSTANCE = Mappers.getMapper(UserConverter.class);
 
-    User UserDTOToUser(UserLoginDTO userLoginDTO);
+    public User UserDTOToUser(UserLoginDTO userLoginDTO);
 
     UserLoginDTO UserToUserDTO(User user);
 

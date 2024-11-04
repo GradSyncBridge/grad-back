@@ -3,17 +3,59 @@
         PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
         "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
 
+<!-- public class Deadline {
+
+    private Integer id;
+
+    private LocalDateTime time;
+
+    // 0 — 提交个人材料，1 — 第一轮导师选择学生，2 — 第二轮调剂，3 — 录取结束
+    private Integer type;
+}
+ -->
+
 <mapper namespace="backend.mapper.DeadlineMapper">
 
-    <insert id="insertDeadline">
+    <sql id="DynamicFields">
+        <trim suffixOverrides=",">
+            <if test="scope.id == true"> id, </if>
+            <if test="scope.time == true"> time, </if>
+            <if test="scope.type == true"> type, </if>
+        </trim>
+    </sql>
 
+    <sql id="DynamicWhere">
+        <where>
+            <if test="deadline.id != null"> and id = #{deadline.id} </if>
+            <if test="deadline.time != null"> and time = #{deadline.time} </if>
+            <if test="deadline.type != null"> and type = #{deadline.type} </if>
+        </where>
+    </sql>
+
+    <insert id="insertDeadline">
+        insert into Deadline
+        (time, type)
+        values
+        (#{time}, #{type})
     </insert>
 
     <select id="selectDeadline" resultType="backend.model.entity.Deadline">
-
+        select
+            <include refid="DynamicFields" />
+        from Deadline
+            <include refid="DynamicWhere" />
     </select>
 
     <update id="updateDeadline">
-
+        update Deadline
+        <set>
+            <if test="deadlineUpdate.time != null"> time = #{deadlineUpdate.time}, </if>
+            <if test="deadlineUpdate.type != null"> type = #{deadlineUpdate.type}, </if>
+        </set>
+        <where>
+            <if test="deadlineQuery.id != null"> and id = #{deadlineQuery.id} </if>
+            <if test="deadlineQuery.time != null"> and time = #{deadlineQuery.time} </if>
+            <if test="deadlineQuery.type != null"> and type = #{deadlineQuery.type} </if>
+        </where>
     </update>
 </mapper>
