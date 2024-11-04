@@ -1,6 +1,7 @@
 package backend.model.converter;
 
 import backend.model.DTO.UserLoginDTO;
+import backend.model.VO.UserProfileVO;
 import backend.model.entity.User;
 import org.mapstruct.Mapper;
 import org.mapstruct.factory.Mappers;
@@ -10,8 +11,10 @@ public interface UserConverter {
 
     UserConverter INSTANCE = Mappers.getMapper(UserConverter.class);
 
-    User UserDTOToUser(UserLoginDTO userLoginDTO);
+    User UserLoginDTOToUser(UserLoginDTO userLoginDTO);
 
-    UserLoginDTO UserToUserDTO(User user);
+    UserLoginDTO UserToUserLoginDTO(User user);
+
+    UserProfileVO UserToUserProfileVO(User user);
 
 }

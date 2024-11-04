@@ -4,11 +4,11 @@ import backend.config.JwtService;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
+
 @Data
 @AllArgsConstructor
 @NoArgsConstructor
-public class UserLoginVO {
-
+public class UserRegisterVO {
     private String access;
 
     private String refresh;
@@ -28,11 +28,11 @@ public class UserLoginVO {
             return this;
         }
 
-        public UserLoginVO build() {
-            UserLoginVO userLoginVO = new UserLoginVO();
-            userLoginVO.setAccess(access);
-            userLoginVO.setRefresh(refresh);
-            return userLoginVO;
+        public UserRegisterVO build() {
+            UserRegisterVO userRegisterVO = new UserRegisterVO();
+            userRegisterVO.setAccess(access);
+            userRegisterVO.setRefresh(refresh);
+            return userRegisterVO;
         }
     }
 }

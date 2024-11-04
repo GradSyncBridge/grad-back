@@ -1,9 +1,8 @@
 package backend.service;
 
 import backend.model.DTO.UserLoginDTO;
-import backend.model.entity.User;
-
-import java.util.Map;
+import backend.model.VO.UserLoginVO;
+import backend.model.VO.UserProfileVO;
 
 public interface UserService {
     /**
@@ -11,5 +10,7 @@ public interface UserService {
      * @param userLoginDTO 登录信息
      * @return 登录结果
      */
-    Map<String, Object> login(UserLoginDTO userLoginDTO);
+    UserLoginVO login(UserLoginDTO userLoginDTO);
+
+    UserProfileVO getUser();
 }

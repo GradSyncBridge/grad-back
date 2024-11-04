@@ -1,13 +1,12 @@
 package backend.exception.model;
 
+import lombok.Getter;
+
+@Getter
 public class BaseException extends RuntimeException {
 
     private Integer code;
     public BaseException() {
-    }
-
-    public Integer getCode() {
-        return code;
     }
 
     public BaseException(String msg, Integer code) {

@@ -3,18 +3,20 @@ package backend.util;
 import backend.exception.model.file.FileStorageException;
 import backend.model.entity.User;
 import org.springframework.http.HttpStatus;
-import org.springframework.http.ResponseEntity;
 import org.springframework.web.multipart.MultipartFile;
 
 import javax.xml.bind.DatatypeConverter;
 import java.io.*;
-import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.UUID;
 
 public class FileManager {
 
     private static final String basePath = "src/main/resources/media";
+
+    private static final long MAX_FILE_SIZE = 1024 * 1024 * 5; // 5MB
+
+    private static final long MAX_IMAGE_SIZE = 1024 * 1024 * 3; // 3MB
 
     public static String saveBase64Image(String base64String) {
         // 从Base64字符串中提取文件类型
@@ -30,23 +32,27 @@ public class FileManager {
         }
 
         // 从Base64字符串中提取文件内容
-        byte data[] = DatatypeConverter.parseBase64Binary(parts[1]);
+        byte[] data = DatatypeConverter.parseBase64Binary(parts[1]);
+
+        if(data.length > MAX_IMAGE_SIZE){
+            throw new FileStorageException(HttpStatus.BAD_REQUEST.value(), "File size exceeds the limit");
+        }
 
         String uuid = UUID.randomUUID().toString();
         String userId = User.getAuth().getId().toString();
 
         // 创建目标目录
-        File storeDir = new File(basePath + "/" + userId);
+        File storeDir = new File(STR."\{basePath}/\{userId}");
         if (!storeDir.exists()) {
             storeDir.mkdirs();
         }
 
-        File storeFile = new File(storeDir, uuid + "." + fileType);
+        File storeFile = new File(storeDir, STR."\{uuid}.\{fileType}");
 
         try(OutputStream outputStream = new BufferedOutputStream(new FileOutputStream(storeFile))){
             outputStream.write(data);
         } catch (Exception e) {
-            throw new FileStorageException(HttpStatus.INTERNAL_SERVER_ERROR.value(), "Failed to store file: " + e.getMessage());
+            throw new FileStorageException(HttpStatus.INTERNAL_SERVER_ERROR.value(), STR."Failed to store file: \{e.getMessage()}");
         }
 
         // 获取文件的绝对路径
@@ -67,6 +73,10 @@ public class FileManager {
 
     public static String store(MultipartFile file){
         try {
+            if (file.getSize() > MAX_FILE_SIZE) {
+                throw new FileStorageException(HttpStatus.BAD_REQUEST.value(), "File size exceeds the limit");
+            }
+
             String fileName = file.getOriginalFilename();
 
             if (fileName == null || fileName.isEmpty()) {
@@ -74,7 +84,7 @@ public class FileManager {
             }
 
             // 获取文件扩展名
-            String fileExtension = "";
+            String fileExtension;
             int extensionIndex = fileName.lastIndexOf(".");
             if (extensionIndex > 0) {
                 fileExtension = fileName.substring(extensionIndex); // 例如: ".pdf" 或 ".png"
@@ -87,7 +97,7 @@ public class FileManager {
             String userId = User.getAuth().getId().toString();
 
             // 创建目标目录
-            File storeDir = new File(basePath + "/" + userId);
+            File storeDir = new File(STR."\{basePath}/\{userId}");
             if (!storeDir.exists()) {
                 storeDir.mkdirs(); // 创建目录
             }
@@ -111,7 +121,7 @@ public class FileManager {
 
             return relativePath;
         } catch (Exception e) {
-            throw new FileStorageException(HttpStatus.INTERNAL_SERVER_ERROR.value(), "File upload failed: " + e.getMessage());
+            throw new FileStorageException(HttpStatus.INTERNAL_SERVER_ERROR.value(), STR."File upload failed: \{e.getMessage()}");
         }
     }
 
@@ -126,7 +136,7 @@ public class FileManager {
                 outputStream.write(buffer, 0, bytesRead);
             }
         }catch (Exception e){
-            throw new FileStorageException(HttpStatus.INTERNAL_SERVER_ERROR.value(), "Failed to store file: " + e.getMessage());
+            throw new FileStorageException(HttpStatus.INTERNAL_SERVER_ERROR.value(), STR."Failed to store file: \{e.getMessage()}");
         }
     }
 
