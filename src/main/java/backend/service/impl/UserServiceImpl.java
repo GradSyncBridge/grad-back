@@ -40,15 +40,6 @@ public class UserServiceImpl implements UserService {
 
         Map<String, Boolean> scope = FieldsGenerator.generateFields(User.class, fields);
 
-//        Collection<String> collection = fields;
-
-//        collection.forEach(new Consumer<String>() {
-//            @Override
-//            public void accept(String s) {
-//
-//            }
-//        });
-
         User selectUser = User.builder().username(userLoginDTO.getUsername()).build();
         User targetUser = userMapper.selectUser(selectUser, scope).getFirst();
 
