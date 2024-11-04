@@ -68,4 +68,9 @@ public class GlobalExceptionHandler {
         return ResultEntity.error(HttpStatus.NOT_FOUND.value(), "filter error: " + ex.getMessage());
     }
 
+    @ExceptionHandler
+    public ResponseEntity<ResultEntity<Object>> handleRuntimeException(RuntimeException ex) {
+        return ResultEntity.error(HttpStatus.INTERNAL_SERVER_ERROR.value(), "No handler found for " + ex.getMessage());
+    }
+
 }

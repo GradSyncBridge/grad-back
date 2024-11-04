@@ -43,11 +43,7 @@ public class UserDetailsServiceImpl implements UserDetailsService {
 
     public User loadUserById(Integer id) throws UsernameNotFoundException {
 
-        // Map<String, Boolean> scope = FieldsGenerator.generateFields(User.class);
-
-        List<String> fields = List.of("id", "username", "password");
-
-        Map<String, Boolean> scope = FieldsGenerator.generateFields(User.class, fields);
+        Map<String, Boolean> scope = FieldsGenerator.generateFields(User.class);
 
         User user;
         try {

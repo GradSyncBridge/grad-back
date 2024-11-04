@@ -54,10 +54,10 @@ public class UserServiceImpl implements UserService {
                 return UserLoginVO.builder().setToken(targetUser.getId(), jwtService).build();
             }
         }catch (Exception e) {
-            throw new LoginFailedException(HttpStatus.FORBIDDEN.value(), "用户名或密码错误");
+            throw new LoginFailedException();
         }
 
-        throw new LoginFailedException(HttpStatus.FORBIDDEN.value(), "用户名或密码错误");
+        throw new LoginFailedException();
     }
 
     /**
@@ -88,12 +88,17 @@ public class UserServiceImpl implements UserService {
         User user = UserConverter.INSTANCE.UserRegisterDTOToUser(userRegisterDTO);
         try{
             user.setPassword(passwordEncoder.encode(user.getPassword()));
+
+            List<User> userList = userMapper.selectUser(User.builder().username(userRegisterDTO.getUsername()).build(), Map.of("username", true));
+            if (!userList.isEmpty()) throw new DuplicateUserException();
             userMapper.insertUser(user);
-        }catch (Exception e){
+        }catch (DuplicateUserException ex){
             throw new DuplicateUserException();
+        }catch (Exception e){
+            throw new RuntimeException(e.getMessage());
         }
-        User storeUser = userMapper.selectUser(User.builder().username(userRegisterDTO.getUsername()).build(), Map.of("id", true)).getFirst();
-        return UserRegisterVO.builder().setToken(storeUser.getId(), jwtService).build();
+
+        return UserRegisterVO.builder().setToken(user.getId(), jwtService).build();
     }
 
     /**
@@ -105,20 +110,18 @@ public class UserServiceImpl implements UserService {
     public UserProfileUpdateDTO updateUserProfile(UserProfileUpdateDTO userProfileUpdateDTO){
 
         try {
-            try {
-                if (userMapper.selectUser(User.builder().username(userProfileUpdateDTO.getUsername()).build(), Map.of("username", true)).getFirst().getUsername() != null) {
-                    throw new DuplicateUserException();
-                }
-            } catch (Exception e) {
-                // ignore
-            }
+            List<User> userList = userMapper.selectUser(User.builder().username(userProfileUpdateDTO.getUsername()).build(), Map.of("username", true));
+
+            if (!userList.isEmpty()) throw new DuplicateUserException();
 
             userProfileUpdateDTO.setAvatar(FileManager.saveBase64Image(userProfileUpdateDTO.getAvatar()));
             User user = UserConverter.INSTANCE.UserProfileUpdateDTOToUser(userProfileUpdateDTO);
 
             userMapper.updateUser(user, User.getAuth());
-        }catch (Exception e){
+        }catch (DuplicateUserException duplicateUserException){
             throw new DuplicateUserException();
+        } catch (Exception e){
+            throw new RuntimeException(e.getMessage());
         }
 
         return userProfileUpdateDTO;

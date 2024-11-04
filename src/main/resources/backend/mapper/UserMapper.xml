@@ -6,7 +6,7 @@
 <mapper namespace="backend.mapper.UserMapper">
     <sql id="DynamicFields">
         <trim suffixOverrides=",">
-            <if test="scope.id"> id, </if>
+            <if test="scope.id == true"> id, </if>
             <if test="scope.username == true"> username, </if>
             <if test="scope.name == true"> name, </if>
             <if test="scope.password == true"> password, </if>
@@ -46,6 +46,7 @@
                 and disabled = #{user.disabled}
             </if>
         </where>
+
     </sql>
 
 
@@ -70,6 +71,10 @@
                 #{phone},
                 #{gender}
             )
+
+        <selectKey keyProperty="id" resultType="int" order="AFTER">
+            SELECT LAST_INSERT_ID()
+        </selectKey>
     </insert>
 
     <select id="selectUser" resultType="backend.model.entity.User">
