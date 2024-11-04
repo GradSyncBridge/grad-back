@@ -2,7 +2,10 @@ package backend.config;
 
 import backend.model.entity.User;
 import com.fasterxml.jackson.databind.ObjectMapper;
+
+import jakarta.annotation.Nonnull;
 import jakarta.servlet.FilterChain;
+import jakarta.validation.*;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
@@ -47,7 +50,6 @@ public class JWTFilter extends OncePerRequestFilter {
             throws ServletException, IOException {
         String authHeader = request.getHeader(tokenName);
         String token = null;
-        String username = null;
         Integer uid = null;
 
         if (authHeader != null && authHeader.startsWith("Bearer ")) {
@@ -74,12 +76,13 @@ public class JWTFilter extends OncePerRequestFilter {
 
         if (uid != null && SecurityContextHolder.getContext().getAuthentication() == null) {
             try {
-                // UserDetails userDetails = context.getBean(UserDetailsServiceImpl.class).loadUserByUsername(username);
+                // UserDetails userDetails =
+                // context.getBean(UserDetailsServiceImpl.class).loadUserByUsername(username);
                 User user = context.getBean(UserDetailsServiceImpl.class).loadUserById(uid);
                 // if (jwtService.validateToken(token, userDetails)) {
                 if (jwtService.validateTokenById(token, user)) {
-                    UsernamePasswordAuthenticationToken authToken =
-                            new UsernamePasswordAuthenticationToken(user, null, ((UserDetails) user).getAuthorities());
+                    UsernamePasswordAuthenticationToken authToken = new UsernamePasswordAuthenticationToken(user, null,
+                            ((UserDetails) user).getAuthorities());
                     authToken.setDetails(new WebAuthenticationDetailsSource().buildDetails(request));
                     SecurityContextHolder.getContext().setAuthentication(authToken);
                 }
