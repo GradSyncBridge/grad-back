@@ -10,7 +10,6 @@ import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
-import org.springframework.web.servlet.NoHandlerFoundException;
 
 import javax.naming.AuthenticationException;
 import java.nio.file.AccessDeniedException;
@@ -41,7 +40,8 @@ public class GlobalExceptionHandler {
     @ExceptionHandler
     public ResponseEntity<ResultEntity<String>> handleConstraintViolation(ConstraintViolationException ex) {
         StringBuilder message = new StringBuilder("Constraint violation: ");
-        ex.getConstraintViolations().forEach(violation -> message.append(violation.getPropertyPath()).append(": ").append(violation.getMessage()).append("; "));
+        ex.getConstraintViolations().forEach(violation -> message.append(violation.getPropertyPath()).append(": ")
+                .append(violation.getMessage()).append("; "));
         return ResultEntity.error(HttpStatus.BAD_REQUEST.value(), message.toString());
     }
 

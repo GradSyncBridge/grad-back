@@ -26,16 +26,16 @@ public class JwtService {
     @Value("${jwt.secretkey}")
     private String secretkey;
 
-//    public JwtService() {
-//
-//        try {
-//            KeyGenerator keyGen = KeyGenerator.getInstance("HmacSHA256");
-//            SecretKey sk = keyGen.generateKey();
-//            secretkey = Base64.getEncoder().encodeToString(sk.getEncoded());
-//        } catch (NoSuchAlgorithmException e) {
-//            throw new RuntimeException(e);
-//        }
-//    }
+    // public JwtService() {
+    //
+    // try {
+    // KeyGenerator keyGen = KeyGenerator.getInstance("HmacSHA256");
+    // SecretKey sk = keyGen.generateKey();
+    // secretkey = Base64.getEncoder().encodeToString(sk.getEncoded());
+    // } catch (NoSuchAlgorithmException e) {
+    // throw new RuntimeException(e);
+    // }
+    // }
 
     @Value("${jwt.accessTokenExpiration}")
     private long accessTokenExpiration;
@@ -43,7 +43,8 @@ public class JwtService {
     @Value("${jwt.freshTokenExpiration}")
     private long freshTokenExpiration;
 
-    private final String uid = "uid";
+    @Value("${jwt.uid}")
+    private String uid;
 
     /**
      * 生成token
