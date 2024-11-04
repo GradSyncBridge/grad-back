@@ -5,16 +5,88 @@
 
 <mapper namespace="backend.mapper.StudentMapper">
 
-    <insert id="insertStudent">
+    <sql id="DynamicFields">
+        <trim suffixOverrides=",">
+            <if test="scope.id == true"> id, </if>
+            <if test="scope.userid == true"> userid, </if>
+            <if test="scope.birth == true"> birth, </if>
+            <if test="scope.grade == true"> grade, </if>
+            <if test="scope.address == true"> address, </if>
+            <if test="scope.major == true"> major, </if>
+            <if test="scope.school == true"> school, </if>
+            <if test="scope.type == true"> type, </if>
+            <if test="scope.biography == true"> biography, </if>
+            <if test="scope.enrollment == true"> enrollment, </if>
+            <if test="scope.application == true"> application, </if>
+            <if test="scope.reassign == true"> reassign, </if>
+            <if test="scope.valid == true"> valid, </if>
+        </trim>
+    </sql>
+    
+    <sql id="DynamicWhere">
+        <where>
+            <if test="student.id != null"> and id = #{student.id} </if>
+            <if test="student.userid != null"> and userid = #{student.userid} </if>
+            <if test="student.birth != null"> and birth = #{student.birth} </if>
+            <if test="student.grade != null"> and grade = #{student.grade} </if>
+            <if test="student.address != null"> and address = #{student.address} </if>
+            <if test="student.major != null"> and major = #{student.major} </if>
+            <if test="student.school != null"> and school = #{student.school} </if>
+            <if test="student.type != null"> and type = #{student.type} </if>
+            <if test="student.biography != null"> and biography = #{student.biography} </if>
+            <if test="student.enrollment != null"> and enrollment = #{student.enrollment} </if>
+            <if test="student.application != null"> and application = #{student.application} </if>
+            <if test="student.reassign != null"> and reassign = #{student.reassign} </if>
+            <if test="student.valid != null"> and valid = #{student.valid} </if>
+        </where>
+    </sql>
 
+
+    <insert id="insertStudent">
+        insert into Student
+        (userid, birth, grade, address, major, school, type, biography, enrollment, application, reassign, valid)
+        values
+        (#{userid}, #{birth}, #{grade}, #{address}, #{major}, #{school}, #{type}, #{biography}, #{enrollment}, #{application}, #{reassign}, #{valid})
     </insert>
 
     <select id="selectStudent" resultType="backend.model.entity.Student">
-
+        select
+            <include refid="DynamicFields" />
+        from Student
+            <include refid="DynamicWhere" />
     </select>
 
     <update id="updateStudent">
-
+        update Student
+        <set>
+            <if test="studentUpdate.userid != null"> userid = #{studentUpdate.userid}, </if>
+            <if test="studentUpdate.birth != null"> birth = #{studentUpdate.birth}, </if>
+            <if test="studentUpdate.grade != null"> grade = #{studentUpdate.grade}, </if>
+            <if test="studentUpdate.address != null"> address = #{studentUpdate.address}, </if>
+            <if test="studentUpdate.major != null"> major = #{studentUpdate.major}, </if>
+            <if test="studentUpdate.school != null"> school = #{studentUpdate.school}, </if>
+            <if test="studentUpdate.type != null"> type = #{studentUpdate.type}, </if>
+            <if test="studentUpdate.biography != null"> biography = #{studentUpdate.biography}, </if>
+            <if test="studentUpdate.enrollment != null"> enrollment = #{studentUpdate.enrollment}, </if>
+            <if test="studentUpdate.application != null"> application = #{studentUpdate.application}, </if>
+            <if test="studentUpdate.reassign != null"> reassign = #{studentUpdate.reassign}, </if>
+            <if test="studentUpdate.valid != null"> valid = #{studentUpdate.valid}, </if>
+        </set>
+        <where>
+            <if test="studentQuery.id != null"> and id = #{studentQuery.id} </if>
+            <if test="studentQuery.userid != null"> and userid = #{studentQuery.userid} </if>
+            <if test="studentQuery.birth != null"> and birth = #{studentQuery.birth} </if>
+            <if test="studentQuery.grade != null"> and grade = #{studentQuery.grade} </if>
+            <if test="studentQuery.address != null"> and address = #{studentQuery.address} </if>
+            <if test="studentQuery.major != null"> and major = #{studentQuery.major} </if>
+            <if test="studentQuery.school != null"> and school = #{studentQuery.school} </if>
+            <if test="studentQuery.type != null"> and type = #{studentQuery.type} </if>
+            <if test="studentQuery.biography != null"> and biography = #{studentQuery.biography} </if>
+            <if test="studentQuery.enrollment != null"> and enrollment = #{studentQuery.enrollment} </if>
+            <if test="studentQuery.application != null"> and application = #{studentQuery.application} </if>
+            <if test="studentQuery.reassign != null"> and reassign = #{studentQuery.reassign} </if>
+            <if test="studentQuery.valid != null"> and valid = #{studentQuery.valid} </if>
+        </where>
     </update>
 
 </mapper>

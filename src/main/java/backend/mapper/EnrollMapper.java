@@ -25,8 +25,8 @@ public interface EnrollMapper {
 
     /**
      * 更新选课记录
-     * @param enroll 更新值
-     * @param scope 更新的条件
+     * @param enrollUpdate 更新值
+     * @param enrollQuery 更新的条件
      */
-    void updateEnroll(Enroll enroll, Map<String, Boolean> updateScope);
+    void updateEnroll(Enroll enrollUpdate, Enroll enrollQuery);
 }

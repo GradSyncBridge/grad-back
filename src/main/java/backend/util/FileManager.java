@@ -48,7 +48,6 @@ public class FileManager {
         }
 
         File storeFile = new File(storeDir, STR."\{uuid}.\{fileType}");
-
         try(OutputStream outputStream = new BufferedOutputStream(new FileOutputStream(storeFile))){
             outputStream.write(data);
         } catch (Exception e) {
@@ -85,6 +84,7 @@ public class FileManager {
 
             // 获取文件扩展名
             String fileExtension;
+          
             int extensionIndex = fileName.lastIndexOf(".");
             if (extensionIndex > 0) {
                 fileExtension = fileName.substring(extensionIndex); // 例如: ".pdf" 或 ".png"

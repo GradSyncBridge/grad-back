@@ -4,75 +4,138 @@
         "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
 
 <mapper namespace="backend.mapper.UserMapper">
+    <sql id="DynamicFields">
+        <trim suffixOverrides=",">
+            <if test="scope.id"> id, </if>
+            <if test="scope.username == true"> username, </if>
+            <if test="scope.name == true"> name, </if>
+            <if test="scope.password == true"> password, </if>
+            <if test="scope.email == true"> email, </if>
+            <if test="scope.avatar == true"> avatar, </if>
+            <if test="scope.role == true"> role, </if>
+            <if test="scope.phone == true"> phone, </if>
+            <if test="scope.gender == true"> gender, </if>
+            <if test="scope.disabled == true"> disabled, </if>
+        </trim>
+    </sql>
 
-    <insert id="insertUser">
+    <sql id="DynamicWhere">
+        <where>
+            <if test="user.id != null">
+                and id = #{user.id}
+            </if>
+            <if test="user.username != null">
+                and username = #{user.username}
+            </if>
+            <if test="user.name != null">
+                and name LIKE CONCAT('%', #{user.name}, '%')
+            </if>
+            <if test="user.email != null">
+                and email = #{user.email}
+            </if>
+            <if test="user.role != null">
+                and role = #{user.role}
+            </if>
+            <if test="user.phone != null">
+                and phone = #{user.phone}
+            </if>
+            <if test="user.gender != null">
+                and gender = #{user.gender}
+            </if>
+            <if test="user.disabled != null">
+                and disabled = #{user.disabled}
+            </if>
+        </where>
+    </sql>
 
+
+    <insert id="insertUser" parameterType="backend.model.entity.User" keyColumn="id" keyProperty="id">
+        insert into User
+            (
+                username,
+                password,
+                role,
+                name,
+                email,
+                phone,
+                gender
+            )
+        values
+            (
+                #{username},
+                #{password},
+                #{role},
+                #{name},
+                #{email},
+                #{phone},
+                #{gender}
+            )
     </insert>
 
     <select id="selectUser" resultType="backend.model.entity.User">
-        SELECT
-        <trim prefix="" suffix="" suffixOverrides=",">
-            <if test="scope.id != null and scope.id != '' ">
-                id,
-            </if>
-            <if test="scope.username != null and scope.username != '' ">
-                username,
-            </if>
-            <if test="scope.name != null and scope.name != '' ">
-                name,
-            </if>
-            <if test="scope.password != null and scope.password != '' ">
-                password,
-            </if>
-            <if test="scope.email != null and scope.email != '' ">
-                email,
-            </if>
-            <if test="scope.avatar != null and scope.avatar != '' ">
-                avatar,
-            </if>
-            <if test="scope.role != null and scope.role != '' ">
-                role,
-            </if>
-            <if test="scope.phone != null and scope.phone != '' ">
-                phone,
-            </if>
-            <if test="scope.gender != null and scope.gender != '' ">
-                gender,
-            </if>
-            <if test="scope.disabled != null and scope.disabled != '' ">
-                disabled
-            </if>
-        </trim>
-        FROM user
-        WHERE 1=1
-        <if test="user.id != null">
-            AND id = #{user.id}
-        </if>
-        <if test="user.username != null">
-            AND username = #{user.username}
-        </if>
-        <if test="user.name != null">
-            AND name LIKE CONCAT('%', #{user.name}, '%')
-        </if>
-        <if test="user.email != null">
-            AND email = #{user.email}
-        </if>
-        <if test="user.role != null">
-            AND role = #{user.role}
-        </if>
-        <if test="user.phone != null">
-            AND phone = #{user.phone}
-        </if>
-        <if test="user.gender != null">
-            AND gender = #{user.gender}
-        </if>
-        <if test="user.disabled != null">
-            AND disabled = #{user.disabled}
-        </if>
-
+        select
+            <include refid="DynamicFields" />
+        from User
+            <include refid="DynamicWhere" />
     </select>
 
     <update id="updateUser">
+        update User
+        <set>
+            <if test="userUpdate.username != null">
+                username = #{userUpdate.username},
+            </if>
+            <if test="userUpdate.name != null">
+                name = #{userUpdate.name},
+            </if>
+            <if test="userUpdate.password != null">
+                password = #{userUpdate.password},
+            </if>
+            <if test="userUpdate.role != null">
+                role = #{userUpdate.role},
+            </if>
+            <if test="userUpdate.email != null">
+                email = #{userUpdate.email},
+            </if>
+            <if test="userUpdate.phone != null">
+                phone = #{userUpdate.phone},
+            </if>
+            <if test="userUpdate.avatar != null">
+                avatar = #{userUpdate.avatar},
+            </if>
+            <if test="userUpdate.gender != null">
+                gender = #{userUpdate.gender},
+            </if>
+        </set>
+        <where>
+            <if test="userQuery.id != null">
+                and id = #{userQuery.id}
+            </if>
+            <if test="userQuery.username != null">
+                and username = #{userQuery.username}
+            </if>
+            <if test="userQuery.name != null">
+                and name = #{userQuery.name}
+            </if>
+            <if test="userQuery.password != null">
+                and password = #{userQuery.password}
+            </if>
+            <if test="userQuery.role != null">
+                and role = #{userQuery.role}
+            </if>
+            <if test="userQuery.email != null">
+                and email = #{userQuery.email}
+            </if>
+            <if test="userQuery.phone != null">
+                and phone = #{userQuery.phone}
+            </if>
+            <if test="userQuery.avatar != null">
+                and avatar = #{userQuery.avatar}
+            </if>
+            <if test="userQuery.gender != null">
+                and gender = #{userQuery.gender}
+            </if>
+        </where>
 
     </update>
 

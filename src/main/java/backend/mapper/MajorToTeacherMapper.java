@@ -17,18 +17,18 @@ public interface MajorToTeacherMapper {
 
     /**
      * 查询老师与专业的关系
-     * @param majorToTeacherMapper 查询条件
+     * @param majorToTeacher 查询条件
      * @param scope 查询返回的字段
-     * @return MajorToTeacher列表
+     * @return MajorToTeacher 列表
      */
-    List<MajorToTeacher> selectMajorToTeacher(MajorToTeacherMapper majorToTeacherMapper, Map<String, Boolean> selectScope);
+    List<MajorToTeacher> selectMajorToTeacher(MajorToTeacher majorToTeacher, Map<String, Boolean> scope);
 
     /**
      * 更新老师与专业的关系
-     * @param majorToTeacher 更新值
-     * @param scope 更新的条件
+     * @param majorToTeacherUpdate 更新值
+     * @param majorToTeacherQuery 更新的条件
      */
-    void updateMajorToTeacher(MajorToTeacher majorToTeacher, Map<String, Boolean> scope);
+    void updateMajorToTeacher(MajorToTeacher majorToTeacherUpdate, MajorToTeacher majorToTeacherQuery);
 
 
 }

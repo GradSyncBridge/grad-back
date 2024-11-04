@@ -5,9 +5,9 @@ spring:
       password: pass
       enabled: false
   datasource:
-    url: jdbc:mysql://localhost:3306/bms_sys
-    username: root
-    password: 123456
+    url: jdbc:mysql://81.69.160.51:3306/test_gradsync
+    username: test_gradsync
+    password: s8tXp2PHCrGXBwb4
     driver-class-name: com.mysql.cj.jdbc.Driver
   mybatis:
     mapper-locations: classpath:backend/mapper/*.xml

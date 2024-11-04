@@ -1,0 +1,65 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<!-- public class Department {
+    private Integer id;
+
+    private Integer did;
+
+    private String name;
+}
+ -->
+
+<mapper namespace="backend.mapper.Department">
+
+    <sql id="DynamicFields">
+        <trim suffixOverrides=",">
+            <if test="scope.id == true"> id, </if>
+            <if test="scope.did == true"> did, </if>
+            <if test="scope.name == true"> name, </if>
+        </trim>
+    </sql>
+
+    <sql id="DynamicWhere">
+        <where>
+            <if test="department.id != null"> and id = #{department.id} </if>
+            <if test="department.did != null"> and did = #{department.did} </if>
+            <if test="department.name != null"> and name = #{department.name} </if>
+        </where>
+    </sql>
+
+    <insert id="insertDepartment">
+        insert into Department
+        (
+            did,
+            name
+        )
+        values
+        (
+            #{did},
+            #{name}
+        )
+    </insert>
+
+    <select id="selectDepartment" resultType="backend.model.entity.Department">
+        select
+            <include refid="DynamicFields" />
+        from Deadline
+            <include refid="DynamicWhere" />
+    </select>
+
+    <update id="updateDepartment">
+        update Department
+        <set>
+            <if test="departmentUpdate.did != null"> did = #{departmentUpdate.did}, </if>
+            <if test="departmentUpdate.name != null"> name = #{departmentUpdate.name}, </if>
+        </set>
+        <where>
+            <if test="departmentQuery.id != null"> and id = #{departmentQuery.id} </if>
+            <if test="departmentQuery.did != null"> and did = #{departmentQuery.did} </if>
+            <if test="departmentQuery.name != null"> and name = #{departmentQuery.name} </if>
+        </where>
+    </update>
+</mapper>

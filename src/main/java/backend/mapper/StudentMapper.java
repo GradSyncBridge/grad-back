@@ -25,8 +25,8 @@ public interface StudentMapper {
 
     /**
      * 更新学生
-     * @param student 更新值
-     * @param scope 更新的条件
+     * @param studentUpdate 更新值
+     * @param studentQuery 更新的条件
      */
-    void updateStudent(Student student, Map<String, Boolean> scope);
+    void updateStudent(Student studentUpdate, Student studentQuery);
 }

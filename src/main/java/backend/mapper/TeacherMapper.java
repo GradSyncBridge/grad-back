@@ -23,10 +23,11 @@ public interface TeacherMapper {
      */
     List<Teacher> selectTeacher(Teacher teacher, Map<String, Boolean> scope);
 
+
     /**
      * 更新教师
-     * @param teacher 更新值
-     * @param scope 更新的条件
+     * @param teacherUpdate 更新条件
+     * @param teacherQuery 查询条件
      */
-    void updateTeacher(Teacher teacher, Map<String, Boolean> scope);
+    void updateTeacher(Teacher teacherUpdate, Teacher teacherQuery);
 }

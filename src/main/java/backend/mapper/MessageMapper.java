@@ -25,8 +25,8 @@ public interface MessageMapper {
 
     /**
      * 更新消息
-     * @param message 更新值
-     * @param scope 更新的条件
+     * @param messageUpdate 更新值
+     * @param messageQuery 更新的条件
      */
-    void updateMessage(Message message, Map<String, Boolean> scope);
+    void updateMessage(Message messageUpdate, Message messageQuery);
 }

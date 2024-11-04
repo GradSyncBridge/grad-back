@@ -25,8 +25,8 @@ public interface SubjectMapper {
 
     /**
      * 更新课程
-     * @param subject 更新值
-     * @param scope 更新的条件
+     * @param subjectUpdate 更新值
+     * @param subjectQuery 更新的条件
      */
-    void updateSubject(Subject subject, Map<String, Boolean> scope);
+    void updateSubject(Subject subjectUpdate, Subject subjectQuery);
 }

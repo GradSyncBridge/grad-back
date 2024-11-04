@@ -5,16 +5,121 @@
 
 <mapper namespace="backend.mapper.MajorMapper">
 
-    <insert id="insertMajor" parameterType="backend.model.entity.Major">
+    <sql id="DynamicFields">
+        <trim suffixOverrides=",">
+            <if test="scope.id == true"> id, </if>
+            <if test="scope.name == true"> name, </if>
+            <if test="scope.mid == true"> mid, </if>
+            <if test="scope.pid == true"> pid, </if>
+            <if test="scope.description == true"> description, </if>
+            <if test="scope.type == true"> type, </if>
+            <if test="scope.total == true"> total, </if>
+            <if test="scope.addition == true"> addition, </if>
+            <if test="scope.remnant == true"> remnant, </if>
+            <if test="scope.year == true"> year, </if>
+            <if test="scope.initial == true"> initial, </if>
+            <if test="scope.interview == true"> interview, </if>
+            <if test="scope.recommend == true"> recommend, </if>
+            <if test="scope.disabled == true"> disabled, </if>
+        </trim>
+    </sql>
 
+    <sql id="DynamicWhere">
+        <where>
+            <if test="major.id != null"> and id = #{major.id} </if>
+            <if test="major.name != null"> and name = #{major.name} </if>
+            <if test="major.mid != null"> and mid = #{major.mid} </if>
+            <if test="major.pid != null"> and pid = #{major.pid} </if>
+            <if test="major.description != null"> and description = #{major.description} </if>
+            <if test="major.type != null"> and type = #{major.type} </if>
+            <if test="major.total != null"> and total = #{major.total} </if>
+            <if test="major.addition != null"> and addition = #{major.addition} </if>
+            <if test="major.remnant != null"> and remnant = #{major.remnant} </if>
+            <if test="major.year != null"> and year = #{major.year} </if>
+            <if test="major.initial != null"> and initial = #{major.initial} </if>
+            <if test="major.interview != null"> and interview = #{major.interview} </if>
+            <if test="major.recommend != null"> and recommend = #{major.recommend} </if>
+            <if test="major.disabled != null"> and disabled = #{major.disabled} </if>
+        </where>
+    </sql>
+
+
+    <insert id="insertMajor" parameterType="backend.model.entity.Major">
+        insert into Major
+        (
+            name,
+            mid,
+            pid,
+            description,
+            type,
+            total,
+            addition,
+            remnant,
+            year,
+            initial,
+            interview,
+            recommend,
+            disabled
+        )
+        values
+        (
+            #{name},
+            #{mid},
+            #{pid},
+            #{description},
+            #{type},
+            #{total},
+            #{addition},
+            #{remnant},
+            #{year},
+            #{initial},
+            #{interview},
+            #{recommend},
+            #{disabled}
+        )
     </insert>
 
     <select id="selectMajor" resultType="backend.model.entity.Major">
-
+        select
+            <include refid="DynamicFields" />
+        from Major
+            <include refid="DynamicWhere" />
     </select>
 
     <update id="updateMajor">
-
+        update Major
+        <set>
+            <if test="majorUpdate.name != null"> name = #{majorUpdate.name}, </if>
+            <if test="majorUpdate.mid != null"> mid = #{majorUpdate.mid}, </if>
+            <if test="majorUpdate.pid != null"> pid = #{majorUpdate.pid}, </if>
+            <if test="majorUpdate.description != null"> description = #{majorUpdate.description}, </if>
+            <if test="majorUpdate.type != null"> type = #{majorUpdate.type}, </if>
+            <if test="majorUpdate.total != null"> total = #{majorUpdate.total}, </if>
+            <if test="majorUpdate.addition != null"> addition = #{majorUpdate.addition}, </if>
+            <if test="majorUpdate.remnant != null"> remnant = #{majorUpdate.remnant}, </if>
+            <if test="majorUpdate.year != null"> year = #{majorUpdate.year}, </if>
+            <if test="majorUpdate.initial != null"> initial = #{majorUpdate.initial}, </if>
+            <if test="majorUpdate.interview != null"> interview = #{majorUpdate.interview}, </if>
+            <if test="majorUpdate.recommend != null"> recommend = #{majorUpdate.recommend}, </if>
+            <if test="majorUpdate.disabled != null"> disabled = #{majorUpdate.disabled}, </if>
+        </set>
+        <where>
+            <if test="majorQuery.id != null"> and id = #{majorQuery.id} </if>
+            <if test="majorQuery.name != null"> and name = #{majorQuery.name} </if>
+            <if test="majorQuery.mid != null"> and mid = #{majorQuery.mid} </if>
+            <if test="majorQuery.pid != null"> and pid = #{majorQuery.pid} </if>
+            <if test="majorQuery.description != null"> and description = #{majorQuery.description} </if>
+            <if test="majorQuery.type != null"> and type = #{majorQuery.type} </if>
+            <if test="majorQuery.total != null"> and total = #{majorQuery.total} </if>
+            <if test="majorQuery.addition != null"> and addition = #{majorQuery.addition} </if>
+            <if test="majorQuery.remnant != null"> and remnant = #{majorQuery.remnant} </if>
+            <if test="majorQuery.year != null"> and year = #{majorQuery.year} </if>
+            <if test="majorQuery.initial != null"> and initial = #{majorQuery.initial} </if>
+            <if test="majorQuery.interview != null"> and interview = #{majorQuery.interview} </if>
+            <if test="majorQuery.recommend != null"> and recommend = #{majorQuery.recommend} </if>
+            <if test="majorQuery.disabled != null"> and disabled = #{majorQuery.disabled} </if>
+        </where>
+        
     </update>
 
 </mapper>

@@ -49,7 +49,7 @@ public class SecurityConfig implements WebMvcConfigurer {
 
         return http.csrf(customizer -> customizer.disable()).
                 authorizeHttpRequests(request -> request
-                        .requestMatchers("/resources/**", "/unauthorized/**").permitAll()
+                        .requestMatchers("login", "/resources/**", "/unauthrizated/**").permitAll()
                         .anyRequest().authenticated()).
                 httpBasic(httpBasic -> httpBasic.disable()) // dev mode, easy for debug by view
                 // httpBasic(Customizer.withDefaults()) // prod mode, disable view for security
@@ -88,8 +88,7 @@ public class SecurityConfig implements WebMvcConfigurer {
      * @param registry 资源处理注册
      */
     @Override
-    public void addResourceHandlers(ResourceHandlerRegistry registry)
-    {
+    public void addResourceHandlers(ResourceHandlerRegistry registry) {
         registry.addResourceHandler("/resources/**")
                 .addResourceLocations("classpath:/media/");
     }

@@ -25,8 +25,8 @@ public interface DeadlineMapper {
 
     /**
      * 更新截止日期
-     * @param deadline 更新值
-     * @param scope 更新的条件
+     * @param deadlineUpdate 更新值
+     * @param deadlineQuery 更新的条件
      */
-    void updateDeadline(Deadline deadline, Map<String, Boolean> scope);
+    void updateDeadline(Deadline deadlineUpdate, Deadline deadlineQuery);
 }

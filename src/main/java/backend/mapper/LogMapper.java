@@ -25,8 +25,8 @@ public interface LogMapper {
 
     /**
      * 更新日志
-     * @param log 更新值
-     * @param scope 更新条件字段
+     * @param logUpdate 更新值
+     * @param logQuery 更新条件字段
      */
-    void updateLog(Log log, Map<String, Boolean> scope);
+    void updateLog(Log logUpdate, Log logQuery);
 }
