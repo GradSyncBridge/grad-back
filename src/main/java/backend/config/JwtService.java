@@ -43,10 +43,13 @@ public class JwtService {
     @Value("${jwt.freshTokenExpiration}")
     private long freshTokenExpiration;
 
+    private final String uid = "uid";
+
     /**
      * 生成token
+     *
      * @param username 用户名
-     * @param type token类型 1: access token 2: fresh token
+     * @param type     token类型 1: access token 2: fresh token
      * @return token
      */
     public String generateToken(String username, Integer type) {
@@ -66,12 +69,14 @@ public class JwtService {
 
     public String generateToken(Integer id, Integer type) {
         long expiration = type == 1 ? accessTokenExpiration : freshTokenExpiration;
+
+        // Saved for future usage
         Map<String, Object> claims = new HashMap<>();
-        String username = id.toString();
+        claims.put(uid, id);
+
         return Jwts.builder()
                 .claims()
                 .add(claims)
-                .subject(username)
                 .issuedAt(new Date(System.currentTimeMillis()))
                 .expiration(new Date(System.currentTimeMillis() + expiration))
                 .and()
@@ -82,6 +87,7 @@ public class JwtService {
 
     /**
      * 获取密钥
+     *
      * @return 密钥
      */
     private SecretKey getKey() {
@@ -91,6 +97,7 @@ public class JwtService {
 
     /**
      * 从token中提取用户名
+     *
      * @param token token
      * @return 用户名
      */
@@ -99,14 +106,23 @@ public class JwtService {
         // extract the username from jwt token
         try {
             return extractClaim(token, Claims::getSubject);
-        }
-        catch (Exception e) {
+        } catch (Exception e) {
             throw new RuntimeException("Invalid JWT token");
         }
     }
 
+    public Integer extractUid(String token) {
+        return (Integer) extractPrivateClaim(token, uid);
+    }
+
+    private Object extractPrivateClaim(String token, String fieldName) {
+        final Claims claims = extractAllClaims(token);
+        return claims.get(fieldName);
+    }
+
     /**
      * 从token中提取过期时间
+     *
      * @param token token
      * @return 过期时间
      */
@@ -117,14 +133,14 @@ public class JwtService {
 
     /**
      * 从token中提取所有声明
+     *
      * @param token token
      * @return 所有声明
      */
     private Claims extractAllClaims(String token) {
         try {
             return Jwts.parser().verifyWith(getKey()).build().parseSignedClaims(token).getPayload();
-        }
-        catch (Exception e) {
+        } catch (Exception e) {
             throw new RuntimeException("Invalid JWT token");
         }
 
@@ -132,7 +148,8 @@ public class JwtService {
 
     /**
      * 验证token
-     * @param token token
+     *
+     * @param token       token
      * @param userDetails 用户信息
      * @return 是否有效
      */
@@ -146,12 +163,13 @@ public class JwtService {
     }
 
     public boolean validateTokenById(String token, User user) {
-        final int id = Integer.parseInt(extractId(token));
+        final int id = extractUid(token);
         return (id == user.getId() && !isTokenExpired(token));
     }
 
     /**
      * 判断token是否过期
+     *
      * @param token token
      * @return 是否过期
      */
@@ -161,6 +179,7 @@ public class JwtService {
 
     /**
      * 从token中提取过期时间
+     *
      * @param token token
      * @return 过期时间
      */
