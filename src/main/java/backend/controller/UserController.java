@@ -25,7 +25,7 @@ public class UserController {
     @GetMapping(value = "/profile")
     public ResponseEntity<ResultEntity<Object>> getUser() {
         UserProfileVO user = userService.getUser();
-        return ResultEntity.success(HttpStatus.OK.value(), "ok", user);
+        return ResultEntity.success(HttpStatus.OK.value(), "Get user's profile successfully.", user);
     }
 
     /**
@@ -35,15 +35,19 @@ public class UserController {
     @GetMapping(value = "/refresh")
     public ResponseEntity<ResultEntity<Object>> refreshToken() {
         UserRefreshVO userRefreshVO = userService.refreshToken();
-        return ResultEntity.success(HttpStatus.OK.value(), "ok", userRefreshVO);
+        return ResultEntity.success(HttpStatus.OK.value(), "Refresh user's token successfully.", userRefreshVO);
     }
 
 
-
+    /**
+     * 更新用户信息
+     * @param userProfileUpdateDTO 用户信息
+     * @return 用户信息
+     */
     @PutMapping(value = "/profile")
     public ResponseEntity<ResultEntity<Object>> updateUserProfile(@RequestBody @Validated UserProfileUpdateDTO userProfileUpdateDTO) {
         UserProfileUpdateDTO data = userService.updateUserProfile(userProfileUpdateDTO);
-        return ResultEntity.success(HttpStatus.OK.value(), "ok", data);
+        return ResultEntity.success(HttpStatus.OK.value(), "Update user's profile successfully.", data);
     }
 
 }

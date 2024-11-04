@@ -32,7 +32,7 @@ public class UnAuthController {
     @PostMapping(value = "/user/login")
     public ResponseEntity<ResultEntity<Object>> login(@RequestBody @Validated UserLoginDTO userLoginDTO) {
         UserLoginVO data = userService.login(userLoginDTO);
-        return ResultEntity.success(HttpStatus.OK.value(), "ok", data);
+        return ResultEntity.success(HttpStatus.OK.value(), "Login successfully.", data);
     }
 
     /**
@@ -43,7 +43,7 @@ public class UnAuthController {
     @PostMapping(value = "/user/register")
     public ResponseEntity<ResultEntity<Object>> register(@RequestBody @Validated UserRegisterDTO userRegisterDTO) {
         UserRegisterVO data = userService.register(userRegisterDTO);
-        return ResultEntity.success(HttpStatus.OK.value(), "ok", data);
+        return ResultEntity.success(HttpStatus.OK.value(), "Register successfully.", data);
     }
 
 }
