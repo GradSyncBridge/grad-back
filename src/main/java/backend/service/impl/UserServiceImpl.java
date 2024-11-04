@@ -43,10 +43,14 @@ public class UserServiceImpl implements UserService {
         Map<String, Boolean> scope = FieldsGenerator.generateFields(User.class, fields);
 
         User selectUser = User.builder().username(userLoginDTO.getUsername()).build();
-        User targetUser = userMapper.selectUser(selectUser, scope).getFirst();
+        try {
+            User targetUser = userMapper.selectUser(selectUser, scope).getFirst();
 
-        if(passwordEncoder.matches(userLoginDTO.getPassword(), targetUser.getPassword())){
-            return UserLoginVO.builder().setToken(userLoginDTO.getUsername(), jwtService).build();
+            if (passwordEncoder.matches(userLoginDTO.getPassword(), targetUser.getPassword())) {
+                return UserLoginVO.builder().setToken(userLoginDTO.getUsername(), jwtService).build();
+            }
+        }catch (Exception e) {
+            throw new LoginFailedException(HttpStatus.FORBIDDEN.value(), "用户名或密码错误");
         }
 
         throw new LoginFailedException(HttpStatus.FORBIDDEN.value(), "用户名或密码错误");
