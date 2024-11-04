@@ -42,16 +42,16 @@ public class FileManager {
         String userId = User.getAuth().getId().toString();
 
         // 创建目标目录
-        File storeDir = new File(STR."\{basePath}/\{userId}");
+        File storeDir = new File(basePath + "/" + userId);
         if (!storeDir.exists()) {
             storeDir.mkdirs();
         }
 
-        File storeFile = new File(storeDir, STR."\{uuid}.\{fileType}");
+        File storeFile = new File(storeDir, uuid + "." + fileType);
         try(OutputStream outputStream = new BufferedOutputStream(new FileOutputStream(storeFile))){
             outputStream.write(data);
         } catch (Exception e) {
-            throw new FileStorageException(HttpStatus.INTERNAL_SERVER_ERROR.value(), STR."Failed to store file: \{e.getMessage()}");
+            throw new FileStorageException(HttpStatus.INTERNAL_SERVER_ERROR.value(), "Failed to store file: " + e.getMessage());
         }
 
         // 获取文件的绝对路径
@@ -97,7 +97,7 @@ public class FileManager {
             String userId = User.getAuth().getId().toString();
 
             // 创建目标目录
-            File storeDir = new File(STR."\{basePath}/\{userId}");
+            File storeDir = new File(basePath + "/" +  userId);
             if (!storeDir.exists()) {
                 storeDir.mkdirs(); // 创建目录
             }
@@ -121,7 +121,7 @@ public class FileManager {
 
             return relativePath;
         } catch (Exception e) {
-            throw new FileStorageException(HttpStatus.INTERNAL_SERVER_ERROR.value(), STR."File upload failed: \{e.getMessage()}");
+            throw new FileStorageException(HttpStatus.INTERNAL_SERVER_ERROR.value(), "File upload failed: " + e.getMessage());
         }
     }
 
@@ -136,7 +136,7 @@ public class FileManager {
                 outputStream.write(buffer, 0, bytesRead);
             }
         }catch (Exception e){
-            throw new FileStorageException(HttpStatus.INTERNAL_SERVER_ERROR.value(), STR."Failed to store file: \{e.getMessage()}");
+            throw new FileStorageException(HttpStatus.INTERNAL_SERVER_ERROR.value(), "Failed to store file: " + e.getMessage());
         }
     }
 
