@@ -31,10 +31,12 @@ public class UserDetailsServiceImpl implements UserDetailsService {
 
         Map<String, Boolean> scope = FieldsGenerator.generateFields(User.class, fields);
 
-        User user = userMapper.selectUser(User.builder().username(username).build(), scope).getFirst();
-
-        if (user == null)
+        User user;
+        try {
+            user = userMapper.selectUser(User.builder().username(username).build(), scope).getFirst();
+        }catch (Exception e) {
             throw new UsernameNotFoundException("User not found");
+        }
 
         return user;
     }

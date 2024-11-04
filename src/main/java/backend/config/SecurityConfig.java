@@ -3,9 +3,11 @@ package backend.config;
 import org.springframework.context.annotation.Configuration;
 
 import org.springframework.context.annotation.Bean;
+import org.springframework.context.annotation.Lazy;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
+import org.springframework.security.web.AuthenticationEntryPoint;
 import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.authentication.AuthenticationProvider;
@@ -28,6 +30,10 @@ public class SecurityConfig implements WebMvcConfigurer {
 
     @Autowired
     private JWTFilter jwtFilter;
+
+    @Autowired
+    @Lazy
+    private AuthenticationEntryPoint authEntryPoint;
 
     /**
      * 密码加密
@@ -55,6 +61,9 @@ public class SecurityConfig implements WebMvcConfigurer {
                 // httpBasic(Customizer.withDefaults()) // prod mode, disable view for security
                 .sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
                 .addFilterBefore(jwtFilter, UsernamePasswordAuthenticationFilter.class)
+                .exceptionHandling(exceptionHandling ->
+                        exceptionHandling.authenticationEntryPoint(authEntryPoint)
+                )
                 .build();
 
     }

@@ -1,7 +1,7 @@
-package backend.annotation;
+package backend.annotation.entity;
 
-import backend.annotation.group.repeatable.UserValidations;
-import backend.annotation.impl.UserValidationImpl;
+import backend.annotation.entity.group.repeatable.UserValidations;
+import backend.annotation.entity.impl.UserValidationImpl;
 import jakarta.validation.Constraint;
 
 import java.lang.annotation.*;

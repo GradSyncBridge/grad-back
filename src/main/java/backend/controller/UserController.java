@@ -1,20 +1,15 @@
 package backend.controller;
 
-import backend.annotation.group.UserGroup.EmailGroup;
 import backend.model.DTO.UserLoginDTO;
-import backend.model.VO.UserLoginVO;
 import backend.model.VO.UserProfileVO;
-import backend.model.entity.User;
+import backend.model.VO.UserRefreshVO;
 import backend.service.UserService;
-import backend.util.FileManager;
 import backend.util.ResultEntity;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
-
-import java.util.Map;
 
 @RestController
 @RequestMapping("/user")
@@ -33,10 +28,18 @@ public class UserController {
         return ResultEntity.success(HttpStatus.OK.value(), "ok", user);
     }
 
+    /**
+     * 刷新token
+     * @return token
+     */
+    @GetMapping(value = "/refresh")
+    public ResponseEntity<ResultEntity<Object>> refreshToken() {
+        UserRefreshVO userRefreshVO = userService.refreshToken();
+        return ResultEntity.success(HttpStatus.OK.value(), "ok", userRefreshVO);
+    }
+
     @GetMapping(value = "/user/email")
-    public ResponseEntity<ResultEntity<String>> getEmail(@RequestBody Map<String, String> map) {
-        String image = map.get("image");
-        FileManager.saveBase64Image(image);
+    public ResponseEntity<ResultEntity<String>> getEmail(@RequestBody @Validated UserLoginDTO userLoginDTO) {
         return ResultEntity.success(HttpStatus.OK.value(), "ok");
     }
 

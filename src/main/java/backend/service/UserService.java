@@ -1,8 +1,11 @@
 package backend.service;
 
 import backend.model.DTO.UserLoginDTO;
+import backend.model.DTO.UserRegisterDTO;
 import backend.model.VO.UserLoginVO;
 import backend.model.VO.UserProfileVO;
+import backend.model.VO.UserRefreshVO;
+import backend.model.VO.UserRegisterVO;
 
 public interface UserService {
     /**
@@ -17,4 +20,12 @@ public interface UserService {
      * @return 用户信息
      */
     UserProfileVO getUser();
+
+    /**
+     * 刷新token
+     * @return token
+     */
+    UserRefreshVO refreshToken();
+
+    UserRegisterVO register(UserRegisterDTO userRegisterDTO);
 }

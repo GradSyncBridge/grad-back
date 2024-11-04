@@ -8,9 +8,11 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.http.converter.HttpMessageNotReadableException;
 import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.ExceptionHandler;
+import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
 import org.springframework.web.servlet.NoHandlerFoundException;
 
+import javax.naming.AuthenticationException;
 import java.nio.file.AccessDeniedException;
 import java.sql.SQLIntegrityConstraintViolationException;
 
@@ -33,7 +35,7 @@ public class GlobalExceptionHandler {
         int startIndex = message.lastIndexOf("message [") + "message [".length();
         int endIndex = message.lastIndexOf("]") - 1;
 
-        return ResultEntity.error(HttpStatus.BAD_REQUEST.value(), message.substring(startIndex, endIndex).trim());
+        return ResultEntity.error(HttpStatus.FORBIDDEN.value(), message.substring(startIndex, endIndex).trim());
     }
 
     @ExceptionHandler
@@ -58,6 +60,12 @@ public class GlobalExceptionHandler {
     public ResponseEntity<ResultEntity<Object>> handleAccessDeniedException(AccessDeniedException ex) {
         String errorMessage = "The requested resource was not found: " + ex.getMessage();
         return ResultEntity.error(HttpStatus.NOT_FOUND.value(), errorMessage);
+    }
+
+    @ExceptionHandler
+    @ResponseBody
+    public ResponseEntity<ResultEntity<Object>> handleAuthenticationException(AuthenticationException ex) {
+        return ResultEntity.error(HttpStatus.NOT_FOUND.value(), "filter error: " + ex.getMessage());
     }
 
 }

@@ -1,8 +1,8 @@
 package backend.model.entity;
 
-import backend.annotation.UserValidation;
-import backend.annotation.group.UserGroup.EmailGroup;
-import backend.annotation.group.UserGroup.UsernameGroup;
+import backend.annotation.entity.UserValidation;
+import backend.annotation.entity.group.UserGroup.EmailGroup;
+import backend.annotation.entity.group.UserGroup.UsernameGroup;
 import lombok.*;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.GrantedAuthority;

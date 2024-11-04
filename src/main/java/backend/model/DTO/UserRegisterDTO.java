@@ -1,6 +1,6 @@
 package backend.model.DTO;
 
-import backend.annotation.DTO.UserLoginDTOValidation;
+import backend.annotation.DTO.UserRegisterDTOValidation;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
@@ -8,10 +8,13 @@ import lombok.NoArgsConstructor;
 @Data
 @AllArgsConstructor
 @NoArgsConstructor
-@UserLoginDTOValidation
-public class UserLoginDTO {
-
+@UserRegisterDTOValidation
+public class UserRegisterDTO {
     private String username;
 
     private String password;
+
+    private Integer gender;
+
+    private Integer role;
 }

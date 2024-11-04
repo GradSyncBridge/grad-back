@@ -1,6 +1,7 @@
 package backend.model.converter;
 
 import backend.model.DTO.UserLoginDTO;
+import backend.model.DTO.UserRegisterDTO;
 import backend.model.VO.UserProfileVO;
 import backend.model.entity.User;
 import org.mapstruct.Mapper;
@@ -16,5 +17,7 @@ public interface UserConverter {
     UserLoginDTO UserToUserLoginDTO(User user);
 
     UserProfileVO UserToUserProfileVO(User user);
+
+    User UserRegisterDTOToUser(UserRegisterDTO userRegisterDTO);
 
 }
