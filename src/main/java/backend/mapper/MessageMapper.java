@@ -11,22 +11,25 @@ public interface MessageMapper {
 
     /**
      * 插入消息
+     *
      * @param message
      */
     void insertMessage(Message message);
 
     /**
      * 查询消息
+     *
      * @param message 查询条件
-     * @param scope 查询返回的字段
+     * @param scope   查询返回的字段
      * @return 消息列表
      */
     List<Message> selectMessage(Message message, Map<String, Boolean> scope);
 
     /**
      * 更新消息
+     *
      * @param messageUpdate 更新值
-     * @param messageQuery 更新的条件
+     * @param messageQuery  更新的条件
      */
     void updateMessage(Message messageUpdate, Message messageQuery);
 }

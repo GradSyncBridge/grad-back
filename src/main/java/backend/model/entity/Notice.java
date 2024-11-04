@@ -9,6 +9,7 @@ import java.time.LocalDateTime;
 
 /**
  * 公告表
+ *
  * @field id 主键 int
  * @field content 内容 text
  * @field created 创建时间 DateTime

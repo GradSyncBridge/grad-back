@@ -8,10 +8,12 @@ import org.springframework.security.core.Authentication;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.core.userdetails.UserDetails;
+
 import java.util.Collection;
 
 /**
  * 用户表
+ *
  * @field id user id int
  * @field username 用户昵称 unique int
  * @field name 用户名 string
@@ -30,7 +32,7 @@ import java.util.Collection;
 @Builder
 @UserValidation(groups = EmailGroup.class)
 @UserValidation(groups = UsernameGroup.class)
-public class User implements UserDetails{
+public class User implements UserDetails {
 
     private Integer id;
 
@@ -54,10 +56,11 @@ public class User implements UserDetails{
     // 1 -- active, 0 -- disabled
     private Integer disabled;
 
-    public static User getAuth(){
+    public static User getAuth() {
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
         return (User) authentication.getPrincipal();
     }
+
     @Override
     public Collection<? extends GrantedAuthority> getAuthorities() {
         return null;

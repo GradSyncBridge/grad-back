@@ -20,23 +20,23 @@ public class StudentApplicationJson {
 
     private Integer third;
 
-    public StudentGradesJson getEntity(String json){
+    public StudentGradesJson getEntity(String json) {
         ObjectMapper objectMapper = new ObjectMapper();
-        if(json != null && !json.equals("")){
-            try{
+        if (json != null && !json.equals("")) {
+            try {
                 return objectMapper.readValue(json, StudentGradesJson.class);
-            }catch(Exception e){
+            } catch (Exception e) {
                 e.printStackTrace();
             }
         }
         return null;
     }
 
-    public String toJson(){
+    public String toJson() {
         ObjectMapper objectMapper = new ObjectMapper();
-        try{
+        try {
             return objectMapper.writeValueAsString(this);
-        }catch (Exception e){
+        } catch (Exception e) {
             throw new JsonConvertionError(HttpStatus.INTERNAL_SERVER_ERROR.value(), e.getMessage());
         }
     }

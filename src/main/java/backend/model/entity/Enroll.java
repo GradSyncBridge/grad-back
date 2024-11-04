@@ -7,6 +7,7 @@ import lombok.NoArgsConstructor;
 
 /**
  * 录取关系表
+ *
  * @field id 主键 int
  * @field sid 学生 ID int
  * @field tid 教师 ID int

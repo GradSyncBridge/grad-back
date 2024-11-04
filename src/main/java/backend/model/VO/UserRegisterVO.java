@@ -7,6 +7,7 @@ import lombok.NoArgsConstructor;
 
 /**
  * 用户注册VO
+ *
  * @field access: access token
  * @field refresh: fresh token
  */

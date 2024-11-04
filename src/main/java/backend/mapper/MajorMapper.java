@@ -11,12 +11,14 @@ public interface MajorMapper {
 
     /**
      * 插入一个专业
+     *
      * @param major 专业
      */
     void insertMajor(Major major);
 
     /**
      * 查询专业
+     *
      * @param major 查询条件
      * @param scope 查询返回的字段
      * @return 专业列表
@@ -25,8 +27,9 @@ public interface MajorMapper {
 
     /**
      * 更新专业
+     *
      * @param majorUpdate 更新值
-     * @param majorQuery 更新的条件
+     * @param majorQuery  更新的条件
      */
     void updateMajor(Major majorUpdate, Major majorQuery);
 }

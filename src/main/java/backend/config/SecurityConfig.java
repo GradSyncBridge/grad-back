@@ -41,6 +41,7 @@ public class SecurityConfig implements WebMvcConfigurer {
 
     /**
      * 密码加密
+     *
      * @return BCryptPasswordEncoder
      */
     @Bean
@@ -50,6 +51,7 @@ public class SecurityConfig implements WebMvcConfigurer {
 
     /**
      * 安全过滤器链
+     *
      * @param http HttpSecurity
      * @return 安全过滤器链
      * @throws Exception 异常
@@ -75,6 +77,7 @@ public class SecurityConfig implements WebMvcConfigurer {
 
     /**
      * 认证提供者
+     *
      * @param passwordEncoder 密码加密
      * @return DaoAuthenticationProvider 认证提供者
      */
@@ -89,6 +92,7 @@ public class SecurityConfig implements WebMvcConfigurer {
 
     /**
      * 认证管理器
+     *
      * @return 认证管理器
      */
     @Bean
@@ -99,6 +103,7 @@ public class SecurityConfig implements WebMvcConfigurer {
 
     /**
      * 静态资源处理
+     *
      * @param registry 资源处理注册
      */
     @Override

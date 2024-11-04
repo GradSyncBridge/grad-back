@@ -14,6 +14,7 @@ import org.springframework.web.bind.annotation.*;
 
 /**
  * UnAuthController
+ *
  * @function 处理与身份验证无关的请求
  * @function login 处理登录请求
  */
@@ -26,6 +27,7 @@ public class UnAuthController {
 
     /**
      * 处理登录请求
+     *
      * @param userLoginDTO 登录信息
      * @return 登录结果
      */
@@ -37,6 +39,7 @@ public class UnAuthController {
 
     /**
      * 处理注册请求
+     *
      * @param userRegisterDTO 注册信息
      * @return token
      */

@@ -36,6 +36,7 @@ public class UserServiceImpl implements UserService {
 
     /**
      * 用户注册
+     *
      * @param userLoginDTO 用户信息
      * @return token
      */
@@ -49,11 +50,11 @@ public class UserServiceImpl implements UserService {
         try {
             List<User> userList = userMapper.selectUser(selectUser, scope);
 
-            if(userList.isEmpty() ||!passwordEncoder.matches(userLoginDTO.getPassword(), userList.getFirst().getPassword()))
+            if (userList.isEmpty() || !passwordEncoder.matches(userLoginDTO.getPassword(), userList.getFirst().getPassword()))
                 throw new LoginFailedException();
 
             return UserLoginVO.builder().setToken(userList.getFirst().getId(), jwtService).build();
-        }catch (LoginFailedException ex){
+        } catch (LoginFailedException ex) {
             throw new LoginFailedException();
         } catch (Exception e) {
             throw new RuntimeException(e.getMessage());
@@ -62,6 +63,7 @@ public class UserServiceImpl implements UserService {
 
     /**
      * 获取用户信息
+     *
      * @return 用户信息
      */
     @Override
@@ -71,6 +73,7 @@ public class UserServiceImpl implements UserService {
 
     /**
      * 刷新token
+     *
      * @return token
      */
     @Override
@@ -80,22 +83,23 @@ public class UserServiceImpl implements UserService {
 
     /**
      * 用户注册
+     *
      * @param userRegisterDTO 用户信息
      * @return token
      */
     @Override
     public UserRegisterVO register(UserRegisterDTO userRegisterDTO) {
         User user = UserConverter.INSTANCE.UserRegisterDTOToUser(userRegisterDTO);
-        try{
+        try {
             user.setPassword(passwordEncoder.encode(user.getPassword()));
 
             List<User> userList = userMapper.selectUser(User.builder().username(userRegisterDTO.getUsername()).build(), Map.of("username", true));
             if (!userList.isEmpty()) throw new DuplicateUserException();
 
             userMapper.insertUser(user);
-        }catch (DuplicateUserException ex){
+        } catch (DuplicateUserException ex) {
             throw new DuplicateUserException();
-        }catch (Exception e){
+        } catch (Exception e) {
             throw new RuntimeException(e.getMessage());
         }
 
@@ -104,11 +108,12 @@ public class UserServiceImpl implements UserService {
 
     /**
      * 更新用户信息
+     *
      * @param userProfileUpdateDTO 用户信息
      * @return 用户信息
      */
     @Override
-    public UserProfileUpdateDTO updateUserProfile(UserProfileUpdateDTO userProfileUpdateDTO){
+    public UserProfileUpdateDTO updateUserProfile(UserProfileUpdateDTO userProfileUpdateDTO) {
 
         try {
             List<User> userList = userMapper.selectUser(User.builder().username(userProfileUpdateDTO.getUsername()).build(), Map.of("username", true));
@@ -119,9 +124,9 @@ public class UserServiceImpl implements UserService {
             User user = UserConverter.INSTANCE.UserProfileUpdateDTOToUser(userProfileUpdateDTO);
 
             userMapper.updateUser(user, User.getAuth());
-        }catch (DuplicateUserException duplicateUserException){
+        } catch (DuplicateUserException duplicateUserException) {
             throw new DuplicateUserException();
-        } catch (Exception e){
+        } catch (Exception e) {
             throw new RuntimeException(e.getMessage());
         }
 

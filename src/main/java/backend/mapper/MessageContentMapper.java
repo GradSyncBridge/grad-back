@@ -9,21 +9,24 @@ import java.util.List;
 @Mapper
 public interface MessageContentMapper {
     /**
-    * 插入新的 message content 记录
-    * @param messageContent
-    * */
+     * 插入新的 message content 记录
+     *
+     * @param messageContent
+     */
     void insertMessageContent(MessageContent messageContent);
 
     /**
-    * 查询消息内容
-    * @param message 查询条件
-    */
+     * 查询消息内容
+     *
+     * @param message 查询条件
+     */
     List<MessageContent> selectMessageContent(MessageContent message, Map<String, Boolean> scope);
 
     /**
      * 更新消息内容
+     *
      * @param messageContentUpdate 更新值
-     * @param messageContentQuery 更新条件
-     * */
+     * @param messageContentQuery  更新条件
+     */
     void updateMessageContent(MessageContent messageContentUpdate, MessageContent messageContentQuery);
 }

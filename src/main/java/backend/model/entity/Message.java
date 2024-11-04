@@ -10,6 +10,7 @@ import java.time.LocalDateTime;
 
 /**
  * 站内信表
+ *
  * @field id 主键 int
  * @field cid 内容ID -> MessageContent.id;
  * @field receiver 收件人 int -> User.id;

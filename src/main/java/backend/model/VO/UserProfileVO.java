@@ -6,6 +6,7 @@ import lombok.NoArgsConstructor;
 
 /**
  * 用户信息VO
+ *
  * @field username: 用户名
  * @field avatar: 头像
  * @field name: 姓名

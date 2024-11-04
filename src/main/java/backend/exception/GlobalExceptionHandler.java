@@ -20,16 +20,16 @@ import java.sql.SQLIntegrityConstraintViolationException;
 public class GlobalExceptionHandler {
 
     @ExceptionHandler(BaseException.class)
-    public ResponseEntity<ResultEntity<Object>> exceptionHandler(BaseException ex){
+    public ResponseEntity<ResultEntity<Object>> exceptionHandler(BaseException ex) {
         return ResultEntity.error(ex.getCode(), ex.getMessage());
     }
 
     @ExceptionHandler
-    public ResponseEntity<ResultEntity<Object>> exceptionHandler(SQLIntegrityConstraintViolationException ex){
+    public ResponseEntity<ResultEntity<Object>> exceptionHandler(SQLIntegrityConstraintViolationException ex) {
         return ResultEntity.error(ex.getMessage());
     }
 
-   @ExceptionHandler
+    @ExceptionHandler
     public ResponseEntity<ResultEntity<String>> handleValidationExceptions(MethodArgumentNotValidException ex) {
         String message = "Validation error: " + ex.getMessage();
         int startIndex = message.lastIndexOf("message [") + "message [".length();

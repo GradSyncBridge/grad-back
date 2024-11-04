@@ -11,6 +11,7 @@ import backend.model.VO.UserRegisterVO;
 public interface UserService {
     /**
      * 用户登录
+     *
      * @param userLoginDTO 登录信息
      * @return 登录结果
      */
@@ -18,12 +19,14 @@ public interface UserService {
 
     /**
      * 获取用户信息
+     *
      * @return 用户信息
      */
     UserProfileVO getUser();
 
     /**
      * 刷新token
+     *
      * @return token
      */
     UserRefreshVO refreshToken();

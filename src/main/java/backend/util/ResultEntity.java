@@ -11,7 +11,7 @@ import org.springframework.http.ResponseEntity;
 @AllArgsConstructor
 @NoArgsConstructor
 @Builder
-public class ResultEntity<T>{
+public class ResultEntity<T> {
 
     private int code;
     private String message;
@@ -29,7 +29,7 @@ public class ResultEntity<T>{
     }
 
     public static <T> ResponseEntity<ResultEntity<T>> success(Integer code, String message, T data) {
-        ResultEntity<T> resultEntity = new ResultEntity<>(code, message, getCurrentTime() , data);
+        ResultEntity<T> resultEntity = new ResultEntity<>(code, message, getCurrentTime(), data);
         return ResponseEntity.status(HttpStatus.OK).body(resultEntity);
     }
 

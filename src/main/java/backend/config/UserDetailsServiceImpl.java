@@ -14,14 +14,16 @@ import java.util.Map;
 
 /**
  * 用户详情服务实现
+ *
  * @field userMapper: 用户mapper
- * @function  loadUserByUsername: 获取当前用户
+ * @function loadUserByUsername: 获取当前用户
  */
 @Service
 public class UserDetailsServiceImpl implements UserDetailsService {
 
     @Autowired
     private UserMapper userMapper;
+
     @Override
     public UserDetails loadUserByUsername(String username) throws UsernameNotFoundException {
 
@@ -34,7 +36,7 @@ public class UserDetailsServiceImpl implements UserDetailsService {
         User user;
         try {
             user = userMapper.selectUser(User.builder().username(username).build(), scope).getFirst();
-        }catch (Exception e) {
+        } catch (Exception e) {
             throw new UsernameNotFoundException("User not found");
         }
 
@@ -48,7 +50,7 @@ public class UserDetailsServiceImpl implements UserDetailsService {
         User user;
         try {
             user = userMapper.selectUser(User.builder().id(id).build(), scope).getFirst();
-        }catch (Exception e) {
+        } catch (Exception e) {
             throw new UsernameNotFoundException("User not found");
         }
 

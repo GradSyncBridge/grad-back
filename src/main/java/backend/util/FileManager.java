@@ -27,14 +27,14 @@ public class FileManager {
         String[] metadataParts = metadata.split(";");
         String fileType = metadataParts[0].split(":")[1].split("/")[1];
 
-        if(!fileType.equals("png") && !fileType.equals("jpg") && !fileType.equals("jpeg")){
+        if (!fileType.equals("png") && !fileType.equals("jpg") && !fileType.equals("jpeg")) {
             throw new FileStorageException(HttpStatus.BAD_REQUEST.value(), "Invalid file type");
         }
 
         // 从Base64字符串中提取文件内容
         byte[] data = DatatypeConverter.parseBase64Binary(parts[1]);
 
-        if(data.length > MAX_IMAGE_SIZE){
+        if (data.length > MAX_IMAGE_SIZE) {
             throw new FileStorageException(HttpStatus.BAD_REQUEST.value(), "File size exceeds the limit");
         }
 
@@ -48,7 +48,7 @@ public class FileManager {
         }
 
         File storeFile = new File(storeDir, uuid + "." + fileType);
-        try(OutputStream outputStream = new BufferedOutputStream(new FileOutputStream(storeFile))){
+        try (OutputStream outputStream = new BufferedOutputStream(new FileOutputStream(storeFile))) {
             outputStream.write(data);
         } catch (Exception e) {
             throw new FileStorageException(HttpStatus.INTERNAL_SERVER_ERROR.value(), "Failed to store file: " + e.getMessage());
@@ -70,7 +70,7 @@ public class FileManager {
         return relativePath;
     }
 
-    public static String store(MultipartFile file){
+    public static String store(MultipartFile file) {
         try {
             if (file.getSize() > MAX_FILE_SIZE) {
                 throw new FileStorageException(HttpStatus.BAD_REQUEST.value(), "File size exceeds the limit");
@@ -84,7 +84,7 @@ public class FileManager {
 
             // 获取文件扩展名
             String fileExtension;
-          
+
             int extensionIndex = fileName.lastIndexOf(".");
             if (extensionIndex > 0) {
                 fileExtension = fileName.substring(extensionIndex); // 例如: ".pdf" 或 ".png"
@@ -97,7 +97,7 @@ public class FileManager {
             String userId = User.getAuth().getId().toString();
 
             // 创建目标目录
-            File storeDir = new File(basePath + "/" +  userId);
+            File storeDir = new File(basePath + "/" + userId);
             if (!storeDir.exists()) {
                 storeDir.mkdirs(); // 创建目录
             }
@@ -125,7 +125,7 @@ public class FileManager {
         }
     }
 
-    private static void saveFile(MultipartFile file, File storeFile){
+    private static void saveFile(MultipartFile file, File storeFile) {
         try (InputStream inputStream = file.getInputStream();
              FileOutputStream outputStream = new FileOutputStream(storeFile)) {
 
@@ -135,7 +135,7 @@ public class FileManager {
             while ((bytesRead = inputStream.read(buffer)) != -1) {
                 outputStream.write(buffer, 0, bytesRead);
             }
-        }catch (Exception e){
+        } catch (Exception e) {
             throw new FileStorageException(HttpStatus.INTERNAL_SERVER_ERROR.value(), "Failed to store file: " + e.getMessage());
         }
     }

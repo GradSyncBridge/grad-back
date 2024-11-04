@@ -18,112 +18,114 @@ public class StudentGradesJson {
 
     private Secondary secondary;
 
-    public StudentGradesJson getEntity(String json){
+    public StudentGradesJson getEntity(String json) {
         ObjectMapper objectMapper = new ObjectMapper();
-        if(json != null && !json.equals("")){
-            try{
+        if (json != null && !json.equals("")) {
+            try {
                 return objectMapper.readValue(json, StudentGradesJson.class);
-            }catch(Exception e){
+            } catch (Exception e) {
                 e.printStackTrace();
             }
         }
         return null;
     }
 
-    public String toJson(){
+    public String toJson() {
         ObjectMapper objectMapper = new ObjectMapper();
-        try{
+        try {
             return objectMapper.writeValueAsString(this);
-        }catch (Exception e){
+        } catch (Exception e) {
             throw new JsonConvertionError(HttpStatus.INTERNAL_SERVER_ERROR.value(), e.getMessage());
         }
     }
 
-    public class Primary{
+    public class Primary {
         private Integer sid;
         private Integer grade;
 
-        public Primary(){}
+        public Primary() {
+        }
 
-        public Primary(Integer sid, Integer grade){
+        public Primary(Integer sid, Integer grade) {
             this.sid = sid;
             this.grade = grade;
         }
 
-        public Integer getSid(){
+        public Integer getSid() {
             return sid;
         }
 
-        public void setSid(Integer sid){
+        public void setSid(Integer sid) {
             this.sid = sid;
         }
 
-        public Integer getGrade(){
+        public Integer getGrade() {
             return grade;
         }
 
-        public void setGrade(Integer grade){
+        public void setGrade(Integer grade) {
             this.grade = grade;
         }
 
-        public String toString(){
+        public String toString() {
             return "sid=" + this.getSid() + ", grade=" + this.getGrade();
         }
     }
 
-    public class Secondary{
+    public class Secondary {
         private Integer sid;
         private Integer grade;
 
-        public Secondary(){}
+        public Secondary() {
+        }
 
-        public Secondary(Integer sid, Integer cid){
+        public Secondary(Integer sid, Integer cid) {
             this.sid = sid;
             this.grade = cid;
         }
 
-        public Integer getSid(){
+        public Integer getSid() {
             return sid;
         }
 
-        public void setSid(Integer sid){
+        public void setSid(Integer sid) {
             this.sid = sid;
         }
 
-        public Integer getGrade(){
+        public Integer getGrade() {
             return grade;
         }
 
-        public void setGrade(Integer grade){
+        public void setGrade(Integer grade) {
             this.grade = grade;
         }
 
-        public String toString(){
+        public String toString() {
             return "sid=" + this.getSid() + ", grade=" + this.getGrade();
         }
     }
 
-    public Primary getPrimary(){
-        if(primary == null)
+    public Primary getPrimary() {
+        if (primary == null)
             return new Primary();
         return primary;
     }
 
-    public void setPrimary(Primary primary){
+    public void setPrimary(Primary primary) {
         this.primary = primary;
     }
 
-    public Secondary getSecondary(){
-        if(secondary == null)
+    public Secondary getSecondary() {
+        if (secondary == null)
             return new Secondary();
         return secondary;
     }
 
-    public void setSecondary(Secondary secondary){
+    public void setSecondary(Secondary secondary) {
         this.secondary = secondary;
     }
 
-    public String toString(){
+    public String toString() {
         return "StudentGradesJson(primary=(" + this.getPrimary() + "), secondary=(" + this.getSecondary() + "))";
     }
 }
