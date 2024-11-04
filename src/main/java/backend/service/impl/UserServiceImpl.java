@@ -2,10 +2,13 @@ package backend.service.impl;
 
 import backend.config.JwtService;
 import backend.exception.model.user.LoginFailedException;
+import backend.exception.model.user.RegisterFailedException;
 import backend.mapper.UserMapper;
 import backend.model.DTO.UserLoginDTO;
+import backend.model.DTO.UserRegisterDTO;
 import backend.model.VO.UserLoginVO;
 import backend.model.VO.UserProfileVO;
+import backend.model.VO.UserRegisterVO;
 import backend.model.converter.UserConverter;
 import backend.model.entity.User;
 import backend.service.UserService;
@@ -63,5 +66,22 @@ public class UserServiceImpl implements UserService {
     @Override
     public UserProfileVO getUser() {
         return UserConverter.INSTANCE.UserToUserProfileVO(User.getAuth());
+    }
+
+    @Override
+    public UserRegisterVO register(UserRegisterDTO userRegisterDTO) {
+        try {
+            UserRegisterDTO tmp = userRegisterDTO;
+            User newuser = User.builder().username(tmp.getUsername())
+                    .password(tmp.getPassword())
+                    .role(tmp.getRole())
+                    .gender(tmp.getGender())
+                    .build();
+
+            userMapper.insertUser(newuser); //insert user
+            return UserRegisterVO.builder().setToken(tmp.getUsername(), jwtService).build();
+        }catch (Exception e){
+            throw new RegisterFailedException(HttpStatus.CONFLICT.value(), "Duplicate Username");
+        }
     }
 }

@@ -1,8 +1,10 @@
 package backend.service;
 
 import backend.model.DTO.UserLoginDTO;
+import backend.model.DTO.UserRegisterDTO;
 import backend.model.VO.UserLoginVO;
 import backend.model.VO.UserProfileVO;
+import backend.model.VO.UserRegisterVO;
 
 public interface UserService {
     /**
@@ -17,4 +19,11 @@ public interface UserService {
      * @return 用户信息
      */
     UserProfileVO getUser();
+
+    /**
+     * 注册用户信息
+     * @param userRegisterDTO
+     * @return 正常注册返回200 和 用户Token; 用户名重复返回 409
+     */
+    UserRegisterVO register(UserRegisterDTO userRegisterDTO);
 }
