@@ -16,6 +16,7 @@ import org.springframework.security.config.http.SessionCreationPolicy;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
+import org.springframework.web.filter.CorsFilter;
 import org.springframework.web.servlet.config.annotation.EnableWebMvc;
 import org.springframework.web.servlet.config.annotation.ResourceHandlerRegistry;
 import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
@@ -34,6 +35,10 @@ public class SecurityConfig implements WebMvcConfigurer {
     @Autowired
     @Lazy
     private AuthenticationEntryPoint authEntryPoint;
+
+    @Autowired
+    @Lazy
+    private CorsConfigurationSourceImpl corsConfigurationSource;
 
     /**
      * 密码加密
@@ -64,6 +69,7 @@ public class SecurityConfig implements WebMvcConfigurer {
                 .exceptionHandling(exceptionHandling ->
                         exceptionHandling.authenticationEntryPoint(authEntryPoint)
                 )
+                .cors(cors -> cors.configurationSource(corsConfigurationSource))
                 .build();
 
     }

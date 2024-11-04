@@ -38,6 +38,8 @@ public class UserController {
         return ResultEntity.success(HttpStatus.OK.value(), "ok", userRefreshVO);
     }
 
+
+
     @GetMapping(value = "/user/email")
     public ResponseEntity<ResultEntity<String>> getEmail(@RequestBody @Validated UserLoginDTO userLoginDTO) {
         return ResultEntity.success(HttpStatus.OK.value(), "ok");
