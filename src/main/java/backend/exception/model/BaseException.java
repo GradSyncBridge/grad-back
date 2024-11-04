@@ -6,6 +6,7 @@ import lombok.Getter;
 public class BaseException extends RuntimeException {
 
     private Integer code;
+
     public BaseException() {
     }
 

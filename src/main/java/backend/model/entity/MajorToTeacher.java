@@ -7,6 +7,7 @@ import lombok.NoArgsConstructor;
 
 /**
  * 学科-老师表
+ *
  * @field id 主键 int
  * @field tid 教师 ID int
  * @field mid 学科 ID int

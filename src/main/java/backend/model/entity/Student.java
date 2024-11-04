@@ -9,6 +9,7 @@ import java.time.LocalDateTime;
 
 /**
  * 学生表
+ *
  * @field id 表id int
  * @field userId user_id int
  * @field birth 出生日期 datetime

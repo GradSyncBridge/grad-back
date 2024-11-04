@@ -1,24 +1,27 @@
 package backend.service.impl;
 
 import backend.config.JwtService;
+import backend.exception.model.user.DuplicateUserException;
 import backend.exception.model.user.LoginFailedException;
 import backend.mapper.UserMapper;
 import backend.model.DTO.UserLoginDTO;
+import backend.model.DTO.UserProfileUpdateDTO;
+import backend.model.DTO.UserRegisterDTO;
 import backend.model.VO.UserLoginVO;
 import backend.model.VO.UserProfileVO;
+import backend.model.VO.UserRefreshVO;
+import backend.model.VO.UserRegisterVO;
 import backend.model.converter.UserConverter;
 import backend.model.entity.User;
 import backend.service.UserService;
 import backend.util.FieldsGenerator;
+import backend.util.FileManager;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.http.HttpStatus;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
 
-import java.util.Collection;
 import java.util.List;
 import java.util.Map;
-import java.util.function.Consumer;
 
 @Service
 public class UserServiceImpl implements UserService {
@@ -33,35 +36,100 @@ public class UserServiceImpl implements UserService {
 
     /**
      * 用户注册
+     *
      * @param userLoginDTO 用户信息
      * @return token
      */
     @Override
     public UserLoginVO login(UserLoginDTO userLoginDTO) {
-        List<String> fields = List.of("username", "password");
+        List<String> fields = List.of("id", "username", "password");
 
         Map<String, Boolean> scope = FieldsGenerator.generateFields(User.class, fields);
 
         User selectUser = User.builder().username(userLoginDTO.getUsername()).build();
         try {
-            User targetUser = userMapper.selectUser(selectUser, scope).getFirst();
+            List<User> userList = userMapper.selectUser(selectUser, scope);
 
-            if (passwordEncoder.matches(userLoginDTO.getPassword(), targetUser.getPassword())) {
-                return UserLoginVO.builder().setToken(userLoginDTO.getUsername(), jwtService).build();
-            }
-        }catch (Exception e) {
-            throw new LoginFailedException(HttpStatus.FORBIDDEN.value(), "用户名或密码错误");
+            if (userList.isEmpty() || !passwordEncoder.matches(userLoginDTO.getPassword(), userList.getFirst().getPassword()))
+                throw new LoginFailedException();
+
+            return UserLoginVO.builder().setToken(userList.getFirst().getId(), jwtService).build();
+        } catch (LoginFailedException ex) {
+            throw new LoginFailedException();
+        } catch (Exception e) {
+            throw new RuntimeException(e.getMessage());
         }
-
-        throw new LoginFailedException(HttpStatus.FORBIDDEN.value(), "用户名或密码错误");
     }
 
     /**
      * 获取用户信息
+     *
      * @return 用户信息
      */
     @Override
     public UserProfileVO getUser() {
         return UserConverter.INSTANCE.UserToUserProfileVO(User.getAuth());
+    }
+
+    /**
+     * 刷新token
+     *
+     * @return token
+     */
+    @Override
+    public UserRefreshVO refreshToken() {
+        return UserRefreshVO.builder().setToken(User.getAuth().getId(), jwtService).build();
+    }
+
+    /**
+     * 用户注册
+     *
+     * @param userRegisterDTO 用户信息
+     * @return token
+     */
+    @Override
+    public UserRegisterVO register(UserRegisterDTO userRegisterDTO) {
+        User user = UserConverter.INSTANCE.UserRegisterDTOToUser(userRegisterDTO);
+        try {
+            user.setPassword(passwordEncoder.encode(user.getPassword()));
+
+            List<User> userList = userMapper.selectUser(User.builder().username(userRegisterDTO.getUsername()).build(), Map.of("username", true));
+            if (!userList.isEmpty()) throw new DuplicateUserException();
+
+            userMapper.insertUser(user);
+        } catch (DuplicateUserException ex) {
+            throw new DuplicateUserException();
+        } catch (Exception e) {
+            throw new RuntimeException(e.getMessage());
+        }
+
+        return UserRegisterVO.builder().setToken(user.getId(), jwtService).build();
+    }
+
+    /**
+     * 更新用户信息
+     *
+     * @param userProfileUpdateDTO 用户信息
+     * @return 用户信息
+     */
+    @Override
+    public UserProfileUpdateDTO updateUserProfile(UserProfileUpdateDTO userProfileUpdateDTO) {
+
+        try {
+            List<User> userList = userMapper.selectUser(User.builder().username(userProfileUpdateDTO.getUsername()).build(), Map.of("username", true));
+
+            if (!userList.isEmpty()) throw new DuplicateUserException();
+
+            userProfileUpdateDTO.setAvatar(FileManager.saveBase64Image(userProfileUpdateDTO.getAvatar()));
+            User user = UserConverter.INSTANCE.UserProfileUpdateDTOToUser(userProfileUpdateDTO);
+
+            userMapper.updateUser(user, User.getAuth());
+        } catch (DuplicateUserException duplicateUserException) {
+            throw new DuplicateUserException();
+        } catch (Exception e) {
+            throw new RuntimeException(e.getMessage());
+        }
+
+        return userProfileUpdateDTO;
     }
 }

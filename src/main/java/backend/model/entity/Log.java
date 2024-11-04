@@ -9,6 +9,7 @@ import java.time.LocalDateTime;
 
 /**
  * 审查记录
+ *
  * @field id 主键 int
  * @field user_id 用户 ID int user_id -> User.id
  * @field content 内容 text

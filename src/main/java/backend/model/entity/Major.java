@@ -7,6 +7,7 @@ import lombok.NoArgsConstructor;
 
 /**
  * 学科表
+ *
  * @field id 主键 int
  * @field name 学科名称 varchar
  * @field mid 学科号码 varchar

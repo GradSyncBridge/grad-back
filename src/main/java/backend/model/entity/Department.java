@@ -7,10 +7,11 @@ import lombok.NoArgsConstructor;
 
 /**
  * 学院信息
+ *
  * @field id 主键 int
  * @field did 学院号码 varchar
  * @field name 学院名称 varchar
-*/
+ */
 
 @Data
 @AllArgsConstructor

@@ -11,7 +11,7 @@ import org.springframework.http.ResponseEntity;
 @AllArgsConstructor
 @NoArgsConstructor
 @Builder
-public class ResultEntity<T>{
+public class ResultEntity<T> {
 
     private int code;
     private String message;
@@ -24,28 +24,32 @@ public class ResultEntity<T>{
         this.time = currentTimeMillis;
     }
 
+    public static Integer getCurrentTime() {
+        return (int) (System.currentTimeMillis() / 1000);
+    }
+
     public static <T> ResponseEntity<ResultEntity<T>> success(Integer code, String message, T data) {
-        ResultEntity<T> resultEntity = new ResultEntity<>(code, message, System.currentTimeMillis(), data);
+        ResultEntity<T> resultEntity = new ResultEntity<>(code, message, getCurrentTime(), data);
         return ResponseEntity.status(HttpStatus.OK).body(resultEntity);
     }
 
     public static <T> ResponseEntity<ResultEntity<T>> success(Integer code, String message) {
-        ResultEntity<T> resultEntity = new ResultEntity<>(code, message, System.currentTimeMillis());
+        ResultEntity<T> resultEntity = new ResultEntity<>(code, message, getCurrentTime());
         return ResponseEntity.status(HttpStatus.OK).body(resultEntity);
     }
 
     public static <T> ResponseEntity<ResultEntity<T>> error(Integer code, String message, T data) {
-        ResultEntity<T> resultEntity = new ResultEntity<>(code, message, System.currentTimeMillis(), data);
-        return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(resultEntity);
+        ResultEntity<T> resultEntity = new ResultEntity<>(code, message, getCurrentTime(), data);
+        return ResponseEntity.status(HttpStatus.OK).body(resultEntity);
     }
 
     public static <T> ResponseEntity<ResultEntity<T>> error(Integer code, String message) {
-        ResultEntity<T> resultEntity = new ResultEntity<>(code, message, System.currentTimeMillis());
-        return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(resultEntity);
+        ResultEntity<T> resultEntity = new ResultEntity<>(code, message, getCurrentTime());
+        return ResponseEntity.status(HttpStatus.OK).body(resultEntity);
     }
 
     public static <T> ResponseEntity<ResultEntity<T>> error(String message) {
-        ResultEntity<T> resultEntity = new ResultEntity<>(HttpStatus.BAD_REQUEST.value(), message, System.currentTimeMillis());
-        return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(resultEntity);
+        ResultEntity<T> resultEntity = new ResultEntity<>(HttpStatus.BAD_REQUEST.value(), message, getCurrentTime());
+        return ResponseEntity.status(HttpStatus.OK).body(resultEntity);
     }
 }

@@ -35,11 +35,12 @@ public class JWTFilter extends OncePerRequestFilter {
 
     /**
      * 过滤器，用于验证token
-     * @param request 请求
-     * @param response 响应
+     *
+     * @param request     请求
+     * @param response    响应
      * @param filterChain 过滤链
      * @throws ServletException 异常
-     * @throws IOException 异常
+     * @throws IOException      异常
      */
     @Override
     protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain filterChain)
@@ -47,19 +48,22 @@ public class JWTFilter extends OncePerRequestFilter {
         String authHeader = request.getHeader(tokenName);
         String token = null;
         String username = null;
+        Integer uid = null;
 
         if (authHeader != null && authHeader.startsWith("Bearer ")) {
             token = authHeader.substring(7);
             try {
-                username = jwtService.extractUserName(token);
-            }
-            catch (Exception e) {
+                // username = jwtService.extractUserName(token);
+                uid = jwtService.extractUid(token);
+            } catch (Exception e) {
                 response.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
                 response.setContentType("application/json");
 
                 Map<String, Object> responseMap = new HashMap<>();
                 responseMap.put("code", HttpServletResponse.SC_UNAUTHORIZED);
                 responseMap.put("message", e.getMessage());
+                responseMap.put("time", System.currentTimeMillis());
+                responseMap.put("data", null);
 
                 String jsonResponse = new ObjectMapper().writeValueAsString(responseMap);
                 response.getWriter().write(jsonResponse);
@@ -68,22 +72,26 @@ public class JWTFilter extends OncePerRequestFilter {
             }
         }
 
-        if (username != null && SecurityContextHolder.getContext().getAuthentication() == null) {
+        if (uid != null && SecurityContextHolder.getContext().getAuthentication() == null) {
             try {
-                UserDetails userDetails = context.getBean(UserDetailsServiceImpl.class).loadUserByUsername(username);
-                if (jwtService.validateToken(token, userDetails)) {
+                // UserDetails userDetails = context.getBean(UserDetailsServiceImpl.class).loadUserByUsername(username);
+                User user = context.getBean(UserDetailsServiceImpl.class).loadUserById(uid);
+                // if (jwtService.validateToken(token, userDetails)) {
+                if (jwtService.validateTokenById(token, user)) {
                     UsernamePasswordAuthenticationToken authToken =
-                            new UsernamePasswordAuthenticationToken(userDetails,null, userDetails.getAuthorities());
+                            new UsernamePasswordAuthenticationToken(user, null, ((UserDetails) user).getAuthorities());
                     authToken.setDetails(new WebAuthenticationDetailsSource().buildDetails(request));
                     SecurityContextHolder.getContext().setAuthentication(authToken);
                 }
-            }catch (UsernameNotFoundException e){
+            } catch (UsernameNotFoundException e) {
                 response.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
                 response.setContentType("application/json");
 
                 Map<String, Object> responseMap = new HashMap<>();
                 responseMap.put("code", HttpServletResponse.SC_UNAUTHORIZED);
                 responseMap.put("message", e.getMessage());
+                responseMap.put("time", System.currentTimeMillis());
+                responseMap.put("data", null);
 
                 String jsonResponse = new ObjectMapper().writeValueAsString(responseMap);
                 response.getWriter().write(jsonResponse);

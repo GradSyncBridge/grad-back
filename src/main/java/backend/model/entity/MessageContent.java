@@ -10,6 +10,7 @@ import java.time.LocalDateTime;
 
 /**
  * 站内信内容
+ *
  * @field id 主键 int
  * @field content 站内信内容 text
  * @field created 创建时间

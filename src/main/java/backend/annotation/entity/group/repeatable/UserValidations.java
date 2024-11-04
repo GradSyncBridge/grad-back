@@ -1,6 +1,6 @@
-package backend.annotation.group.repeatable;
+package backend.annotation.entity.group.repeatable;
 
-import backend.annotation.UserValidation;
+import backend.annotation.entity.UserValidation;
 
 import java.lang.annotation.ElementType;
 import java.lang.annotation.Retention;

@@ -11,13 +11,15 @@ public interface LogMapper {
 
     /**
      * 插入日志
+     *
      * @param log 日志
      */
     void insertLog(Log log);
 
     /**
      * 查询日志
-     * @param log 查询条件
+     *
+     * @param log   查询条件
      * @param scope 查询返回的字段
      * @return 日志列表
      */
@@ -25,8 +27,9 @@ public interface LogMapper {
 
     /**
      * 更新日志
+     *
      * @param logUpdate 更新值
-     * @param logQuery 更新条件字段
+     * @param logQuery  更新条件字段
      */
     void updateLog(Log logUpdate, Log logQuery);
 }
