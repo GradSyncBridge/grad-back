@@ -31,7 +31,7 @@ public class GlobalExceptionHandler {
 
    @ExceptionHandler
     public ResponseEntity<ResultEntity<String>> handleValidationExceptions(MethodArgumentNotValidException ex) {
-        String message = STR."Validation error: \{ex.getMessage()}";
+        String message = "Validation error: " + ex.getMessage();
         int startIndex = message.lastIndexOf("message [") + "message [".length();
         int endIndex = message.lastIndexOf("]") - 1;
 
@@ -52,7 +52,7 @@ public class GlobalExceptionHandler {
 
     @ExceptionHandler
     public ResponseEntity<ResultEntity<Object>> handleHttpMessageNotReadable(HttpMessageNotReadableException ex) {
-        String message = STR."Invalid format: \{ex.getMessage() != null ? ex.getMessage() : "No message available"}";
+        String message = "Invalid format: " + (ex.getMessage() != null ? ex.getMessage() : "No message available");
         return ResultEntity.error(HttpStatus.BAD_REQUEST.value(), message);
     }
 
