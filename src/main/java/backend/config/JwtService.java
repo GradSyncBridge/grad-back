@@ -1,5 +1,6 @@
 package backend.config;
 
+import backend.model.entity.User;
 import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.io.Decoders;
@@ -63,6 +64,22 @@ public class JwtService {
 
     }
 
+    public String generateToken(Integer id, Integer type) {
+        long expiration = type == 1 ? accessTokenExpiration : freshTokenExpiration;
+        Map<String, Object> claims = new HashMap<>();
+        String username = id.toString();
+        return Jwts.builder()
+                .claims()
+                .add(claims)
+                .subject(username)
+                .issuedAt(new Date(System.currentTimeMillis()))
+                .expiration(new Date(System.currentTimeMillis() + expiration))
+                .and()
+                .signWith(getKey())
+                .compact();
+
+    }
+
     /**
      * 获取密钥
      * @return 密钥
@@ -93,7 +110,6 @@ public class JwtService {
      * @param token token
      * @return 过期时间
      */
-
     private <T> T extractClaim(String token, Function<Claims, T> claimResolver) {
         final Claims claims = extractAllClaims(token);
         return claimResolver.apply(claims);
@@ -123,6 +139,15 @@ public class JwtService {
     public boolean validateToken(String token, UserDetails userDetails) {
         final String userName = extractUserName(token);
         return (userName.equals(userDetails.getUsername()) && !isTokenExpired(token));
+    }
+
+    public String extractId(String token) {
+        return extractUserName(token);
+    }
+
+    public boolean validateTokenById(String token, User user) {
+        final int id = Integer.parseInt(extractId(token));
+        return (id == user.getId() && !isTokenExpired(token));
     }
 
     /**

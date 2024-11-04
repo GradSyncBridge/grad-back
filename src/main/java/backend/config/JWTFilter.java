@@ -51,7 +51,8 @@ public class JWTFilter extends OncePerRequestFilter {
         if (authHeader != null && authHeader.startsWith("Bearer ")) {
             token = authHeader.substring(7);
             try {
-                username = jwtService.extractUserName(token);
+               // username = jwtService.extractUserName(token);
+                username = jwtService.extractId(token);
             }
             catch (Exception e) {
                 response.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
@@ -72,8 +73,11 @@ public class JWTFilter extends OncePerRequestFilter {
 
         if (username != null && SecurityContextHolder.getContext().getAuthentication() == null) {
             try {
-                UserDetails userDetails = context.getBean(UserDetailsServiceImpl.class).loadUserByUsername(username);
-                if (jwtService.validateToken(token, userDetails)) {
+                // UserDetails userDetails = context.getBean(UserDetailsServiceImpl.class).loadUserByUsername(username);
+                User user = context.getBean(UserDetailsServiceImpl.class).loadUserById(Integer.parseInt(username));
+                UserDetails userDetails = User.builder().id(user.getId()).username(user.getUsername()).password(user.getPassword()).build();
+                // if (jwtService.validateToken(token, userDetails)) {
+                if (jwtService.validateTokenById(token, user)) {
                     UsernamePasswordAuthenticationToken authToken =
                             new UsernamePasswordAuthenticationToken(userDetails,null, userDetails.getAuthorities());
                     authToken.setDetails(new WebAuthenticationDetailsSource().buildDetails(request));

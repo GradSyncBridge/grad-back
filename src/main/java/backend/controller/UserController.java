@@ -1,6 +1,6 @@
 package backend.controller;
 
-import backend.model.DTO.UserLoginDTO;
+import backend.model.DTO.UserProfileUpdateDTO;
 import backend.model.VO.UserProfileVO;
 import backend.model.VO.UserRefreshVO;
 import backend.service.UserService;
@@ -40,9 +40,10 @@ public class UserController {
 
 
 
-    @GetMapping(value = "/user/email")
-    public ResponseEntity<ResultEntity<String>> getEmail(@RequestBody @Validated UserLoginDTO userLoginDTO) {
-        return ResultEntity.success(HttpStatus.OK.value(), "ok");
+    @PutMapping(value = "/profile")
+    public ResponseEntity<ResultEntity<Object>> updateUserProfile(@RequestBody @Validated UserProfileUpdateDTO userProfileUpdateDTO) {
+        UserProfileUpdateDTO data = userService.updateUserProfile(userProfileUpdateDTO);
+        return ResultEntity.success(HttpStatus.OK.value(), "ok", data);
     }
 
 }

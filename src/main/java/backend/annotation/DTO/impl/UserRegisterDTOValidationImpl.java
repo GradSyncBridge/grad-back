@@ -15,6 +15,7 @@ public class UserRegisterDTOValidationImpl implements ConstraintValidator<UserRe
     public boolean isValid(UserRegisterDTO userRegisterDTO, ConstraintValidatorContext constraintValidatorContext) {
         return userRegisterDTO.getUsername() != null && !userRegisterDTO.getUsername().isEmpty() &&
                 userRegisterDTO.getPassword() != null && !userRegisterDTO.getPassword().isEmpty() &&
-                userRegisterDTO.getGender() != null && userRegisterDTO.getRole() != null;
+                userRegisterDTO.getGender() != null && userRegisterDTO.getGender() >= 0 && userRegisterDTO.getGender() <= 2 &&
+                userRegisterDTO.getRole() != null;
     }
 }

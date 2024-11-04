@@ -41,4 +41,22 @@ public class UserDetailsServiceImpl implements UserDetailsService {
         return user;
     }
 
+    public User loadUserById(Integer id) throws UsernameNotFoundException {
+
+        // Map<String, Boolean> scope = FieldsGenerator.generateFields(User.class);
+
+        List<String> fields = List.of("id", "username", "password");
+
+        Map<String, Boolean> scope = FieldsGenerator.generateFields(User.class, fields);
+
+        User user;
+        try {
+            user = userMapper.selectUser(User.builder().id(id).build(), scope).getFirst();
+        }catch (Exception e) {
+            throw new UsernameNotFoundException("User not found");
+        }
+
+        return user;
+    }
+
 }

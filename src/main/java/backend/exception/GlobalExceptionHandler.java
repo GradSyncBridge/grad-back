@@ -19,7 +19,7 @@ import java.sql.SQLIntegrityConstraintViolationException;
 @RestControllerAdvice
 public class GlobalExceptionHandler {
 
-    @ExceptionHandler
+    @ExceptionHandler(BaseException.class)
     public ResponseEntity<ResultEntity<Object>> exceptionHandler(BaseException ex){
         return ResultEntity.error(ex.getCode(), ex.getMessage());
     }

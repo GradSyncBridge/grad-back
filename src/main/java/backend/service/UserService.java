@@ -1,6 +1,7 @@
 package backend.service;
 
 import backend.model.DTO.UserLoginDTO;
+import backend.model.DTO.UserProfileUpdateDTO;
 import backend.model.DTO.UserRegisterDTO;
 import backend.model.VO.UserLoginVO;
 import backend.model.VO.UserProfileVO;
@@ -28,4 +29,6 @@ public interface UserService {
     UserRefreshVO refreshToken();
 
     UserRegisterVO register(UserRegisterDTO userRegisterDTO);
+
+    UserProfileUpdateDTO updateUserProfile(UserProfileUpdateDTO userProfileUpdateDTO);
 }

@@ -28,9 +28,9 @@ public class UserRegisterVO {
 
         private String refresh;
 
-        public Builder setToken(String username, JwtService jwtService) {
-            access = jwtService.generateToken(username, 1);
-            refresh = jwtService.generateToken(username, 2);
+        public Builder setToken(Integer id, JwtService jwtService) {
+            access = jwtService.generateToken(id, 1);
+            refresh = jwtService.generateToken(id, 2);
             return this;
         }
 
