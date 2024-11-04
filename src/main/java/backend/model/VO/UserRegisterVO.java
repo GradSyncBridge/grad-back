@@ -6,16 +6,15 @@ import lombok.Data;
 import lombok.NoArgsConstructor;
 
 /**
- * 用户登录VO
+ * 用户注册VO
  * @field access: access token
- * @field refresh: refresh token
+ * @field refresh: fresh token
  */
 
 @Data
 @AllArgsConstructor
 @NoArgsConstructor
-public class UserLoginVO {
-
+public class UserRegisterVO {
     private String access;
 
     private String refresh;
@@ -35,11 +34,11 @@ public class UserLoginVO {
             return this;
         }
 
-        public UserLoginVO build() {
-            UserLoginVO userLoginVO = new UserLoginVO();
-            userLoginVO.setAccess(access);
-            userLoginVO.setRefresh(refresh);
-            return userLoginVO;
+        public UserRegisterVO build() {
+            UserRegisterVO userRegisterVO = new UserRegisterVO();
+            userRegisterVO.setAccess(access);
+            userRegisterVO.setRefresh(refresh);
+            return userRegisterVO;
         }
     }
 }

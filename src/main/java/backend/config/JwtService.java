@@ -42,6 +42,12 @@ public class JwtService {
     @Value("${jwt.freshTokenExpiration}")
     private long freshTokenExpiration;
 
+    /**
+     * 生成token
+     * @param username 用户名
+     * @param type token类型 1: access token 2: fresh token
+     * @return token
+     */
     public String generateToken(String username, Integer type) {
         long expiration = type == 1 ? accessTokenExpiration : freshTokenExpiration;
         Map<String, Object> claims = new HashMap<>();
@@ -57,10 +63,20 @@ public class JwtService {
 
     }
 
+    /**
+     * 获取密钥
+     * @return 密钥
+     */
     private SecretKey getKey() {
         byte[] keyBytes = Decoders.BASE64.decode(secretkey);
         return Keys.hmacShaKeyFor(keyBytes);
     }
+
+    /**
+     * 从token中提取用户名
+     * @param token token
+     * @return 用户名
+     */
 
     public String extractUserName(String token) {
         // extract the username from jwt token
@@ -72,11 +88,22 @@ public class JwtService {
         }
     }
 
+    /**
+     * 从token中提取过期时间
+     * @param token token
+     * @return 过期时间
+     */
+
     private <T> T extractClaim(String token, Function<Claims, T> claimResolver) {
         final Claims claims = extractAllClaims(token);
         return claimResolver.apply(claims);
     }
 
+    /**
+     * 从token中提取所有声明
+     * @param token token
+     * @return 所有声明
+     */
     private Claims extractAllClaims(String token) {
         try {
             return Jwts.parser().verifyWith(getKey()).build().parseSignedClaims(token).getPayload();
@@ -87,15 +114,31 @@ public class JwtService {
 
     }
 
+    /**
+     * 验证token
+     * @param token token
+     * @param userDetails 用户信息
+     * @return 是否有效
+     */
     public boolean validateToken(String token, UserDetails userDetails) {
         final String userName = extractUserName(token);
         return (userName.equals(userDetails.getUsername()) && !isTokenExpired(token));
     }
 
+    /**
+     * 判断token是否过期
+     * @param token token
+     * @return 是否过期
+     */
     private boolean isTokenExpired(String token) {
         return extractExpiration(token).before(new Date());
     }
 
+    /**
+     * 从token中提取过期时间
+     * @param token token
+     * @return 过期时间
+     */
     private Date extractExpiration(String token) {
         return extractClaim(token, Claims::getExpiration);
     }

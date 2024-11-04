@@ -1,5 +1,6 @@
 package backend.config;
 
+import backend.model.entity.User;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;
@@ -32,6 +33,14 @@ public class JWTFilter extends OncePerRequestFilter {
     @Value("${jwt.token-name}")
     private String tokenName;
 
+    /**
+     * 过滤器，用于验证token
+     * @param request 请求
+     * @param response 响应
+     * @param filterChain 过滤链
+     * @throws ServletException 异常
+     * @throws IOException 异常
+     */
     @Override
     protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain filterChain)
             throws ServletException, IOException {
@@ -57,18 +66,6 @@ public class JWTFilter extends OncePerRequestFilter {
 
                 return;
             }
-        }else{
-            response.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
-            response.setContentType("application/json");
-
-            Map<String, Object> responseMap = new HashMap<>();
-            responseMap.put("code", HttpServletResponse.SC_UNAUTHORIZED);
-            responseMap.put("message", "Token not found");
-
-            String jsonResponse = new ObjectMapper().writeValueAsString(responseMap);
-            response.getWriter().write(jsonResponse);
-
-            return;
         }
 
         if (username != null && SecurityContextHolder.getContext().getAuthentication() == null) {

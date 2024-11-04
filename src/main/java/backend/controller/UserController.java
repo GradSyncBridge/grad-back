@@ -2,6 +2,8 @@ package backend.controller;
 
 import backend.annotation.group.UserGroup.EmailGroup;
 import backend.model.DTO.UserLoginDTO;
+import backend.model.VO.UserLoginVO;
+import backend.model.VO.UserProfileVO;
 import backend.model.entity.User;
 import backend.service.UserService;
 import backend.util.FileManager;
@@ -15,21 +17,20 @@ import org.springframework.web.bind.annotation.*;
 import java.util.Map;
 
 @RestController
-@RequestMapping
+@RequestMapping("/user")
 public class UserController {
 
     @Autowired
     private UserService userService;
 
-    @PostMapping(value = "/login")
-    public ResponseEntity<ResultEntity<Object>> login(@RequestBody UserLoginDTO userLoginDTO) {
-        Map<String, Object> data = userService.login(userLoginDTO);
-        return ResultEntity.success(HttpStatus.OK.value(), "ok", data);
-    }
-
-    @GetMapping(value = "/user")
+    /**
+     * 获取用户信息
+     * @return 用户信息
+     */
+    @GetMapping(value = "/profile")
     public ResponseEntity<ResultEntity<Object>> getUser() {
-        return ResultEntity.success(HttpStatus.OK.value(), "ok", null);
+        UserProfileVO user = userService.getUser();
+        return ResultEntity.success(HttpStatus.OK.value(), "ok", user);
     }
 
     @GetMapping(value = "/user/email")

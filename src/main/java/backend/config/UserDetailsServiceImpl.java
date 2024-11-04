@@ -12,6 +12,11 @@ import org.springframework.stereotype.Service;
 import java.util.List;
 import java.util.Map;
 
+/**
+ * 用户详情服务实现
+ * @field userMapper: 用户mapper
+ * @function  loadUserByUsername: 获取当前用户
+ */
 @Service
 public class UserDetailsServiceImpl implements UserDetailsService {
 
@@ -26,7 +31,7 @@ public class UserDetailsServiceImpl implements UserDetailsService {
 
         Map<String, Boolean> scope = FieldsGenerator.generateFields(User.class, fields);
 
-        User user = userMapper.selectUser(User.builder().username(username).build(), scope).get(0);
+        User user = userMapper.selectUser(User.builder().username(username).build(), scope).getFirst();
 
         if (user == null)
             throw new UsernameNotFoundException("User not found");
