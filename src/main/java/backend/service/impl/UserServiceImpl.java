@@ -17,7 +17,6 @@ import backend.service.UserService;
 import backend.util.FieldsGenerator;
 import backend.util.FileManager;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.http.HttpStatus;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
 
@@ -48,16 +47,17 @@ public class UserServiceImpl implements UserService {
 
         User selectUser = User.builder().username(userLoginDTO.getUsername()).build();
         try {
-            User targetUser = userMapper.selectUser(selectUser, scope).getFirst();
+            List<User> userList = userMapper.selectUser(selectUser, scope);
 
-            if (passwordEncoder.matches(userLoginDTO.getPassword(), targetUser.getPassword())) {
-                return UserLoginVO.builder().setToken(targetUser.getId(), jwtService).build();
-            }
-        }catch (Exception e) {
+            if(userList.isEmpty() ||!passwordEncoder.matches(userLoginDTO.getPassword(), userList.getFirst().getPassword()))
+                throw new LoginFailedException();
+
+            return UserLoginVO.builder().setToken(userList.getFirst().getId(), jwtService).build();
+        }catch (LoginFailedException ex){
             throw new LoginFailedException();
+        } catch (Exception e) {
+            throw new RuntimeException(e.getMessage());
         }
-
-        throw new LoginFailedException();
     }
 
     /**
@@ -91,6 +91,7 @@ public class UserServiceImpl implements UserService {
 
             List<User> userList = userMapper.selectUser(User.builder().username(userRegisterDTO.getUsername()).build(), Map.of("username", true));
             if (!userList.isEmpty()) throw new DuplicateUserException();
+
             userMapper.insertUser(user);
         }catch (DuplicateUserException ex){
             throw new DuplicateUserException();
