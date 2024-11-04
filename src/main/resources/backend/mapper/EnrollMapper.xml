@@ -3,21 +3,6 @@
         PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
         "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
 
-<!-- @Builder
-public class Enroll {
-
-    private Integer id;
-
-    private Integer sid;
-
-    private Integer tid;
-
-    private Integer year;
-
-    // 0 -> false, 1 -> true
-    private Integer disabled;
-} -->
-
 <mapper namespace="backend.mapper.EnrollMapper">
 
     <sql id="DynamicFields">

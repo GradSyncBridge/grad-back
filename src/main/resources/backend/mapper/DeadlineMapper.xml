@@ -3,17 +3,6 @@
         PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
         "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
 
-<!-- public class Deadline {
-
-    private Integer id;
-
-    private LocalDateTime time;
-
-    // 0 — 提交个人材料，1 — 第一轮导师选择学生，2 — 第二轮调剂，3 — 录取结束
-    private Integer type;
-}
- -->
-
 <mapper namespace="backend.mapper.DeadlineMapper">
 
     <sql id="DynamicFields">

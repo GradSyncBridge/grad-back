@@ -3,18 +3,6 @@
         PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
         "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
 
-<!-- public class Notice {
-
-    private Integer id;
-
-    private String content;
-
-    private LocalDateTime created;
-
-    // 0 -> 有效, 1 -> 无效
-    private Integer disabled;
-}
- -->
 
 <mapper namespace="backend.mapper.NoticeMapper">
 
