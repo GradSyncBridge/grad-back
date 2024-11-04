@@ -12,7 +12,7 @@ public interface Department {
      * 插入截止日期
      * @param department 截止日期
      */
-    void insertDeadline(Department department);
+    void insertDepartment(Department department);
 
     /**
      * 查询截止日期
@@ -20,12 +20,12 @@ public interface Department {
      * @param scope 查询返回的字段
      * @return 截止日期列表
      */
-    List<Department> selectDeadline(Department department, Map<String, Boolean> scope);
+    List<Department> selectDepartment(Department department, Map<String, Boolean> scope);
 
     /**
      * 更新截止日期
      * @param departmentUpdate 更新值
      * @param departmentQuery 更新的条件
      */
-    void updateDeadline(Department departmentUpdate, Department departmentQuery);
+    void updateDepartment(Department departmentUpdate, Department departmentQuery);
 }

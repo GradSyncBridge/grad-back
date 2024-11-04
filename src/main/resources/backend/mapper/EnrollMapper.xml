@@ -25,7 +25,7 @@
         </where>
     </sql>
 
-    <insert id="insertDeadline" >
+    <insert id="insertEnroll" >
         insert into Enroll
         (
             sid,
@@ -42,14 +42,14 @@
         )
     </insert>
 
-    <select id="selectDeadline" resultType="backend.model.entity.Enroll">
+    <select id="selectEnroll" resultType="backend.model.entity.Enroll">
         select
             <include refid="DynamicFields" />
         from Enroll
             <include refid="DynamicWhere" />
     </select>
 
-    <update id="updateDeadline">
+    <update id="updateEnroll">
         update Enroll
         <set>
             <if test="enrollUpdate.sid != null"> sid = #{enrollUpdate.sid}, </if>
