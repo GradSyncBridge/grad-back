@@ -1,9 +1,14 @@
 package backend.config;
 
+import jakarta.mail.internet.MimeMessage;
 import org.springframework.context.annotation.Configuration;
 
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Lazy;
+import org.springframework.mail.MailException;
+import org.springframework.mail.SimpleMailMessage;
+import org.springframework.mail.javamail.JavaMailSender;
+import org.springframework.mail.javamail.JavaMailSenderImpl;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
@@ -19,6 +24,8 @@ import org.springframework.security.web.authentication.UsernamePasswordAuthentic
 import org.springframework.web.servlet.config.annotation.EnableWebMvc;
 import org.springframework.web.servlet.config.annotation.ResourceHandlerRegistry;
 import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
+
+import java.io.InputStream;
 
 @Configuration
 @EnableWebSecurity
@@ -39,6 +46,9 @@ public class SecurityConfig implements WebMvcConfigurer {
     @Lazy
     private CorsConfigurationSourceImpl corsConfigurationSource;
 
+    @Autowired
+    @Lazy
+    private RateLimitingFilter rateLimitingFilter;
     /**
      * 密码加密
      *
@@ -67,6 +77,7 @@ public class SecurityConfig implements WebMvcConfigurer {
                 // httpBasic(Customizer.withDefaults()) // prod mode, disable view for security
                 .sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
                 .addFilterBefore(jwtFilter, UsernamePasswordAuthenticationFilter.class)
+                .addFilterBefore(rateLimitingFilter, UsernamePasswordAuthenticationFilter.class)
                 .exceptionHandling(exceptionHandling ->
                         exceptionHandling.authenticationEntryPoint(authEntryPoint)
                 )

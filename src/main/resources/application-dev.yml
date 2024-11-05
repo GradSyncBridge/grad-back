@@ -14,12 +14,19 @@ spring:
     type-aliases-package: backend.model.entity
     configuration:
       log-impl: org.apache.ibatis.logging.stdout.StdOutImpl
+  mail:
+    host: smtp.gmail.com
+    port: 587
+    username: qinglinhe44@gmail.com
+    password: Heqinglin2021
+    protocol: smtp
+    properties:
+        mail.smtp.auth: true
+        mail.smtp.starttls.enable: true
 
 jwt:
   secretkey: VHJ1c3R3b3JrT3BhZHVzJTIwU2VjdXJlU2VjcmV0Q29tcGxleEJ0b2xkY29tcGxleENvbmZpZyUyMExhcmdlU2VjcmV0S2V5
   freshTokenExpiration: 2592000000 #30 days
-  accessTokenExpiration: 259200000 # 3 days
+  accessTokenExpiration: 25920000000 # 3 days
   token-name: Authorization
-
-  # Private token claims
-  uid: uid
+  uid: uid # Private token claims

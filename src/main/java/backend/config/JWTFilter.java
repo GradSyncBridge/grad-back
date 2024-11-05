@@ -12,6 +12,7 @@ import jakarta.servlet.http.HttpServletResponse;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.ApplicationContext;
+import org.springframework.http.HttpStatus;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.core.userdetails.UserDetails;
@@ -58,7 +59,7 @@ public class JWTFilter extends OncePerRequestFilter {
                 // username = jwtService.extractUserName(token);
                 uid = jwtService.extractUid(token);
             } catch (Exception e) {
-                response.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
+                response.setStatus(HttpStatus.OK.value());
                 response.setContentType("application/json");
 
                 Map<String, Object> responseMap = new HashMap<>();
@@ -87,7 +88,7 @@ public class JWTFilter extends OncePerRequestFilter {
                     SecurityContextHolder.getContext().setAuthentication(authToken);
                 }
             } catch (UsernameNotFoundException e) {
-                response.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
+                response.setStatus(HttpStatus.OK.value());
                 response.setContentType("application/json");
 
                 Map<String, Object> responseMap = new HashMap<>();
