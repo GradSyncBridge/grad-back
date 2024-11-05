@@ -30,6 +30,6 @@ public class MajorToTeacher {
     // 0 -> false, 1 -> true
     private Integer valid;
 
-    Integer metrci;
+    private Integer metrci;
 
 }
