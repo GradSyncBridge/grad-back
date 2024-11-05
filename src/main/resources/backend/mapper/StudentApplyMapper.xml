@@ -1,0 +1,70 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+
+<mapper namespace="backend.mapper.StudentApplyMapper">
+
+    <sql id="DynamicFields">
+        <trim suffixOverrides=",">
+            <if test="scope.id == true"> id, </if>
+            <if test="scope.user_id == true"> user_id, </if>
+            <if test="scope.tid == true"> tid, </if>
+            <if test="scope.level == true"> level, </if>
+            <if test="scope.disabled == true"> disabled, </if>
+        </trim>
+    </sql>
+
+    <sql id="DynamicWhere">
+        <where>
+            <if test="studentApply.id != null"> and id = #{studentApply.id} </if>
+            <if test="studentApply.user_id != null"> and user_id = #{studentApply.user_id} </if>
+            <if test="studentApply.tid != null"> and tid = #{studentApply.tid} </if>
+            <if test="studentApply.level != null"> and level = #{studentApply.level} </if>
+            <if test="studentApply.disabled != null"> and disabled = #{studentApply.disabled} </if>
+        </where>
+    </sql>
+
+    <insert id="insertStudentApply">
+        insert into StudentApply
+        (
+            user_id,
+            tid,
+            level,
+            disabled
+        )
+        values
+        (
+            #{user_id},
+            #{tid},
+            #{level},
+            #{disabled}
+        )
+    </insert>
+
+    <select id="selectStudentApply" resultType="backend.model.entity.StudentApply">
+        select
+            <include refid="DynamicFields" />
+        from StudentApply
+            <include refid="DynamicWhere" />
+    </select>
+
+    <update id="updateStudentApply">
+        update StudentApply
+        <set>
+            <if test="studentApplyUpdate.user_id != null"> user_id = #{studentApplyUpdate.user_id}, </if>
+            <if test="studentApplyUpdate.tid != null"> tid = #{studentApplyUpdate.tid}, </if>
+            <if test="studentApplyUpdate.level != null"> level = #{studentApplyUpdate.level}, </if>
+            <if test="studentApplyUpdate.disabled != null"> disabled = #{studentApplyUpdate.disabled}, </if>
+        </set>
+        <where>
+            <if test="studentApplyQuery.id != null"> and id = #{studentApplyQuery.id} </if>
+            <if test="studentApplyQuery.user_id != null"> and user_id = #{studentApplyQuery.user_id} </if>
+            <if test="studentApplyQuery.tid != null"> and tid = #{studentApplyQuery.tid} </if>
+            <if test="studentApplyQuery.level != null"> and level = #{studentApplyQuery.level} </if>
+            <if test="studentApplyQuery.disabled != null"> and disabled = #{studentApplyQuery.disabled} </if>
+        </where>
+    </update>
+
+</mapper>

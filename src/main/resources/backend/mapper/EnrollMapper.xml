@@ -12,6 +12,7 @@
             <if test="scope.tid == true"> tid, </if>
             <if test="scope.year == true"> year, </if>
             <if test="scope.disabled == true"> disabled, </if>
+            <if test="scope.mid == true"> mid, </if>
         </trim>
     </sql>
 
@@ -22,6 +23,7 @@
             <if test="enroll.tid != null"> and tid = #{enroll.tid} </if>
             <if test="enroll.year != null"> and year = #{enroll.year} </if>
             <if test="enroll.disabled != null"> and disabled = #{enroll.disabled} </if>
+            <if test="enroll.mid != null"> and mid = #{enroll.mid} </if>
         </where>
     </sql>
 
@@ -31,14 +33,16 @@
             sid,
             tid,
             year,
-            disabled
+            disabled,
+            mid
         )
         values
         (
             #{sid},
             #{tid},
             #{year},
-            #{disabled}
+            #{disabled},
+            #{mid}
         )
     </insert>
 
@@ -56,6 +60,7 @@
             <if test="enrollUpdate.tid != null"> tid = #{enrollUpdate.tid}, </if>
             <if test="enrollUpdate.year != null"> year = #{enrollUpdate.year}, </if>
             <if test="enrollUpdate.disabled != null"> disabled = #{enrollUpdate.disabled}, </if>
+            <if test="enrollUpdate.mid != null"> mid = #{enrollUpdate.mid}, </if>
         </set>
         <where>
             <if test="enrollQuery.id != null"> and id = #{enrollQuery.id} </if>
@@ -63,6 +68,7 @@
             <if test="enrollQuery.tid != null"> and tid = #{enrollQuery.tid} </if>
             <if test="enrollQuery.year != null"> and year = #{enrollQuery.year} </if>
             <if test="enrollQuery.disabled != null"> and disabled = #{enrollQuery.disabled} </if>
+            <if test="enrollQuery.mid != null"> and mid = #{enrollQuery.mid} </if>
         </where>
     </update>
 
