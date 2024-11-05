@@ -3,10 +3,10 @@ package backend.service;
 import backend.model.DTO.UserLoginDTO;
 import backend.model.DTO.UserProfileUpdateDTO;
 import backend.model.DTO.UserRegisterDTO;
-import backend.model.VO.UserLoginVO;
-import backend.model.VO.UserProfileVO;
-import backend.model.VO.UserRefreshVO;
-import backend.model.VO.UserRegisterVO;
+import backend.model.VO.user.UserLoginVO;
+import backend.model.VO.user.UserProfileVO;
+import backend.model.VO.user.UserRefreshVO;
+import backend.model.VO.user.UserRegisterVO;
 
 public interface UserService {
     /**

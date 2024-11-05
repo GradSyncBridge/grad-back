@@ -2,8 +2,8 @@ package backend.controller;
 
 import backend.model.DTO.UserLoginDTO;
 import backend.model.DTO.UserRegisterDTO;
-import backend.model.VO.UserLoginVO;
-import backend.model.VO.UserRegisterVO;
+import backend.model.VO.user.UserLoginVO;
+import backend.model.VO.user.UserRegisterVO;
 import backend.service.UserService;
 import backend.util.ResultEntity;
 import org.springframework.beans.factory.annotation.Autowired;

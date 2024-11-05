@@ -3,7 +3,7 @@ package backend.model.converter;
 import backend.model.DTO.UserLoginDTO;
 import backend.model.DTO.UserProfileUpdateDTO;
 import backend.model.DTO.UserRegisterDTO;
-import backend.model.VO.UserProfileVO;
+import backend.model.VO.user.UserProfileVO;
 import backend.model.entity.User;
 import org.mapstruct.Mapper;
 import org.mapstruct.factory.Mappers;

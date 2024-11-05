@@ -1,8 +1,8 @@
 package backend.controller;
 
 import backend.model.DTO.UserProfileUpdateDTO;
-import backend.model.VO.UserProfileVO;
-import backend.model.VO.UserRefreshVO;
+import backend.model.VO.user.UserProfileVO;
+import backend.model.VO.user.UserRefreshVO;
 import backend.service.UserService;
 import backend.util.ResultEntity;
 import org.springframework.http.HttpStatus;

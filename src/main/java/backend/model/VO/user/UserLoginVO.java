@@ -1,4 +1,4 @@
-package backend.model.VO;
+package backend.model.VO.user;
 
 import backend.config.JwtService;
 import lombok.AllArgsConstructor;
@@ -6,16 +6,17 @@ import lombok.Data;
 import lombok.NoArgsConstructor;
 
 /**
- * 用户注册VO
+ * 用户登录VO
  *
  * @field access: access token
- * @field refresh: fresh token
+ * @field refresh: refresh token
  */
 
 @Data
 @AllArgsConstructor
 @NoArgsConstructor
-public class UserRegisterVO {
+public class UserLoginVO {
+
     private String access;
 
     private String refresh;
@@ -35,11 +36,11 @@ public class UserRegisterVO {
             return this;
         }
 
-        public UserRegisterVO build() {
-            UserRegisterVO userRegisterVO = new UserRegisterVO();
-            userRegisterVO.setAccess(access);
-            userRegisterVO.setRefresh(refresh);
-            return userRegisterVO;
+        public UserLoginVO build() {
+            UserLoginVO userLoginVO = new UserLoginVO();
+            userLoginVO.setAccess(access);
+            userLoginVO.setRefresh(refresh);
+            return userLoginVO;
         }
     }
 }

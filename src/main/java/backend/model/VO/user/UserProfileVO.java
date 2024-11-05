@@ -1,4 +1,4 @@
-package backend.model.VO;
+package backend.model.VO.user;
 
 import lombok.AllArgsConstructor;
 import lombok.Data;
