@@ -63,7 +63,7 @@ public class MajorServiceImpl implements MajorService {
                 List<CompletableFuture<SubMajorVO>> futures = new ArrayList<>();
 
                 for (Major major : subMajorList) {
-                    CompletableFuture<List<Map<Integer, String>>> future1 = asyncSubMajorInitials(major);
+                    CompletableFuture<List<Map<String, String>>> future1 = asyncSubMajorInitials(major);
                     CompletableFuture<List<String>> future2 = asyncSubMajorInterviews(major);
 
                     CompletableFuture<SubMajorVO> combinedFuture = future1.thenCombine(future2,
@@ -93,17 +93,17 @@ public class MajorServiceImpl implements MajorService {
     }
 
     @Async("taskExecutor")
-    public CompletableFuture<List<Map<Integer, String>>> asyncSubMajorInitials(Major major) {
+    public CompletableFuture<List<Map<String, String>>> asyncSubMajorInitials(Major major) {
         try {
-            List<CompletableFuture<Map<Integer, String>>> futures = new ArrayList<>();
-            List<Map<Integer, String>> initials = new ArrayList<>();
+            List<CompletableFuture<Map<String, String>>> futures = new ArrayList<>();
+            List<Map<String, String>> initials = new ArrayList<>();
             MajorDTO majorDTO = majorConverter.MajorToMajorDTO(major);
 
             for (Integer initialId : majorDTO.getInitial()) {
-                CompletableFuture<Map<Integer, String>> future = CompletableFuture.supplyAsync(() -> {
-                    List<Subject> subjects = subjectMapper.selectSubject(Subject.builder().sid(initialId).build(),
+                CompletableFuture<Map<String, String>> future = CompletableFuture.supplyAsync(() -> {
+                    List<Subject> subjects = subjectMapper.selectSubject(Subject.builder().id(initialId).build(),
                             FieldsGenerator.generateFields(Subject.class));
-                    Map<Integer, String> initialMap = new HashMap<>();
+                    Map<String, String> initialMap = new HashMap<>();
 
                     if (!subjects.isEmpty()) {
                         Subject subject = subjects.getFirst();
@@ -118,7 +118,7 @@ public class MajorServiceImpl implements MajorService {
             CompletableFuture<Void> allOf = CompletableFuture.allOf(futures.toArray(new CompletableFuture[0]))
                     .thenAccept(v -> {
 
-                        for (CompletableFuture<Map<Integer, String>> future : futures) {
+                        for (CompletableFuture<Map<String, String>> future : futures) {
                             try {
                                 initials.add(future.get());
                             } catch (Exception e) {
@@ -147,7 +147,7 @@ public class MajorServiceImpl implements MajorService {
 
             for (Integer initialId : majorDTO.getInitial()) {
                 CompletableFuture<String> future = CompletableFuture.supplyAsync(() -> {
-                    List<Subject> subjects = subjectMapper.selectSubject(Subject.builder().sid(initialId).build(),
+                    List<Subject> subjects = subjectMapper.selectSubject(Subject.builder().id(initialId).build(),
                             FieldsGenerator.generateFields(Subject.class));
                     return subjects.isEmpty() ? "" : subjects.getFirst().getName();
                 });
@@ -168,6 +168,7 @@ public class MajorServiceImpl implements MajorService {
 
             allOf.join();
 
+            return CompletableFuture.completedFuture(initials);
         } catch (Exception e) {
             e.printStackTrace();
         }

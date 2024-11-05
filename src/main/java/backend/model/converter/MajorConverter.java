@@ -53,7 +53,7 @@ public interface MajorConverter {
         return majorDTO;
     }
 
-    SubMajorVO MajorToSubMajorVO(Major major, List<Map<Integer, String>> initials, List<String> interviews);
+    SubMajorVO MajorToSubMajorVO(Major major, List<Map<String, String>> initials, List<String> interviews);
 
     List<MajorVO> MajorListToMajorVOList(List<Major> majorList);
 }

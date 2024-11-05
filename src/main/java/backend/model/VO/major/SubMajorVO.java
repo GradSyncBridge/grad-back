@@ -22,7 +22,7 @@ public class SubMajorVO {
 
     private Integer year;
 
-    private List<Map<Integer, String>> initials;
+    private List<Map<String, String>> initials;
 
     private List<String> interviews;
 
