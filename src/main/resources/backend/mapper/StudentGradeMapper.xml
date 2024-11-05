@@ -8,7 +8,7 @@
     <sql id="DynamicFields">
         <trim suffixOverrides=",">
             <if test="scope.id == true"> id, </if>
-            <if test="scope.user_id == true"> user_id, </if>
+            <if test="scope.userId == true"> userId, </if>
             <if test="scope.sid == true"> sid, </if>
             <if test="scope.grade == true"> grade, </if>
             <if test="scope.disabled == true"> disabled, </if>
@@ -18,7 +18,7 @@
     <sql id="DynamicWhere">
         <where>
             <if test="studentGrade.id != null"> and id = #{studentGrade.id} </if>
-            <if test="studentGrade.user_id != null"> and user_id = #{studentGrade.user_id} </if>
+            <if test="studentGrade.userId != null"> and userId = #{studentGrade.userId} </if>
             <if test="studentGrade.sid != null"> and sid = #{studentGrade.sid} </if>
             <if test="studentGrade.grade != null"> and grade = #{studentGrade.grade} </if>
             <if test="studentGrade.disabled != null"> and disabled = #{studentGrade.disabled} </if>
@@ -28,14 +28,14 @@
     <insert id="insertStudentGrade">
         insert into StudentGrade
         (
-            user_id,
+            userId,
             sid,
             grade,
             disabled
         )
         values
         (
-            #{user_id},
+            #{userId},
             #{sid},
             #{grade},
             #{disabled}
@@ -52,14 +52,14 @@
     <update id="updateStudentGrade">
         update StudentGrade
         <set>
-            <if test="studentGradeUpdate.user_id != null"> user_id = #{studentGradeUpdate.user_id}, </if>
+            <if test="studentGradeUpdate.userId != null"> userId = #{studentGradeUpdate.userId}, </if>
             <if test="studentGradeUpdate.sid != null"> sid = #{studentGradeUpdate.sid}, </if>
             <if test="studentGradeUpdate.grade != null"> grade = #{studentGradeUpdate.grade}, </if>
             <if test="studentGradeUpdate.disabled != null"> disabled = #{studentGradeUpdate.disabled}, </if>
         </set>
         <where>
             <if test="studentGradeQuery.id != null"> and id = #{studentGradeQuery.id} </if>
-            <if test="studentGradeQuery.user_id != null"> and user_id = #{studentGradeQuery.user_id} </if>
+            <if test="studentGradeQuery.userId != null"> and userId = #{studentGradeQuery.userId} </if>
             <if test="studentGradeQuery.sid != null"> and sid = #{studentGradeQuery.sid} </if>
             <if test="studentGradeQuery.grade != null"> and grade = #{studentGradeQuery.grade} </if>
             <if test="studentGradeQuery.disabled != null"> and disabled = #{studentGradeQuery.disabled} </if>

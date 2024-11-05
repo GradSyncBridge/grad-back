@@ -12,7 +12,7 @@
             <if test="scope.tid == true"> tid, </if>
             <if test="scope.mid == true"> mid, </if>
             <if test="scope.valid == true"> valid, </if>
-            <if test="scope.metrci == true"> metrci, </if>
+            <if test="scope.metric == true"> metric, </if>
         </trim>
     </sql>
 
@@ -22,7 +22,7 @@
             <if test="majorToTeacherQuery.tid != null"> and tid = #{majorToTeacherQuery.tid} </if>
             <if test="majorToTeacherQuery.mid != null"> and mid = #{majorToTeacherQuery.mid} </if>
             <if test="majorToTeacherQuery.valid != null"> and valid = #{majorToTeacherQuery.valid} </if>
-            <if test="majorToTeacherQuery.metrci != null"> and metrci = #{majorToTeacherQuery.metrci} </if>
+            <if test="majorToTeacherQuery.metric != null"> and metric = #{majorToTeacherQuery.metric} </if>
         </where>
     </sql>
     
@@ -32,14 +32,14 @@
             tid,
             mid,
             valid,
-            metrci
+            metric
         )
         values
         (
             #{tid},
             #{mid},
             #{valid},
-            #{metrci}
+            #{metric}
         )
     </insert>
 
@@ -56,14 +56,14 @@
             <if test="majorToTeacherUpdate.tid != null"> tid = #{majorToTeacherUpdate.tid}, </if>
             <if test="majorToTeacherUpdate.mid != null"> mid = #{majorToTeacherUpdate.mid}, </if>
             <if test="majorToTeacherUpdate.valid != null"> valid = #{majorToTeacherUpdate.valid}, </if>
-            <if test="majorToTeacherUpdate.metrci != null"> metrci = #{majorToTeacherUpdate.metrci}, </if>
+            <if test="majorToTeacherUpdate.metric != null"> metric = #{majorToTeacherUpdate.metric}, </if>
         </set>
         <where>
             <if test="majorToTeacherQuery.id != null"> and id = #{majorToTeacherQuery.id} </if>
             <if test="majorToTeacherQuery.tid != null"> and tid = #{majorToTeacherQuery.tid} </if>
             <if test="majorToTeacherQuery.mid != null"> and mid = #{majorToTeacherQuery.mid} </if>
             <if test="majorToTeacherQuery.valid != null"> and valid = #{majorToTeacherQuery.valid} </if>
-            <if test="majorToTeacherQuery.metrci != null"> and metrci = #{majorToTeacherQuery.metrci} </if>
+            <if test="majorToTeacherQuery.metric != null"> and metric = #{majorToTeacherQuery.metric} </if>
         </where>
     </update>
 

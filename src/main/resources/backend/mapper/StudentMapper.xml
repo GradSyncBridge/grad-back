@@ -8,93 +8,93 @@
     <sql id="DynamicFields">
         <trim suffixOverrides=",">
             <if test="scope.id == true"> id, </if>
-            <if test="scope.userId == true"> user_id, </if>
+            <if test="scope.userId == true"> userId, </if>
             <if test="scope.birth == true"> birth, </if>
             <if test="scope.address == true"> address, </if>
-            <if test="scope.major_grad == true"> major_grad, </if>
+            <if test="scope.majorGrad == true"> majorGrad, </if>
             <if test="scope.school == true"> school, </if>
             <if test="scope.type == true"> type, </if>
             <if test="scope.enrollment == true"> enrollment, </if>
             <if test="scope.reassign == true"> reassign, </if>
             <if test="scope.valid == true"> valid, </if>
-            <if test="scope.exam_id == true"> exam_id, </if>
-            <if test="scope.emergence == true"> emergence, </if>
-            <if test="scope.grade_primary == true"> grade_primary, </if>
-            <if test="scope.grade_second == true"> grade_second, </if>
-            <if test="scope.major_apply == true"> major_apply, </if>
-            <if test="scope.major_study == true"> major_study, </if>
+            <if test="scope.examId  == true"> examId , </if>
+            <if test="scope.emergency == true"> emergency, </if>
+            <if test="scope.gradePrimary == true"> gradePrimary, </if>
+            <if test="scope.gradeSecond == true"> gradeSecond, </if>
+            <if test="scope.majorApply == true"> majorApply, </if>
+            <if test="scope.majorStudy == true"> majorStudy, </if>
             <if test="scope.disabled == true"> disabled, </if>
             <if test="scope.quality == true"> quality, </if>
-            <if test="scope.certify_id == true"> certify_id, </if>
+            <if test="scope.certifyId == true"> certifyId, </if>
         </trim>
     </sql>
 
     <sql id="DynamicWhere">
         <where>
             <if test="student.id != null"> and id = #{student.id} </if>
-            <if test="student.userId != null"> and user_id = #{student.userId} </if>
+            <if test="student.userId != null"> and userId = #{student.userId} </if>
             <if test="student.birth != null"> and birth = #{student.birth} </if>
             <if test="student.address != null"> and address = #{student.address} </if>
-            <if test="student.major_grad != null"> and major_grad = #{student.major_grad} </if>
+            <if test="student.majorGrad != null"> and majorGrad = #{student.majorGrad} </if>
             <if test="student.school != null"> and school = #{student.school} </if>
             <if test="student.type != null"> and type = #{student.type} </if>
             <if test="student.enrollment != null"> and enrollment = #{student.enrollment} </if>
             <if test="student.reassign != null"> and reassign = #{student.reassign} </if>
             <if test="student.valid != null"> and valid = #{student.valid} </if>
-            <if test="student.exam_id != null"> and exam_id = #{student.exam_id} </if>
-            <if test="student.emergence != null"> and emergence = #{student.emergence} </if>
-            <if test="student.grade_primary != null"> and grade_primary = #{student.grade_primary} </if>
-            <if test="student.grade_second != null"> and grade_second = #{student.grade_second} </if>
-            <if test="student.major_apply != null"> and major_apply = #{student.major_apply} </if>
-            <if test="student.major_study != null"> and major_study = #{student.major_study} </if>
+            <if test="student.examId  != null"> and examId  = #{student.examId } </if>
+            <if test="student.emergency != null"> and emergency = #{student.emergency} </if>
+            <if test="student.gradePrimary != null"> and gradePrimary = #{student.gradePrimary} </if>
+            <if test="student.gradeSecond != null"> and gradeSecond = #{student.gradeSecond} </if>
+            <if test="student.majorApply != null"> and majorApply = #{student.majorApply} </if>
+            <if test="student.majorStudy != null"> and majorStudy = #{student.majorStudy} </if>
             <if test="student.disabled != null"> and disabled = #{student.disabled} </if>
             <if test="student.quality != null"> and quality = #{student.quality} </if>
-            <if test="student.certify_id != null"> and certify_id = #{student.certify_id} </if>
+            <if test="student.certifyId != null"> and certifyId = #{student.certifyId} </if>
         </where>
     </sql>
 
     <insert id="insertStudent">
         insert into Student
         (
-            user_id,
+            userId,
             birth,
             address,
-            major_grad,
+            majorGrad,
             school,
             type,
             enrollment,
             reassign,
             valid,
-            exam_id,
-            emergence,
-            grade_primary,
-            grade_second,
-            major_apply,
-            major_study,
+            examId ,
+            emergency,
+            gradePrimary,
+            gradeSecond,
+            majorApply,
+            majorStudy,
             disabled,
             quality,
-            certify_id
+            certifyId
         )
         values
         (
             #{userId},
             #{birth},
             #{address},
-            #{major_grad},
+            #{majorGrad},
             #{school},
             #{type},
             #{enrollment},
             #{reassign},
             #{valid},
-            #{exam_id},
-            #{emergence},
-            #{grade_primary},
-            #{grade_second},
-            #{major_apply},
-            #{major_study},
+            #{examId },
+            #{emergency},
+            #{gradePrimary},
+            #{gradeSecond},
+            #{majorApply},
+            #{majorStudy},
             #{disabled},
             #{quality},
-            #{certify_id}
+            #{certifyId}
         )
     </insert>
 
@@ -108,45 +108,45 @@
     <update id="updateStudent">
         update Student
         <set>
-            <if test="studentUpdate.userId != null"> user_id = #{studentUpdate.userId}, </if>
+            <if test="studentUpdate.userId != null"> userId = #{studentUpdate.userId}, </if>
             <if test="studentUpdate.birth != null"> birth = #{studentUpdate.birth}, </if>
             <if test="studentUpdate.address != null"> address = #{studentUpdate.address}, </if>
-            <if test="studentUpdate.major_grad != null"> major_grad = #{studentUpdate.major_grad}, </if>
+            <if test="studentUpdate.majorGrad != null"> majorGrad = #{studentUpdate.majorGrad}, </if>
             <if test="studentUpdate.school != null"> school = #{studentUpdate.school}, </if>
             <if test="studentUpdate.type != null"> type = #{studentUpdate.type}, </if>
             <if test="studentUpdate.enrollment != null"> enrollment = #{studentUpdate.enrollment}, </if>
             <if test="studentUpdate.reassign != null"> reassign = #{studentUpdate.reassign}, </if>
             <if test="studentUpdate.valid != null"> valid = #{studentUpdate.valid}, </if>
-            <if test="studentUpdate.exam_id != null"> exam_id = #{studentUpdate.exam_id}, </if>
-            <if test="studentUpdate.emergence != null"> emergence = #{studentUpdate.emergence}, </if>
-            <if test="studentUpdate.grade_primary != null"> grade_primary = #{studentUpdate.grade_primary}, </if>
-            <if test="studentUpdate.grade_second != null"> grade_second = #{studentUpdate.grade_second}, </if>
-            <if test="studentUpdate.major_apply != null"> major_apply = #{studentUpdate.major_apply}, </if>
-            <if test="studentUpdate.major_study != null"> major_study = #{studentUpdate.major_study}, </if>
+            <if test="studentUpdate.examId  != null"> examId  = #{studentUpdate.examId }, </if>
+            <if test="studentUpdate.emergency != null"> emergency = #{studentUpdate.emergency}, </if>
+            <if test="studentUpdate.gradePrimary != null"> gradePrimary = #{studentUpdate.gradePrimary}, </if>
+            <if test="studentUpdate.gradeSecond != null"> gradeSecond = #{studentUpdate.gradeSecond}, </if>
+            <if test="studentUpdate.majorApply != null"> majorApply = #{studentUpdate.majorApply}, </if>
+            <if test="studentUpdate.majorStudy != null"> majorStudy = #{studentUpdate.majorStudy}, </if>
             <if test="studentUpdate.disabled != null"> disabled = #{studentUpdate.disabled}, </if>
             <if test="studentUpdate.quality != null"> quality = #{studentUpdate.quality}, </if>
-            <if test="studentUpdate.certify_id != null"> certify_id = #{studentUpdate.certify_id}, </if>
+            <if test="studentUpdate.certifyId != null"> certifyId = #{studentUpdate.certifyId}, </if>
         </set>
         <where>
             <if test="studentQuery.id != null"> and id = #{studentQuery.id} </if>
-            <if test="studentQuery.userId != null"> and user_id = #{studentQuery.userId} </if>
+            <if test="studentQuery.userId != null"> and userId = #{studentQuery.userId} </if>
             <if test="studentQuery.birth != null"> and birth = #{studentQuery.birth} </if>
             <if test="studentQuery.address != null"> and address = #{studentQuery.address} </if>
-            <if test="studentQuery.major_grad != null"> and major_grad = #{studentQuery.major_grad} </if>
+            <if test="studentQuery.majorGrad != null"> and majorGrad = #{studentQuery.majorGrad} </if>
             <if test="studentQuery.school != null"> and school = #{studentQuery.school} </if>
             <if test="studentQuery.type != null"> and type = #{studentQuery.type} </if>
             <if test="studentQuery.enrollment != null"> and enrollment = #{studentQuery.enrollment} </if>
             <if test="studentQuery.reassign != null"> and reassign = #{studentQuery.reassign} </if>
             <if test="studentQuery.valid != null"> and valid = #{studentQuery.valid} </if>
-            <if test="studentQuery.exam_id != null"> and exam_id = #{studentQuery.exam_id} </if>
-            <if test="studentQuery.emergence != null"> and emergence = #{studentQuery.emergence} </if>
-            <if test="studentQuery.grade_primary != null"> and grade_primary = #{studentQuery.grade_primary} </if>
-            <if test="studentQuery.grade_second != null"> and grade_second = #{studentQuery.grade_second} </if>
-            <if test="studentQuery.major_apply != null"> and major_apply = #{studentQuery.major_apply} </if>
-            <if test="studentQuery.major_study != null"> and major_study = #{studentQuery.major_study} </if>
+            <if test="studentQuery.examId  != null"> and examId  = #{studentQuery.examId } </if>
+            <if test="studentQuery.emergency != null"> and emergency = #{studentQuery.emergency} </if>
+            <if test="studentQuery.gradePrimary != null"> and gradePrimary = #{studentQuery.gradePrimary} </if>
+            <if test="studentQuery.gradeSecond != null"> and gradeSecond = #{studentQuery.gradeSecond} </if>
+            <if test="studentQuery.majorApply != null"> and majorApply = #{studentQuery.majorApply} </if>
+            <if test="studentQuery.majorStudy != null"> and majorStudy = #{studentQuery.majorStudy} </if>
             <if test="studentQuery.disabled != null"> and disabled = #{studentQuery.disabled} </if>
             <if test="studentQuery.quality != null"> and quality = #{studentQuery.quality} </if>
-            <if test="studentQuery.certify_id != null"> and certify_id = #{studentQuery.certify_id} </if>
+            <if test="studentQuery.certifyId != null"> and certifyId = #{studentQuery.certifyId} </if>
         </where>
     </update>
 

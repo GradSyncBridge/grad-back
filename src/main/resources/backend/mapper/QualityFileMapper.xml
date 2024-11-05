@@ -10,7 +10,7 @@
     <sql id="DynamicFields">
         <trim suffixOverrides=",">
             <if test="scope.id == true"> id, </if>
-            <if test="scope.user_id == true"> user_id, </if>
+            <if test="scope.userId == true"> userId, </if>
             <if test="scope.file == true"> file, </if>
             <if test="scope.created == true"> created, </if>
         </trim>
@@ -19,7 +19,7 @@
     <sql id="DynamicWhere">
         <where>
             <if test="qualityFile.id != null"> and id = #{qualityFile.id} </if>
-            <if test="qualityFile.user_id != null"> and user_id = #{qualityFile.user_id} </if>
+            <if test="qualityFile.userId != null"> and userId = #{qualityFile.userId} </if>
             <if test="qualityFile.file != null"> and file = #{qualityFile.file} </if>
             <if test="qualityFile.created != null"> and created = #{qualityFile.created} </if>
         </where>
@@ -28,13 +28,13 @@
     <insert id="insertQualityFile">
         insert into QualityFile
         (
-            user_id,
+            userId,
             file,
             created
         )
         values
         (
-            #{user_id},
+            #{userId},
             #{file},
             #{created}
         )
@@ -50,13 +50,13 @@
     <update id="updateQualityFile">
         update QualityFile
         <set>
-            <if test="qualityFileUpdate.user_id != null"> user_id = #{qualityFileUpdate.user_id}, </if>
+            <if test="qualityFileUpdate.userId != null"> userId = #{qualityFileUpdate.userId}, </if>
             <if test="qualityFileUpdate.file != null"> file = #{qualityFileUpdate.file}, </if>
             <if test="qualityFileUpdate.created != null"> created = #{qualityFileUpdate.created}, </if>
         </set>
         <where>
             <if test="qualityFileQuery.id != null"> and id = #{qualityFileQuery.id} </if>
-            <if test="qualityFileQuery.user_id != null"> and user_id = #{qualityFileQuery.user_id} </if>
+            <if test="qualityFileQuery.userId != null"> and userId = #{qualityFileQuery.userId} </if>
             <if test="qualityFileQuery.file != null"> and file = #{qualityFileQuery.file} </if>
             <if test="qualityFileQuery.created != null"> and created = #{qualityFileQuery.created} </if>
         </where>

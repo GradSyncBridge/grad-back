@@ -22,7 +22,7 @@ import lombok.NoArgsConstructor;
  * @field recommend 推免数 int
  * @field disabled 是否废弃 int
  * @field department 所属学院 int
- * @field allow_reassign 是否允许调剂，仅针对一级学科 int
+ * @field allowReassign 是否允许调剂，仅针对一级学科 int
  */
 
 @Data
@@ -61,6 +61,6 @@ public class Major {
 
     private Integer department;
 
-    private Integer allow_reassign;
+    private Integer allowReassign;
 
 }

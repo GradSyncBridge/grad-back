@@ -11,7 +11,7 @@
             <if test="scope.title == true"> title, </if>
             <if test="scope.description == true"> description, </if>
             <if test="scope.identity == true"> identity, </if>
-            <if test="scope.user_id == true"> user_id, </if>
+            <if test="scope.userId == true"> userId, </if>
             <if test="scope.department == true"> department, </if>
             <if test="scope.total == true"> total, </if>
             <if test="scope.remnant == true"> remnant, </if>
@@ -24,7 +24,7 @@
             <if test="teacher.title != null"> and title = #{teacher.title} </if>
             <if test="teacher.description != null"> and description = #{teacher.description} </if>
             <if test="teacher.identity != null"> and identity = #{teacher.identity} </if>
-            <if test="teacher.user_id != null"> and user_id = #{teacher.user_id} </if>
+            <if test="teacher.userId != null"> and userId = #{teacher.userId} </if>
             <if test="teacher.department != null"> and department = #{teacher.department} </if>
             <if test="teacher.total != null"> and total = #{teacher.total} </if>
             <if test="teacher.remnant != null"> and remnant = #{teacher.remnant} </if>
@@ -37,7 +37,7 @@
             title,
             description,
             identity,
-            user_id,
+            userId,
             department,
             total,
             remnant
@@ -47,7 +47,7 @@
             #{title},
             #{description},
             #{identity},
-            #{user_id},
+            #{userId},
             #{department},
             #{total},
             #{remnant}
@@ -67,7 +67,7 @@
             <if test="teacherUpdate.title != null"> title = #{teacherUpdate.title}, </if>
             <if test="teacherUpdate.description != null"> description = #{teacherUpdate.description}, </if>
             <if test="teacherUpdate.identity != null"> identity = #{teacherUpdate.identity}, </if>
-            <if test="teacherUpdate.user_id != null"> user_id = #{teacherUpdate.user_id}, </if>
+            <if test="teacherUpdate.userId != null"> userId = #{teacherUpdate.userId}, </if>
             <if test="teacherUpdate.department != null"> department = #{teacherUpdate.department}, </if>
             <if test="teacherUpdate.total != null"> total = #{teacherUpdate.total}, </if>
             <if test="teacherUpdate.remnant != null"> remnant = #{teacherUpdate.remnant}, </if>
@@ -77,7 +77,7 @@
             <if test="teacherQuery.title != null"> and title = #{teacherQuery.title} </if>
             <if test="teacherQuery.description != null"> and description = #{teacherQuery.description} </if>
             <if test="teacherQuery.identity != null"> and identity = #{teacherQuery.identity} </if>
-            <if test="teacherQuery.user_id != null"> and user_id = #{teacherQuery.user_id} </if>
+            <if test="teacherQuery.userId != null"> and userId = #{teacherQuery.userId} </if>
             <if test="teacherQuery.department != null"> and department = #{teacherQuery.department} </if>
             <if test="teacherQuery.total != null"> and total = #{teacherQuery.total} </if>
             <if test="teacherQuery.remnant != null"> and remnant = #{teacherQuery.remnant} </if>

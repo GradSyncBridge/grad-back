@@ -12,7 +12,7 @@ import lombok.NoArgsConstructor;
  * @field title 职称 int
  * @field description 描述 text
  * @field identity 权限 int
- * @field user_id 用户id int
+ * @field userId 用户id int
  * @field department 学院 int
  * @field total 总指标 int
  * @field remnant 剩余指标 int
@@ -32,7 +32,7 @@ public class Teacher {
 
     private Integer identity;
 
-    private Integer user_id;
+    private Integer userId;
 
     private Integer department;
 

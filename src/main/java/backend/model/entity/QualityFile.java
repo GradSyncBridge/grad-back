@@ -11,7 +11,7 @@ import java.time.LocalDateTime;
  * 资格审查文件
  *
  * @field id 主键 int
- * @field user_id 用户 ID int
+ * @field userId 用户 ID int
  * @field file 文件的相对路径 String
  * @field created 创建时间 DateTime
  */
@@ -24,7 +24,7 @@ public class QualityFile {
 
     private Integer id;
 
-    private Integer user_id;
+    private Integer userId;
 
     private String file;
 
