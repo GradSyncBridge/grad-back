@@ -1,0 +1,69 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="backend.mapper.StudentGradeMapper">
+
+    <sql id="DynamicFields">
+        <trim suffixOverrides=",">
+            <if test="scope.id == true"> id, </if>
+            <if test="scope.userId == true"> userId, </if>
+            <if test="scope.sid == true"> sid, </if>
+            <if test="scope.grade == true"> grade, </if>
+            <if test="scope.disabled == true"> disabled, </if>
+        </trim>
+    </sql>
+
+    <sql id="DynamicWhere">
+        <where>
+            <if test="studentGrade.id != null"> and id = #{studentGrade.id} </if>
+            <if test="studentGrade.userId != null"> and userId = #{studentGrade.userId} </if>
+            <if test="studentGrade.sid != null"> and sid = #{studentGrade.sid} </if>
+            <if test="studentGrade.grade != null"> and grade = #{studentGrade.grade} </if>
+            <if test="studentGrade.disabled != null"> and disabled = #{studentGrade.disabled} </if>
+        </where>
+    </sql>
+
+    <insert id="insertStudentGrade">
+        insert into StudentGrade
+        (
+            userId,
+            sid,
+            grade,
+            disabled
+        )
+        values
+        (
+            #{userId},
+            #{sid},
+            #{grade},
+            #{disabled}
+        )
+    </insert>
+
+    <select id="selectStudentGrade" resultType="backend.model.entity.StudentGrade">
+        select
+            <include refid="DynamicFields" />
+        from StudentGrade
+            <include refid="DynamicWhere" />
+    </select>
+
+    <update id="updateStudentGrade">
+        update StudentGrade
+        <set>
+            <if test="studentGradeUpdate.userId != null"> userId = #{studentGradeUpdate.userId}, </if>
+            <if test="studentGradeUpdate.sid != null"> sid = #{studentGradeUpdate.sid}, </if>
+            <if test="studentGradeUpdate.grade != null"> grade = #{studentGradeUpdate.grade}, </if>
+            <if test="studentGradeUpdate.disabled != null"> disabled = #{studentGradeUpdate.disabled}, </if>
+        </set>
+        <where>
+            <if test="studentGradeQuery.id != null"> and id = #{studentGradeQuery.id} </if>
+            <if test="studentGradeQuery.userId != null"> and userId = #{studentGradeQuery.userId} </if>
+            <if test="studentGradeQuery.sid != null"> and sid = #{studentGradeQuery.sid} </if>
+            <if test="studentGradeQuery.grade != null"> and grade = #{studentGradeQuery.grade} </if>
+            <if test="studentGradeQuery.disabled != null"> and disabled = #{studentGradeQuery.disabled} </if>
+        </where>
+    </update>
+
+</mapper>
