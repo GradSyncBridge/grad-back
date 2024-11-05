@@ -12,7 +12,8 @@ import lombok.NoArgsConstructor;
  * @field sid 学生 ID int
  * @field tid 教师 ID int
  * @field year 年份 int
- * @field disabled 是否有效 管理员 int (0 -> false, 1 -> true)
+ * @field disabled 是否有效 管理员 int (0 -> 无效, 1 -> 有效)
+ * @field mid 录取学科ID int
  */
 
 @Data
@@ -31,4 +32,6 @@ public class Enroll {
 
     // 0 -> false, 1 -> true
     private Integer disabled;
+
+    private Integer mid;
 }

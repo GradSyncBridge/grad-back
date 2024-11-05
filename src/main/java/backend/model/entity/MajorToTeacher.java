@@ -12,6 +12,7 @@ import lombok.NoArgsConstructor;
  * @field tid 教师 ID int
  * @field mid 学科 ID int
  * @field valid 是否具有招生资格 int (0 -> false, 1 -> true)
+ * @field metrci 招生指标,教师在该学科的指标 int 
  */
 
 @Data
@@ -28,5 +29,7 @@ public class MajorToTeacher {
 
     // 0 -> false, 1 -> true
     private Integer valid;
+
+    Integer metrci;
 
 }
