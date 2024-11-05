@@ -26,7 +26,7 @@ public class DelegatedAuthenticationEntryPoint implements AuthenticationEntryPoi
     @Override
     public void commence(HttpServletRequest request, HttpServletResponse response, AuthenticationException authException)
             throws IOException, ServletException {
-        response.setStatus(HttpStatus.NOT_FOUND.value());
+        response.setStatus(HttpStatus.OK.value());
         response.setContentType("application/json");
 
         Map<String, Object> responseMap = new HashMap<>();

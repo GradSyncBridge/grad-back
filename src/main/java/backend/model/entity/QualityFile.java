@@ -8,11 +8,11 @@ import lombok.NoArgsConstructor;
 import java.time.LocalDateTime;
 
 /**
- * 审查记录
+ * 资格审查文件
  *
  * @field id 主键 int
- * @field userId 用户 ID int userId -> User.id
- * @field content 内容 text
+ * @field userId 用户 ID int
+ * @field file 文件的相对路径 String
  * @field created 创建时间 DateTime
  */
 
@@ -20,14 +20,14 @@ import java.time.LocalDateTime;
 @AllArgsConstructor
 @NoArgsConstructor
 @Builder
-public class Log {
+public class QualityFile {
 
     private Integer id;
 
-    // userId -> User.id
     private Integer userId;
 
-    private String content;
+    private String file;
 
+    // 0 -> 有效, 1 -> 无效
     private LocalDateTime created;
 }

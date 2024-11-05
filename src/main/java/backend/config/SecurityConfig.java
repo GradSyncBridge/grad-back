@@ -39,6 +39,9 @@ public class SecurityConfig implements WebMvcConfigurer {
     @Lazy
     private CorsConfigurationSourceImpl corsConfigurationSource;
 
+    @Autowired
+    @Lazy
+    private RateLimitingFilter rateLimitingFilter;
     /**
      * 密码加密
      *
@@ -67,6 +70,7 @@ public class SecurityConfig implements WebMvcConfigurer {
                 // httpBasic(Customizer.withDefaults()) // prod mode, disable view for security
                 .sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
                 .addFilterBefore(jwtFilter, UsernamePasswordAuthenticationFilter.class)
+                .addFilterBefore(rateLimitingFilter, UsernamePasswordAuthenticationFilter.class)
                 .exceptionHandling(exceptionHandling ->
                         exceptionHandling.authenticationEntryPoint(authEntryPoint)
                 )
