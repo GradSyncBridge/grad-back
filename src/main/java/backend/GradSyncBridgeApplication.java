@@ -10,16 +10,16 @@ import org.springframework.boot.autoconfigure.SpringBootApplication;
 
 @SpringBootApplication
 @MapperScan("backend.mapper")
-public class GradSyncBridgeApplication implements CommandLineRunner {
+public class GradSyncBridgeApplication {
     public static void main(String[] args) {
         SpringApplication.run(GradSyncBridgeApplication.class, args);
     }
 
-    @Autowired
-    private MajorService majorService;
+    // @Autowired
+    // private MajorService majorService;
 
-    @Override
-    public void run(String... args) throws Exception {
-        System.out.println(majorService.grabMajors(4));
-    }
+    // @Override
+    // public void run(String... args) throws Exception {
+    // System.out.println(majorService.grabMajors(4));
+    // }
 }

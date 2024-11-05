@@ -33,29 +33,31 @@ public class MajorServiceImpl implements MajorService {
 
     @Override
     public MajorGrabVO grabMajors(Integer department) {
-        List<Major> majorList = majorMapper.selectMajor(Major.builder().pid(0).department(department).build(), FieldsGenerator.generateFields(Major.class));
-//        List<MajorVO> majorVOList = majorConverter.MajorListToMajorVOList(majorList);
-//
-//        List<CompletableFuture<List<SubMajorVO>>> futures = new ArrayList<>();
-//
-//        for (MajorVO majorVO : majorVOList) {
-//            CompletableFuture<List<SubMajorVO>> future = asyncSubMajors(majorVO);
-//            futures.add(future);
-//        }
-//
-//        CompletableFuture.allOf(futures.toArray(new CompletableFuture[0])).join(); // 等待所有异步操作完成
-//
-//        for (int i = 0; i < majorVOList.size(); i++) majorVOList.get(i).setSubMajors(futures.get(i).join());
-//
-//        return MajorGrabVO.builder().majors(majorVOList).build();
-        return null;
+        List<Major> majorList = majorMapper.selectMajor(Major.builder().pid(0).department(department).build(),
+                FieldsGenerator.generateFields(Major.class));
+        List<MajorVO> majorVOList = majorConverter.MajorListToMajorVOList(majorList);
+
+        List<CompletableFuture<List<SubMajorVO>>> futures = new ArrayList<>();
+
+        for (MajorVO majorVO : majorVOList) {
+            CompletableFuture<List<SubMajorVO>> future = asyncSubMajors(majorVO);
+            futures.add(future);
+        }
+
+        CompletableFuture.allOf(futures.toArray(new CompletableFuture[0])).join(); // 等待所有异步操作完成
+
+        for (int i = 0; i < majorVOList.size(); i++)
+            majorVOList.get(i).setSubMajors(futures.get(i).join());
+
+        return MajorGrabVO.builder().majors(majorVOList).build();
+        // return null;
     }
 
     @Async("taskExecutor")
     public CompletableFuture<List<SubMajorVO>> asyncSubMajors(MajorVO majorVO) {
         try {
-            List<Major> subMajorList =
-                    majorMapper.selectMajor(Major.builder().pid(majorVO.getId()).build(), FieldsGenerator.generateFields(Major.class));
+            List<Major> subMajorList = majorMapper.selectMajor(Major.builder().pid(majorVO.getId()).build(),
+                    FieldsGenerator.generateFields(Major.class));
 
             if (!subMajorList.isEmpty()) {
                 List<CompletableFuture<SubMajorVO>> futures = new ArrayList<>();
@@ -64,9 +66,10 @@ public class MajorServiceImpl implements MajorService {
                     CompletableFuture<List<Map<Integer, String>>> future1 = asyncSubMajorInitials(major);
                     CompletableFuture<List<String>> future2 = asyncSubMajorInterviews(major);
 
-                    CompletableFuture<SubMajorVO> combinedFuture = future1.thenCombine(future2, (initials, interviews) -> {
-                        return majorConverter.MajorToSubMajorVO(major, initials, interviews);
-                    });
+                    CompletableFuture<SubMajorVO> combinedFuture = future1.thenCombine(future2,
+                            (initials, interviews) -> {
+                                return majorConverter.MajorToSubMajorVO(major, initials, interviews);
+                            });
 
                     futures.add(combinedFuture);
                 }
@@ -90,7 +93,7 @@ public class MajorServiceImpl implements MajorService {
     }
 
     @Async("taskExecutor")
-    public CompletableFuture<List<Map<Integer, String>>> asyncSubMajorInitials(Major major){
+    public CompletableFuture<List<Map<Integer, String>>> asyncSubMajorInitials(Major major) {
         try {
             List<CompletableFuture<Map<Integer, String>>> futures = new ArrayList<>();
             List<Map<Integer, String>> initials = new ArrayList<>();
@@ -98,7 +101,8 @@ public class MajorServiceImpl implements MajorService {
 
             for (Integer initialId : majorDTO.getInitial()) {
                 CompletableFuture<Map<Integer, String>> future = CompletableFuture.supplyAsync(() -> {
-                    List<Subject> subjects = subjectMapper.selectSubject(Subject.builder().sid(initialId).build(), FieldsGenerator.generateFields(Subject.class));
+                    List<Subject> subjects = subjectMapper.selectSubject(Subject.builder().sid(initialId).build(),
+                            FieldsGenerator.generateFields(Subject.class));
                     Map<Integer, String> initialMap = new HashMap<>();
 
                     if (!subjects.isEmpty()) {
@@ -134,8 +138,8 @@ public class MajorServiceImpl implements MajorService {
     }
 
     @Async("taskExecutor")
-    public CompletableFuture<List<String>>  asyncSubMajorInterviews(Major major){
-        try{
+    public CompletableFuture<List<String>> asyncSubMajorInterviews(Major major) {
+        try {
 
             List<CompletableFuture<String>> futures = new ArrayList<>();
             List<String> initials = new ArrayList<>();
@@ -143,7 +147,8 @@ public class MajorServiceImpl implements MajorService {
 
             for (Integer initialId : majorDTO.getInitial()) {
                 CompletableFuture<String> future = CompletableFuture.supplyAsync(() -> {
-                    List<Subject> subjects = subjectMapper.selectSubject(Subject.builder().sid(initialId).build(), FieldsGenerator.generateFields(Subject.class));
+                    List<Subject> subjects = subjectMapper.selectSubject(Subject.builder().sid(initialId).build(),
+                            FieldsGenerator.generateFields(Subject.class));
                     return subjects.isEmpty() ? "" : subjects.getFirst().getName();
                 });
 
@@ -163,7 +168,7 @@ public class MajorServiceImpl implements MajorService {
 
             allOf.join();
 
-        }catch (Exception e){
+        } catch (Exception e) {
             e.printStackTrace();
         }
         return CompletableFuture.completedFuture(Collections.emptyList());
