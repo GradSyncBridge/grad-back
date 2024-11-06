@@ -32,3 +32,4 @@ jwt:
   accessTokenExpiration: 25920000000 # 30 days
   token-name: Authorization
   uid: uid # Private token claims
+  role: role

@@ -1,8 +1,8 @@
 package backend.model.entity;
 
 import backend.annotation.entity.UserValidation;
-import backend.annotation.entity.group.UserGroup.EmailGroup;
-import backend.annotation.entity.group.UserGroup.UsernameGroup;
+import backend.annotation.entity.group.userGroup.EmailGroup;
+import backend.annotation.entity.group.userGroup.UsernameGroup;
 import lombok.*;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.GrantedAuthority;
@@ -55,6 +55,10 @@ public class User implements UserDetails {
 
     // 1 -- active, 0 -- disabled
     private Integer disabled;
+
+    private Student student;
+
+    private Teacher teacher;
 
     public static User getAuth() {
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();

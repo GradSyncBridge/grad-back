@@ -42,7 +42,7 @@ public class UserServiceImpl implements UserService {
      */
     @Override
     public UserLoginVO login(UserLoginDTO userLoginDTO) {
-        List<String> fields = List.of("id", "username", "password");
+        List<String> fields = List.of("id", "username", "password", "role");
 
         Map<String, Boolean> scope = FieldsGenerator.generateFields(User.class, fields);
 
@@ -53,7 +53,7 @@ public class UserServiceImpl implements UserService {
             if (userList.isEmpty() || !passwordEncoder.matches(userLoginDTO.getPassword(), userList.getFirst().getPassword()))
                 throw new LoginFailedException();
 
-            return UserLoginVO.builder().setToken(userList.getFirst().getId(), jwtService).build();
+            return UserLoginVO.builder().setToken(userList.getFirst().getId(), userList.getFirst().getRole(), jwtService).build();
         } catch (LoginFailedException ex) {
             throw new LoginFailedException();
         } catch (Exception e) {
@@ -78,7 +78,7 @@ public class UserServiceImpl implements UserService {
      */
     @Override
     public UserRefreshVO refreshToken() {
-        return UserRefreshVO.builder().setToken(User.getAuth().getId(), jwtService).build();
+        return UserRefreshVO.builder().setToken(User.getAuth().getId(), User.getAuth().getRole(), jwtService).build();
     }
 
     /**
@@ -103,7 +103,7 @@ public class UserServiceImpl implements UserService {
             throw new RuntimeException(e.getMessage());
         }
 
-        return UserRegisterVO.builder().setToken(user.getId(), jwtService).build();
+        return UserRegisterVO.builder().setToken(user.getId(), user.getRole(), jwtService).build();
     }
 
     /**

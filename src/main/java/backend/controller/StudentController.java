@@ -21,6 +21,7 @@ public class StudentController {
 
     @PostMapping
     public ResponseEntity<ResultEntity<Object>> login(@RequestBody @Validated StudentTableDTO studentTableDTO) {
+        studentService.submitTable(studentTableDTO);
         return ResultEntity.success(HttpStatus.OK.value(), "Login successfully.", null);
     }
 }
