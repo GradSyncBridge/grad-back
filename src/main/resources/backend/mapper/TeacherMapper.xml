@@ -12,7 +12,7 @@
             <if test="scope.description == true"> description, </if>
             <if test="scope.identity == true"> identity, </if>
             <if test="scope.userId == true"> user_id, </if>
-            <if test="scope.department == true"> department, </if>
+            <if test="scope.departmentMapper == true"> department, </if>
             <if test="scope.total == true"> total, </if>
             <if test="scope.remnant == true"> remnant, </if>
         </trim>

@@ -4,6 +4,7 @@ import backend.model.DTO.UserLoginDTO;
 import backend.model.DTO.UserRegisterDTO;
 import backend.model.VO.user.UserLoginVO;
 import backend.model.VO.user.UserRegisterVO;
+import backend.service.DepartmentService;
 import backend.service.MajorService;
 import backend.service.UserService;
 import backend.util.ResultEntity;
@@ -29,6 +30,9 @@ public class UnAuthController {
 
     @Autowired
     private MajorService majorService;
+
+    @Autowired
+    private DepartmentService departmentService;
 
     /**
      * 处理登录请求
@@ -62,6 +66,15 @@ public class UnAuthController {
     @GetMapping(value = "/catalogue")
     public ResponseEntity<ResultEntity<Object>> getCatalogue(@Param(value = "department") Integer department) {
         return ResultEntity.success(200, "Get all majors successfully", majorService.getCatalogue(department));
+    }
+
+    /**
+     * 获取所有学院
+     * @return 学院列表
+     */
+    @GetMapping(value = "/department")
+    public ResponseEntity<ResultEntity<Object>> getDepartment() {
+        return ResultEntity.success(200, "Get all departments successfully", departmentService.getDepartment());
     }
 
 }

@@ -3,7 +3,7 @@
         PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
         "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
 
-<mapper namespace="backend.mapper.Department">
+<mapper namespace="backend.mapper.DepartmentMapper">
 
     <sql id="DynamicFields">
         <trim suffixOverrides=",">
@@ -37,20 +37,25 @@
     <select id="selectDepartment" resultType="backend.model.entity.Department">
         select
             <include refid="DynamicFields" />
-        from Deadline
+        from Department
             <include refid="DynamicWhere" />
     </select>
 
     <update id="updateDepartment">
         update Department
         <set>
-            <if test="departmentUpdate.did != null"> did = #{departmentUpdate.did}, </if>
-            <if test="departmentUpdate.name != null"> name = #{departmentUpdate.name}, </if>
+            <if test="departmentMapperUpdate.did != null"> did = #{departmentMapperUpdate.did}, </if>
+            <if test="departmentMapperUpdate.name != null"> name = #{departmentMapperUpdate.name}, </if>
         </set>
         <where>
-            <if test="departmentQuery.id != null"> and id = #{departmentQuery.id} </if>
-            <if test="departmentQuery.did != null"> and did = #{departmentQuery.did} </if>
-            <if test="departmentQuery.name != null"> and name = #{departmentQuery.name} </if>
+            <if test="departmentMapperQuery.id != null"> and id = #{departmentMapperQuery.id} </if>
+            <if test="departmentMapperQuery.did != null"> and did = #{departmentMapperQuery.did} </if>
+            <if test="departmentMapperQuery.name != null"> and name = #{departmentMapperQuery.name} </if>
         </where>
     </update>
+
+    <select id="selectAllDepartments" resultType="backend.model.entity.Department">
+        select *
+        from Department;
+    </select>
 </mapper>
