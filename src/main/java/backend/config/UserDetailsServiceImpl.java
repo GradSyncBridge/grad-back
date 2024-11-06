@@ -1,5 +1,9 @@
 package backend.config;
 
+import backend.mapper.StudentMapper;
+import backend.mapper.TeacherMapper;
+import backend.model.entity.Student;
+import backend.model.entity.Teacher;
 import backend.model.entity.User;
 import backend.mapper.UserMapper;
 import backend.util.FieldsGenerator;
@@ -24,10 +28,14 @@ public class UserDetailsServiceImpl implements UserDetailsService {
     @Autowired
     private UserMapper userMapper;
 
+    @Autowired
+    private StudentMapper studentMapper;
+
+    @Autowired
+    private TeacherMapper teacherMapper;
+
     @Override
     public UserDetails loadUserByUsername(String username) throws UsernameNotFoundException {
-
-        // Map<String, Boolean> scope = FieldsGenerator.generateFields(User.class);
 
         List<String> fields = List.of("id", "username", "password");
 
@@ -50,6 +58,15 @@ public class UserDetailsServiceImpl implements UserDetailsService {
         User user;
         try {
             user = userMapper.selectUser(User.builder().id(id).build(), scope).getFirst();
+            Integer role = user.getRole();
+
+            if (role == 1) {
+                List<Student> students = studentMapper.selectStudent(Student.builder().userId(user.getId()).build(), FieldsGenerator.generateFields(Student.class));
+                user.setStudent(students.isEmpty() ? null : students.getFirst());
+            } else if (role == 2) {
+                List<Teacher> teachers = teacherMapper.selectTeacher(Teacher.builder().userId(user.getId()).build(), FieldsGenerator.generateFields(Teacher.class));
+                user.setTeacher(teachers.isEmpty() ? null : teachers.getFirst());
+            }
         } catch (Exception e) {
             throw new UsernameNotFoundException("User not found");
         }

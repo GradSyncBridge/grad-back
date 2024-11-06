@@ -56,6 +56,10 @@ public class User implements UserDetails {
     // 1 -- active, 0 -- disabled
     private Integer disabled;
 
+    private Student student;
+
+    private Teacher teacher;
+
     public static User getAuth() {
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
         return (User) authentication.getPrincipal();
