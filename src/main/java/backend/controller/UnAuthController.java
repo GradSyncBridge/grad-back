@@ -4,8 +4,10 @@ import backend.model.DTO.UserLoginDTO;
 import backend.model.DTO.UserRegisterDTO;
 import backend.model.VO.user.UserLoginVO;
 import backend.model.VO.user.UserRegisterVO;
+import backend.service.MajorService;
 import backend.service.UserService;
 import backend.util.ResultEntity;
+import org.apache.ibatis.annotations.Param;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -24,6 +26,9 @@ public class UnAuthController {
 
     @Autowired
     private UserService userService;
+
+    @Autowired
+    private MajorService majorService;
 
     /**
      * 处理登录请求
@@ -47,6 +52,16 @@ public class UnAuthController {
     public ResponseEntity<ResultEntity<Object>> register(@RequestBody @Validated UserRegisterDTO userRegisterDTO) {
         UserRegisterVO data = userService.register(userRegisterDTO);
         return ResultEntity.success(HttpStatus.OK.value(), "Register successfully.", data);
+    }
+
+    /**
+     * 获取所有专业
+     * @param department 学院
+     * @return 专业列表
+     */
+    @GetMapping(value = "/catalogue")
+    public ResponseEntity<ResultEntity<Object>> getCatalogue(@Param(value = "department") Integer department) {
+        return ResultEntity.success(200, "Get all majors successfully", majorService.getCatalogue(department));
     }
 
 }

@@ -10,11 +10,11 @@ import java.util.List;
 @NoArgsConstructor
 @AllArgsConstructor
 public class MajorVO {
-    private Integer id;
+    private Integer majorID;
 
     private String name;
 
-    private Integer mid;
+    private String majorNum;
 
     private String description;
 
@@ -29,6 +29,10 @@ public class MajorVO {
     private Integer year;
 
     private Integer department;
+
+    private List<Integer> initials;
+
+    private List<Integer> interviews;
 
     private List<SubMajorVO> subMajors;
 }

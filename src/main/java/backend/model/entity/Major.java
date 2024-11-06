@@ -1,9 +1,13 @@
 package backend.model.entity;
 
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
+
+import java.util.List;
 
 /**
  * 学科表
@@ -62,5 +66,16 @@ public class Major {
     private Integer department;
 
     private Integer allowReassign;
+
+
+    public static List<Integer> initialToList(String initial) throws JsonProcessingException {
+        ObjectMapper objectMapper = new ObjectMapper();
+        return objectMapper.readValue(initial, List.class);
+    }
+
+    public static List<Integer> interviewToList(String interview) throws JsonProcessingException {
+        ObjectMapper objectMapper = new ObjectMapper();
+        return objectMapper.readValue(interview, List.class);
+    }
 
 }

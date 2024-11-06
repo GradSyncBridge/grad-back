@@ -5,12 +5,17 @@ import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
-import java.util.List;
-
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
 @Builder
-public class MajorGrabVO {
-    List<MajorVO> majors;
+public class SubMajorSubject {
+
+    private Integer subjectID;
+
+    private String subjectNum;
+
+    private String name;
+
+    private Integer type;
 }

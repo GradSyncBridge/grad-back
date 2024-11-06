@@ -5,27 +5,35 @@ import lombok.Data;
 import lombok.NoArgsConstructor;
 
 import java.util.List;
-import java.util.Map;
 
 @Data
 @AllArgsConstructor
 @NoArgsConstructor
 public class SubMajorVO {
 
-    private Integer id;
+    private Integer majorID;
 
     private String name;
 
-    private Integer mid;
+    private String majorNum;
 
     private Integer pid;
 
     private Integer year;
 
-    private List<Map<String, String>> initials;
+    private String description;
 
-    private List<String> interviews;
+    private Integer type;
 
-    private List<TeacherInMajorVO> teacher;
+    private Integer total;
 
+    private Integer addition;
+
+    private Integer recommend;
+
+    private Integer department;
+
+    private List<SubMajorSubject> initials;
+
+    private List<SubMajorSubject> interviews;
 }
