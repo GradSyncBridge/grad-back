@@ -31,7 +31,7 @@
         </where>
     </sql>
 
-    <insert id="insertTeacher" parameterType="backend.model.entity.Teacher" keyColumn="id">
+    <insert id="insertTeacher">
         insert into Teacher
         (
             title,

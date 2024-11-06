@@ -38,6 +38,10 @@
             #{file},
             #{created}
         )
+
+        <selectKey keyProperty="id" resultType="int" order="AFTER">
+            SELECT LAST_INSERT_ID()
+        </selectKey>
     </insert>
 
     <select id="selectQualityFile" resultType="backend.model.entity.QualityFile">

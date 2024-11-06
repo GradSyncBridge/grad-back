@@ -27,6 +27,7 @@ public class DepartmentServiceImpl implements DepartmentService {
     public List<DepartmentVO> getDepartment() {
         try{
             List<Department> departmentList = departmentMapper.selectAllDepartments();
+
             return departmentConverter.INSTANCE.DepartmentListTODepartmentVOList(departmentList);
         }catch (Exception e){
             throw new RuntimeException(e.getMessage());

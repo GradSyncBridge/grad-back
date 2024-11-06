@@ -15,6 +15,7 @@ public class StudentTableDTOValidationImpl implements ConstraintValidator<Studen
     @Override
     public boolean isValid(StudentTableDTO studentTableDTO, ConstraintValidatorContext constraintValidatorContext) {
         return User.getAuth().getRole() == 1 && studentTableDTO != null &&
+                User.getAuth().getStudent().getDisabled() == 1 &&
                 studentTableDTO.getBirth() != null &&
                 studentTableDTO.getExamID() != null && !studentTableDTO.getExamID().isEmpty() &&
                 studentTableDTO.getCertifyID() != null && !studentTableDTO.getCertifyID().isEmpty() &&
@@ -26,6 +27,7 @@ public class StudentTableDTOValidationImpl implements ConstraintValidator<Studen
                 studentTableDTO.getSchool() != null && !studentTableDTO.getSchool().isEmpty() &&
                 studentTableDTO.getType() != null && !studentTableDTO.getType().isEmpty() &&
                 studentTableDTO.getEnrollment() != null &&
+                studentTableDTO.getGrades() != null && !studentTableDTO.getGrades().isEmpty() &&
                 studentTableDTO.getReassign() != null;
     }
 }

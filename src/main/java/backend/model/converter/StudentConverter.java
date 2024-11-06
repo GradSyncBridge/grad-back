@@ -13,6 +13,7 @@ public interface StudentConverter {
     @Mapping(target = "examId", source = "studentTableDTO.examID")
     @Mapping(target = "certifyId", source = "studentTableDTO.certifyID")
     @Mapping(target = "majorStudy", source = "majorStudy")
+    @Mapping(target = "birth", source = "studentTableDTO.birthday")
     Student StudentTableDTOToStudent(StudentTableDTO studentTableDTO, String majorStudy);
 }
 

@@ -61,13 +61,14 @@ public class UserDetailsServiceImpl implements UserDetailsService {
             Integer role = user.getRole();
 
             if (role == 1) {
-                List<Student> students = studentMapper.selectStudent(Student.builder().userId(user.getId()).build(), FieldsGenerator.generateFields(Student.class));
+                List<Student> students = studentMapper.selectStudent(Student.builder().userId(id).build(), FieldsGenerator.generateFields(Student.class));
                 user.setStudent(students.isEmpty() ? null : students.getFirst());
             } else if (role == 2) {
-                List<Teacher> teachers = teacherMapper.selectTeacher(Teacher.builder().userId(user.getId()).build(), FieldsGenerator.generateFields(Teacher.class));
+                List<Teacher> teachers = teacherMapper.selectTeacher(Teacher.builder().userId(id).build(), FieldsGenerator.generateFields(Teacher.class));
                 user.setTeacher(teachers.isEmpty() ? null : teachers.getFirst());
             }
         } catch (Exception e) {
+            System.out.println(e.getMessage());
             throw new UsernameNotFoundException("User not found");
         }
 
