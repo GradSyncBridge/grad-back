@@ -19,7 +19,7 @@
             <if test="scope.valid == true"> valid, </if>
             <if test="scope.examId  == true"> exam_id , </if>
             <if test="scope.emergency == true"> emergency, </if>
-            <if test="scope.gradePrimary == true"> grade_primary, </if>
+            <if test="scope.gradePrimary == true"> grade_first, </if>
             <if test="scope.gradeSecond == true"> grade_second, </if>
             <if test="scope.majorApply == true"> major_apply, </if>
             <if test="scope.majorStudy == true"> major_study, </if>
@@ -43,7 +43,7 @@
             <if test="student.valid != null"> and valid = #{student.valid} </if>
             <if test="student.examId  != null"> and exam_id  = #{student.examId } </if>
             <if test="student.emergency != null"> and emergency = #{student.emergency} </if>
-            <if test="student.gradePrimary != null"> and grade_primary = #{student.gradePrimary} </if>
+            <if test="student.gradePrimary != null"> and grade_first = #{student.gradePrimary} </if>
             <if test="student.gradeSecond != null"> and grade_second = #{student.gradeSecond} </if>
             <if test="student.majorApply != null"> and major_apply = #{student.majorApply} </if>
             <if test="student.majorStudy != null"> and major_study = #{student.majorStudy} </if>
@@ -67,7 +67,7 @@
             valid,
             exam_id ,
             emergency,
-            grade_primary,
+            grade_first,
             grade_second,
             major_apply,
             major_study,
@@ -119,7 +119,7 @@
             <if test="studentUpdate.valid != null"> valid = #{studentUpdate.valid}, </if>
             <if test="studentUpdate.examId  != null"> exam_id  = #{studentUpdate.examId }, </if>
             <if test="studentUpdate.emergency != null"> emergency = #{studentUpdate.emergency}, </if>
-            <if test="studentUpdate.gradePrimary != null"> grade_primary = #{studentUpdate.gradePrimary}, </if>
+            <if test="studentUpdate.gradePrimary != null"> grade_first = #{studentUpdate.gradePrimary}, </if>
             <if test="studentUpdate.gradeSecond != null"> grade_second = #{studentUpdate.gradeSecond}, </if>
             <if test="studentUpdate.majorApply != null"> major_apply = #{studentUpdate.majorApply}, </if>
             <if test="studentUpdate.majorStudy != null"> major_study = #{studentUpdate.majorStudy}, </if>
@@ -140,7 +140,7 @@
             <if test="studentQuery.valid != null"> and valid = #{studentQuery.valid} </if>
             <if test="studentQuery.examId  != null"> and exam_id  = #{studentQuery.examId } </if>
             <if test="studentQuery.emergency != null"> and emergency = #{studentQuery.emergency} </if>
-            <if test="studentQuery.gradePrimary != null"> and grade_primary = #{studentQuery.gradePrimary} </if>
+            <if test="studentQuery.gradePrimary != null"> and grade_first = #{studentQuery.gradePrimary} </if>
             <if test="studentQuery.gradeSecond != null"> and grade_second = #{studentQuery.gradeSecond} </if>
             <if test="studentQuery.majorApply != null"> and major_apply = #{studentQuery.majorApply} </if>
             <if test="studentQuery.majorStudy != null"> and major_study = #{studentQuery.majorStudy} </if>

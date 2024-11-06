@@ -34,4 +34,6 @@ public interface UserMapper {
      *                   non-query params are null.
      */
     void updateUser(User userUpdate, User userQuery);
+
+    void deleteUser(User user);
 }

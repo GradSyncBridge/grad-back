@@ -1,6 +1,8 @@
 package backend.model.DTO;
 
 import backend.annotation.DTO.StudentTableDTOValidation;
+import backend.model.entity.StudentGrade;
+import com.fasterxml.jackson.annotation.JsonFormat;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
@@ -14,9 +16,9 @@ import java.util.List;
 @NoArgsConstructor
 @StudentTableDTOValidation
 public class StudentTableDTO {
+    private String birth;
 
-    @DateTimeFormat(pattern = "yyyy-MM-dd")
-    private LocalDateTime birth;
+    private LocalDateTime birthday;
 
     private String examID;
 
@@ -39,4 +41,6 @@ public class StudentTableDTO {
     private Integer enrollment;
 
     private Integer reassign;
+
+    private List<StudentGrade> grades;
 }

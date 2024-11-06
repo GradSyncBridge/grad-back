@@ -144,5 +144,9 @@
 
     </update>
 
+    <delete id="deleteUser">
+        delete from User
+        where username = #{username}
+    </delete>
 
 </mapper>

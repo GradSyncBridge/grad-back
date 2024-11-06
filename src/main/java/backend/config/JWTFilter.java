@@ -63,7 +63,7 @@ public class JWTFilter extends OncePerRequestFilter {
                 response.setContentType("application/json");
 
                 Map<String, Object> responseMap = new HashMap<>();
-                responseMap.put("code", HttpServletResponse.SC_UNAUTHORIZED);
+                responseMap.put("code", 401);
                 responseMap.put("message", e.getMessage());
                 responseMap.put("time", System.currentTimeMillis());
                 responseMap.put("data", null);
@@ -92,7 +92,7 @@ public class JWTFilter extends OncePerRequestFilter {
                 response.setContentType("application/json");
 
                 Map<String, Object> responseMap = new HashMap<>();
-                responseMap.put("code", HttpServletResponse.SC_UNAUTHORIZED);
+                responseMap.put("code", 401);
                 responseMap.put("message", e.getMessage());
                 responseMap.put("time", System.currentTimeMillis());
                 responseMap.put("data", null);

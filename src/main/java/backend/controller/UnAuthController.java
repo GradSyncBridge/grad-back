@@ -6,6 +6,7 @@ import backend.model.VO.user.UserLoginVO;
 import backend.model.VO.user.UserRegisterVO;
 import backend.service.DepartmentService;
 import backend.service.MajorService;
+import backend.service.TeacherService;
 import backend.service.UserService;
 import backend.util.ResultEntity;
 import org.apache.ibatis.annotations.Param;
@@ -33,6 +34,9 @@ public class UnAuthController {
 
     @Autowired
     private DepartmentService departmentService;
+
+    @Autowired
+    private TeacherService teacherService;
 
     /**
      * 处理登录请求
@@ -69,6 +73,14 @@ public class UnAuthController {
     }
 
     /**
+     * 获取学院下属所有老师
+     */
+    @GetMapping(value = "/department/teachers")
+    public ResponseEntity<ResultEntity<Object>> getTeacher(@RequestParam(value = "departmentID") Integer department) {
+        return ResultEntity.success(200, "Get all teachers successfully", teacherService.getTeacher(department));
+    }
+
+    /**
      * 获取所有学院
      * @return 学院列表
      */
@@ -76,5 +88,4 @@ public class UnAuthController {
     public ResponseEntity<ResultEntity<Object>> getDepartment() {
         return ResultEntity.success(200, "Get all departments successfully", departmentService.getDepartment());
     }
-
 }
