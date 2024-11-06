@@ -1,8 +1,10 @@
 package backend.model.DTO;
 
+import backend.annotation.DTO.StudentTableDTOValidation;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
+import org.springframework.format.annotation.DateTimeFormat;
 
 import java.time.LocalDateTime;
 import java.util.List;
@@ -10,7 +12,10 @@ import java.util.List;
 @Data
 @AllArgsConstructor
 @NoArgsConstructor
+@StudentTableDTOValidation
 public class StudentTableDTO {
+
+    @DateTimeFormat(pattern = "yyyy-MM-dd")
     private LocalDateTime birth;
 
     private String examID;
@@ -23,17 +28,15 @@ public class StudentTableDTO {
 
     private String majorGrad;
 
-    private int majorApply;
+    private Integer majorApply;
 
-    private List<Integer> majorStudy;
+    private List<String> majorStudy;
 
     private String school;
 
     private String type;
 
-    private List<Integer> quality;
-
     private Integer enrollment;
 
-    private Boolean reassign;
+    private Integer reassign;
 }
