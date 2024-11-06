@@ -46,6 +46,9 @@ public class JwtService {
     @Value("${jwt.uid}")
     private String uid;
 
+    @Value("role")
+    private String role;
+
     /**
      * 生成token
      *
@@ -68,12 +71,13 @@ public class JwtService {
 
     }
 
-    public String generateToken(Integer id, Integer type) {
+    public String generateToken(Integer userId, Integer userRole, Integer type) {
         long expiration = type == 1 ? accessTokenExpiration : freshTokenExpiration;
 
         // Saved for future usage
         Map<String, Object> claims = new HashMap<>();
-        claims.put(uid, id);
+        claims.put(uid, userId);
+        claims.put(role, userRole);
 
         return Jwts.builder()
                 .claims()
@@ -115,6 +119,8 @@ public class JwtService {
     public Integer extractUid(String token) {
         return (Integer) extractPrivateClaim(token, uid);
     }
+
+    public Integer extractRole(String token) { return (Integer) extractPrivateClaim(token, role); }
 
     private Object extractPrivateClaim(String token, String fieldName) {
         final Claims claims = extractAllClaims(token);

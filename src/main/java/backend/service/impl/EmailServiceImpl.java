@@ -132,6 +132,6 @@ public class EmailServiceImpl implements EmailService {
 
         if(userList.isEmpty()) throw new UserNotFoundException();
 
-        return jwtService.generateToken(userList.getFirst().getId(), 1);
+        return jwtService.generateToken(userList.getFirst().getId(), userList.getFirst().getRole(), 1);
     }
 }
