@@ -1,7 +1,7 @@
 package backend.annotation.entity.impl;
 
 import backend.annotation.entity.UserValidation;
-import backend.annotation.entity.group.UserGroup.EmailGroup;
+import backend.annotation.entity.group.userGroup.EmailGroup;
 import backend.model.entity.User;
 import jakarta.validation.ConstraintValidator;
 import jakarta.validation.ConstraintValidatorContext;
