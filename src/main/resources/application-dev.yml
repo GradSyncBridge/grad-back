@@ -15,10 +15,12 @@ spring:
     configuration:
       log-impl: org.apache.ibatis.logging.stdout.StdOutImpl
   mail:
+    baseURL: http://localhost:8081/unauthorized/email
+    loginURL: http://localhost:8081/unauthorized/login
     host: smtp.gmail.com
     port: 587
-    username: qinglinhe44@gmail.com
-    password: Heqinglin2021
+    username: alexanderbruce044@gmail.com
+    password: ngwmvmwylbqavmzr
     protocol: smtp
     properties:
         mail.smtp.auth: true
@@ -27,6 +29,6 @@ spring:
 jwt:
   secretkey: VHJ1c3R3b3JrT3BhZHVzJTIwU2VjdXJlU2VjcmV0Q29tcGxleEJ0b2xkY29tcGxleENvbmZpZyUyMExhcmdlU2VjcmV0S2V5
   freshTokenExpiration: 2592000000 #30 days
-  accessTokenExpiration: 25920000000 # 3 days
+  accessTokenExpiration: 25920000000 # 30 days
   token-name: Authorization
   uid: uid # Private token claims

@@ -1,5 +1,6 @@
 package backend.mapper;
 
+import backend.model.VO.major.SubMajorSubject;
 import backend.model.entity.Subject;
 import org.apache.ibatis.annotations.Mapper;
 
@@ -32,4 +33,8 @@ public interface SubjectMapper {
      * @param subjectQuery  更新的条件
      */
     void updateSubject(Subject subjectUpdate, Subject subjectQuery);
+
+    List<SubMajorSubject> selectSubjectForeach(List<Integer> ids);
+
+    SubMajorSubject selectSubMajorSubject(Integer majorId);
 }

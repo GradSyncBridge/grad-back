@@ -21,7 +21,7 @@
             <if test="scope.recommend == true"> recommend, </if>
             <if test="scope.disabled == true"> disabled, </if>
             <if test="scope.department == true"> department, </if>
-            <if test="scope.allowReassign == true"> allowReassign, </if>
+            <if test="scope.allowReassign == true"> allow_reassign, </if>
         </trim>
     </sql>
 
@@ -41,7 +41,7 @@
             <if test="major.recommend != null"> and recommend = #{major.recommend} </if>
             <if test="major.disabled != null"> and disabled = #{major.disabled} </if>
             <if test="major.department != null"> and department = #{major.department} </if>
-            <if test="major.allowReassign != null"> and allowReassign = #{major.allowReassign} </if>
+            <if test="major.allowReassign != null"> and allow_reassign = #{major.allowReassign} </if>
         </where>
     </sql>
 
@@ -61,7 +61,7 @@
             recommend,
             disabled,
             department,
-            allowReassign
+            allow_reassign
         )
         values
         (
@@ -105,7 +105,7 @@
             <if test="majorUpdate.recommend != null"> recommend = #{majorUpdate.recommend}, </if>
             <if test="majorUpdate.disabled != null"> disabled = #{majorUpdate.disabled}, </if>
             <if test="majorUpdate.department != null"> department = #{majorUpdate.department}, </if>
-            <if test="majorUpdate.allowReassign != null"> allowReassign = #{majorUpdate.allowReassign}, </if>
+            <if test="majorUpdate.allowReassign != null"> allow_reassign = #{majorUpdate.allowRreassign}, </if>
         </set>
         <where>
             <if test="majorQuery.id != null"> and id = #{majorQuery.id} </if>
@@ -122,7 +122,7 @@
             <if test="majorQuery.recommend != null"> and recommend = #{majorQuery.recommend} </if>
             <if test="majorQuery.disabled != null"> and disabled = #{majorQuery.disabled} </if>
             <if test="majorQuery.department != null"> and department = #{majorQuery.department} </if>
-            <if test="majorQuery.allowReassign != null"> and allowReassign = #{majorQuery.allowReassign} </if>
+            <if test="majorQuery.allowReassign != null"> and allow_reassign = #{majorQuery.allowRreassign} </if>
         </where>
     </update>
 

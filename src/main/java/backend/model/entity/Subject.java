@@ -22,7 +22,7 @@ public class Subject {
 
     private Integer id;
 
-    private Integer sid;
+    private String sid;
 
     private String name;
 

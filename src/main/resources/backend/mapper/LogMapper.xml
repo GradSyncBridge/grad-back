@@ -25,7 +25,7 @@
 
     <insert id="insertLog">
         insert into Log
-        (userId, content, created)
+        (user_id, content, created)
         values
         (#{userId}, #{content}, #{created})
     </insert>
@@ -40,13 +40,13 @@
     <update id="updateLog">
         update Log
         <set>
-            <if test="logUpdate.userId != null"> userId = #{logUpdate.userId}, </if>
+            <if test="logUpdate.userId != null"> user_id = #{logUpdate.userId}, </if>
             <if test="logUpdate.content != null"> content = #{logUpdate.content}, </if>
             <if test="logUpdate.created != null"> created = #{logUpdate.created}, </if>
         </set>
         <where>
             <if test="logQuery.id != null"> and id = #{logQuery.id} </if>
-            <if test="logQuery.userId != null"> and userId = #{logQuery.userId} </if>
+            <if test="logQuery.userId != null"> and user_id = #{logQuery.userId} </if>
             <if test="logQuery.content != null"> and content = #{logQuery.content} </if>
             <if test="logQuery.created != null"> and created = #{logQuery.created} </if>
         </where>
