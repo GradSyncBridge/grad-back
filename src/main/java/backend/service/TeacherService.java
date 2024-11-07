@@ -1,5 +1,6 @@
 package backend.service;
 
+import backend.model.VO.teacher.TeacherProfileVO;
 import backend.model.VO.teacher.TeacherVO;
 
 import java.util.List;
@@ -19,4 +20,10 @@ public interface TeacherService {
      */
     List<TeacherVO> getTeachersByCatalogue(Integer majorID);
 
+    /**
+     * 获取教师个人信息
+     * @param uid 教师uid
+     * @return 教师个人信息
+     */
+    TeacherProfileVO getTeacherProfile(Integer uid);
 }

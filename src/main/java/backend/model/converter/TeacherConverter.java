@@ -1,6 +1,7 @@
 package backend.model.converter;
 
 import backend.model.VO.major.TeacherInMajorVO;
+import backend.model.VO.teacher.TeacherProfileVO;
 import backend.model.VO.teacher.TeacherVO;
 import backend.model.entity.Teacher;
 import backend.model.entity.User;
@@ -33,6 +34,9 @@ public interface TeacherConverter {
     @Mapping(target = "title", source = "teacher.title")
     @Mapping(target = "description", source = "teacher.description")
     TeacherVO TeacherAndUserToTeacherVO(Teacher teacher, User user);
+
+    @Mapping(target = "uid", source = "user.id")
+    TeacherProfileVO TeacherAndUserToTeacherProfileVO(Teacher teacher, User user);
 
     default ArrayList<TeacherVO> TeacherListToTeacherVOList(List<Teacher> teachers, List<User> users){
         ArrayList<TeacherVO> teacherVOS = new ArrayList<>();
