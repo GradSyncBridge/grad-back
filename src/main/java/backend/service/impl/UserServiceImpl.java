@@ -1,8 +1,9 @@
 package backend.service.impl;
 
 import backend.config.JwtService;
-import backend.exception.model.user.DuplicateUserException;
-import backend.exception.model.user.LoginFailedException;
+import backend.exception.model.User.DuplicateUserEmailException;
+import backend.exception.model.User.DuplicateUserException;
+import backend.exception.model.User.LoginFailedException;
 import backend.mapper.StudentMapper;
 import backend.mapper.TeacherMapper;
 import backend.mapper.UserMapper;
@@ -20,6 +21,7 @@ import backend.service.UserService;
 import backend.util.FieldsGenerator;
 import backend.util.FileManager;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.autoconfigure.liquibase.LiquibaseProperties;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
 
@@ -143,13 +145,22 @@ public class UserServiceImpl implements UserService {
     public UserProfileUpdateDTO updateUserProfile(UserProfileUpdateDTO userProfileUpdateDTO) {
 
         String username = userProfileUpdateDTO.getUsername();
+        String email = userProfileUpdateDTO.getEmail();
         try {
             if(!username.equals(User.getAuth().getUsername())) {
                 List<User> userList = userMapper.selectUser(User.builder().username(userProfileUpdateDTO.getUsername()).build(), Map.of("username", true));
 
                 if (!userList.isEmpty()) throw new DuplicateUserException();
-            }else {
+            }else{
                 userProfileUpdateDTO.setUsername(null);
+            }
+
+            if(!email.equals(User.getAuth().getEmail())) {
+                List<User> userList = userMapper.selectUser(User.builder().email(email).build(), Map.of("email", true));
+
+                if (!userList.isEmpty()) throw new DuplicateUserEmailException();
+            }else {
+                userProfileUpdateDTO.setEmail(null);
             }
 
             userProfileUpdateDTO.setAvatar(FileManager.saveBase64Image(userProfileUpdateDTO.getAvatar()));
@@ -158,11 +169,14 @@ public class UserServiceImpl implements UserService {
             userMapper.updateUser(user, User.getAuth());
         } catch (DuplicateUserException duplicateUserException) {
             throw new DuplicateUserException();
+        } catch (DuplicateUserEmailException duplicateUserEmailException){
+            throw new DuplicateUserEmailException();
         } catch (Exception e) {
             throw new RuntimeException(e.getMessage());
         }
 
         userProfileUpdateDTO.setUsername(username);
+        userProfileUpdateDTO.setEmail(email);
         return userProfileUpdateDTO;
     }
 }

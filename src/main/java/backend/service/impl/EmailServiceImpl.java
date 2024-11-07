@@ -1,7 +1,7 @@
 package backend.service.impl;
 
 import backend.config.JwtService;
-import backend.exception.model.user.UserNotFoundException;
+import backend.exception.model.User.UserNotFoundException;
 import backend.mapper.UserMapper;
 import backend.model.entity.User;
 import backend.service.EmailService;
@@ -14,7 +14,6 @@ import org.springframework.http.HttpStatus;
 import org.springframework.mail.javamail.JavaMailSender;
 import org.springframework.mail.javamail.MimeMessageHelper;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
-import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.web.servlet.view.RedirectView;
 

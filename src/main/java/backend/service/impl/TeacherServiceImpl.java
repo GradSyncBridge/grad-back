@@ -21,6 +21,7 @@ import java.util.concurrent.CompletableFuture;
 
 @Service
 public class TeacherServiceImpl implements TeacherService {
+
     @Autowired
     private TeacherMapper teacherMapper;
 
@@ -33,6 +34,11 @@ public class TeacherServiceImpl implements TeacherService {
     @Autowired
     private MajorToTeacherMapper majorToTeacherMapper;
 
+    /**
+     * 获取对应部门教师列表
+     * @param department 部门
+     * @return 教师列表
+     */
     @Override
     public List<TeacherVO> getTeacher(Integer department) {
         List<Teacher> teachers =
@@ -45,6 +51,11 @@ public class TeacherServiceImpl implements TeacherService {
         return teacherConverter.INSTANCE.TeacherListToTeacherVOList(teachers, users);
     }
 
+    /**
+     * 获取对应二级学科教师列表
+     * @param majorID 二级学科
+     * @return 教师列表
+     */
     @Override
     public List<TeacherVO> getTeachersByCatalogue(Integer majorID) {
 
