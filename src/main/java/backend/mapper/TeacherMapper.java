@@ -1,5 +1,6 @@
 package backend.mapper;
 
+import backend.model.entity.MajorToTeacher;
 import backend.model.entity.Teacher;
 import org.apache.ibatis.annotations.Mapper;
 
@@ -33,4 +34,6 @@ public interface TeacherMapper {
      * @param teacherQuery  查询条件
      */
     void updateTeacher(Teacher teacherUpdate, Teacher teacherQuery);
+
+    List<Teacher> selectTeacherForeach(List<MajorToTeacher> majorToTeachers);
 }

@@ -18,11 +18,13 @@ public class UserProfileUpdateDTOValidationImpl implements ConstraintValidator<U
     public boolean isValid(UserProfileUpdateDTO userProfileUpdateDTO, ConstraintValidatorContext constraintValidatorContext) {
         String emailRegex = "^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\\.[a-zA-Z]{2,}$";
 
+        Pattern specialCharPattern = Pattern.compile("[^a-zA-Z0-9]");
+
         Pattern pattern = Pattern.compile(emailRegex);
 
         Matcher matcher = pattern.matcher(userProfileUpdateDTO.getEmail());
 
-        return userProfileUpdateDTO.getUsername() != null && !userProfileUpdateDTO.getUsername().isEmpty() &&
+        return userProfileUpdateDTO.getUsername() != null && !userProfileUpdateDTO.getUsername().isEmpty() && !specialCharPattern.matcher(userProfileUpdateDTO.getUsername()).find() &&
                 userProfileUpdateDTO.getAvatar() != null && !userProfileUpdateDTO.getAvatar().isEmpty() &&
                 userProfileUpdateDTO.getName() != null && !userProfileUpdateDTO.getName().isEmpty() &&
                 matcher.matches() &&

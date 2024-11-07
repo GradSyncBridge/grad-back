@@ -88,4 +88,14 @@ public class UnAuthController {
     public ResponseEntity<ResultEntity<Object>> getDepartment() {
         return ResultEntity.success(200, "Get all departments successfully", departmentService.getDepartment());
     }
+
+    /**
+     * 获取对应二级学科教师列表
+     * @param majorID 二级学科
+     * @return 教师列表
+     */
+    @GetMapping(value = "/catalogue/teachers")
+    public ResponseEntity<ResultEntity<Object>> getTeachersByCatalogue(@RequestParam(value = "majorID") Integer majorID) {
+        return ResultEntity.success(200, "Get all departments successfully", teacherService.getTeachersByCatalogue(majorID));
+    }
 }

@@ -85,4 +85,12 @@
 
     </update>
 
+    <select id="selectTeacherForeach" resultType="backend.model.entity.Teacher">
+        SELECT * FROM Teacher
+        WHERE id IN
+        <foreach collection="majorToTeachers" item="majorToTeacher" open="(" separator="," close=")">
+            #{majorToTeacher.tid}
+        </foreach>
+    </select>
+
 </mapper>

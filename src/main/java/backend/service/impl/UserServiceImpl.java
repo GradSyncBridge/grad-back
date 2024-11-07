@@ -1,8 +1,9 @@
 package backend.service.impl;
 
 import backend.config.JwtService;
-import backend.exception.model.user.DuplicateUserException;
-import backend.exception.model.user.LoginFailedException;
+import backend.exception.model.User.DuplicateUserEmailException;
+import backend.exception.model.User.DuplicateUserException;
+import backend.exception.model.User.LoginFailedException;
 import backend.mapper.StudentMapper;
 import backend.mapper.TeacherMapper;
 import backend.mapper.UserMapper;
@@ -20,11 +21,14 @@ import backend.service.UserService;
 import backend.util.FieldsGenerator;
 import backend.util.FileManager;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.autoconfigure.liquibase.LiquibaseProperties;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
 import java.util.Map;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 @Service
 public class UserServiceImpl implements UserService {
@@ -51,11 +55,24 @@ public class UserServiceImpl implements UserService {
      */
     @Override
     public UserLoginVO login(UserLoginDTO userLoginDTO) {
-        List<String> fields = List.of("id", "username", "password", "role");
+        String emailRegex = "^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\\.[a-zA-Z]{2,}$";
+
+        Pattern pattern = Pattern.compile(emailRegex);
+
+        Matcher matcher = pattern.matcher(userLoginDTO.getUsername());
+
+        User selectUser;
+        List<String> fields;
+        if(matcher.matches()) {
+            fields = List.of("id", "username", "password", "email", "role");
+            selectUser = User.builder().email(userLoginDTO.getUsername()).build();
+        }
+        else {
+            fields = List.of("id", "username", "password", "role");
+            selectUser = User.builder().username(userLoginDTO.getUsername()).build();
+        }
 
         Map<String, Boolean> scope = FieldsGenerator.generateFields(User.class, fields);
-
-        User selectUser = User.builder().username(userLoginDTO.getUsername()).build();
         try {
             List<User> userList = userMapper.selectUser(selectUser, scope);
 
@@ -128,13 +145,22 @@ public class UserServiceImpl implements UserService {
     public UserProfileUpdateDTO updateUserProfile(UserProfileUpdateDTO userProfileUpdateDTO) {
 
         String username = userProfileUpdateDTO.getUsername();
+        String email = userProfileUpdateDTO.getEmail();
         try {
             if(!username.equals(User.getAuth().getUsername())) {
                 List<User> userList = userMapper.selectUser(User.builder().username(userProfileUpdateDTO.getUsername()).build(), Map.of("username", true));
 
                 if (!userList.isEmpty()) throw new DuplicateUserException();
-            }else {
+            }else{
                 userProfileUpdateDTO.setUsername(null);
+            }
+
+            if(!email.equals(User.getAuth().getEmail())) {
+                List<User> userList = userMapper.selectUser(User.builder().email(email).build(), Map.of("email", true));
+
+                if (!userList.isEmpty()) throw new DuplicateUserEmailException();
+            }else {
+                userProfileUpdateDTO.setEmail(null);
             }
 
             userProfileUpdateDTO.setAvatar(FileManager.saveBase64Image(userProfileUpdateDTO.getAvatar()));
@@ -143,11 +169,14 @@ public class UserServiceImpl implements UserService {
             userMapper.updateUser(user, User.getAuth());
         } catch (DuplicateUserException duplicateUserException) {
             throw new DuplicateUserException();
+        } catch (DuplicateUserEmailException duplicateUserEmailException){
+            throw new DuplicateUserEmailException();
         } catch (Exception e) {
             throw new RuntimeException(e.getMessage());
         }
 
         userProfileUpdateDTO.setUsername(username);
+        userProfileUpdateDTO.setEmail(email);
         return userProfileUpdateDTO;
     }
 }
