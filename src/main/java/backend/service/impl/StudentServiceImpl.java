@@ -3,6 +3,7 @@ package backend.service.impl;
 import backend.mapper.StudentGradeMapper;
 import backend.mapper.StudentMapper;
 import backend.model.DTO.StudentTableDTO;
+import backend.model.VO.student.StudentSubmitTableVO;
 import backend.model.converter.StudentConverter;
 import backend.model.entity.Student;
 import backend.model.entity.StudentGrade;
@@ -48,5 +49,14 @@ public class StudentServiceImpl implements StudentService {
         }catch (Exception e){
             throw new RuntimeException(e.getMessage());
         }
+    }
+
+    @Override
+    public StudentSubmitTableVO getStudentSubmitTable() {
+        User user = User.getAuth();
+        Student student = User.getAuth().getStudent();
+
+
+        return null;
     }
 }

@@ -29,4 +29,9 @@ public class StudentController {
         // studentService.submitGrade(User.getAuth().getId())
         return ResultEntity.success(HttpStatus.OK.value(), "Submit grade successfully.");
     }
+
+    @GetMapping
+    public ResponseEntity<ResultEntity<Object>> getStudentSubmitTable(){
+        return ResultEntity.success(HttpStatus.OK.value(), "Get Student's submit table successfully", studentService.getStudentSubmitTable());
+    }
 }
