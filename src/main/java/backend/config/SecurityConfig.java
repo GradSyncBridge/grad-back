@@ -115,7 +115,7 @@ public class SecurityConfig implements WebMvcConfigurer {
      */
     @Override
     public void addResourceHandlers(ResourceHandlerRegistry registry) {
-        registry.addResourceHandler("/resources/**")
+        registry.addResourceHandler("/resources/media/**")
                 .addResourceLocations("classpath:/media/");
     }
 

@@ -21,7 +21,7 @@ public class RateLimitingFilter extends OncePerRequestFilter {
     private final Map<String, Integer> requestCounts = new ConcurrentHashMap<>();
 
     // Define maximum allowed requests per minute
-    private static final int MAX_REQUESTS_PER_MINUTE = 20;
+    private static final int MAX_REQUESTS_PER_MINUTE = 200;
 
     @Override
     protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain filterChain)
