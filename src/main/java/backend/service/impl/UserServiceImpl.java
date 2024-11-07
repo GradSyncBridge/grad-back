@@ -25,6 +25,8 @@ import org.springframework.stereotype.Service;
 
 import java.util.List;
 import java.util.Map;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 @Service
 public class UserServiceImpl implements UserService {
@@ -51,11 +53,24 @@ public class UserServiceImpl implements UserService {
      */
     @Override
     public UserLoginVO login(UserLoginDTO userLoginDTO) {
-        List<String> fields = List.of("id", "username", "password", "role");
+        String emailRegex = "^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\\.[a-zA-Z]{2,}$";
+
+        Pattern pattern = Pattern.compile(emailRegex);
+
+        Matcher matcher = pattern.matcher(userLoginDTO.getUsername());
+
+        User selectUser;
+        List<String> fields;
+        if(matcher.matches()) {
+            fields = List.of("id", "username", "password", "email", "role");
+            selectUser = User.builder().email(userLoginDTO.getUsername()).build();
+        }
+        else {
+            fields = List.of("id", "username", "password", "role");
+            selectUser = User.builder().username(userLoginDTO.getUsername()).build();
+        }
 
         Map<String, Boolean> scope = FieldsGenerator.generateFields(User.class, fields);
-
-        User selectUser = User.builder().username(userLoginDTO.getUsername()).build();
         try {
             List<User> userList = userMapper.selectUser(selectUser, scope);
 
