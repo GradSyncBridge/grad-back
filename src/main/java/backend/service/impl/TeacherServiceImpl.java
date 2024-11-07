@@ -52,6 +52,8 @@ public class TeacherServiceImpl implements TeacherService {
                 .selectMajorToTeacher(MajorToTeacher.builder().mid(majorID).build(),
                         FieldsGenerator.generateFields(MajorToTeacher.class));
 
+        if(majorToTeachers.isEmpty()) throw new TeacherNotFoundException();
+
         List<Teacher> teachers = teacherMapper.selectTeacherForeach(majorToTeachers);
 
         List<User> users = getTeacherAsync(teachers).join();
