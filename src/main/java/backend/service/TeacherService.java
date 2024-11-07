@@ -6,4 +6,6 @@ import java.util.List;
 
 public interface TeacherService {
     List<TeacherVO> getTeacher(Integer department);
+
+    List<TeacherVO> getTeachersByCatalogue(Integer majorID);
 }

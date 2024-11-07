@@ -1,10 +1,12 @@
 package backend.service.impl;
 
 import backend.exception.model.teacher.TeacherNotFoundException;
+import backend.mapper.MajorToTeacherMapper;
 import backend.mapper.TeacherMapper;
 import backend.mapper.UserMapper;
 import backend.model.VO.teacher.TeacherVO;
 import backend.model.converter.TeacherConverter;
+import backend.model.entity.MajorToTeacher;
 import backend.model.entity.Teacher;
 import backend.model.entity.User;
 import backend.service.TeacherService;
@@ -28,12 +30,29 @@ public class TeacherServiceImpl implements TeacherService {
     @Autowired
     private TeacherConverter teacherConverter;
 
+    @Autowired
+    private MajorToTeacherMapper majorToTeacherMapper;
+
     @Override
     public List<TeacherVO> getTeacher(Integer department) {
         List<Teacher> teachers =
                 teacherMapper.selectTeacher(Teacher.builder().department(department).build(), FieldsGenerator.generateFields(Teacher.class));
 
         if(teachers.isEmpty()) throw new TeacherNotFoundException();
+
+        List<User> users = getTeacherAsync(teachers).join();
+
+        return teacherConverter.INSTANCE.TeacherListToTeacherVOList(teachers, users);
+    }
+
+    @Override
+    public List<TeacherVO> getTeachersByCatalogue(Integer majorID) {
+
+        List<MajorToTeacher> majorToTeachers = majorToTeacherMapper
+                .selectMajorToTeacher(MajorToTeacher.builder().mid(majorID).build(),
+                        FieldsGenerator.generateFields(MajorToTeacher.class));
+
+        List<Teacher> teachers = teacherMapper.selectTeacherForeach(majorToTeachers);
 
         List<User> users = getTeacherAsync(teachers).join();
 

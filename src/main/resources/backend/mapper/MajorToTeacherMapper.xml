@@ -18,11 +18,11 @@
 
     <sql id="DynamicWhere">
         <where>
-            <if test="majorToTeacherQuery.id != null"> and id = #{majorToTeacherQuery.id} </if>
-            <if test="majorToTeacherQuery.tid != null"> and tid = #{majorToTeacherQuery.tid} </if>
-            <if test="majorToTeacherQuery.mid != null"> and mid = #{majorToTeacherQuery.mid} </if>
-            <if test="majorToTeacherQuery.valid != null"> and valid = #{majorToTeacherQuery.valid} </if>
-            <if test="majorToTeacherQuery.metric != null"> and metric = #{majorToTeacherQuery.metric} </if>
+            <if test="majorToTeacher.id != null"> and id = #{majorToTeacher.id} </if>
+            <if test="majorToTeacher.tid != null"> and tid = #{majorToTeacher.tid} </if>
+            <if test="majorToTeacher.mid != null"> and mid = #{majorToTeacher.mid} </if>
+            <if test="majorToTeacher.valid != null"> and valid = #{majorToTeacher.valid} </if>
+            <if test="majorToTeacher.metric != null"> and metric = #{majorToTeacher.metric} </if>
         </where>
     </sql>
     
