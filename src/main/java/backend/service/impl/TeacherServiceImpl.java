@@ -1,9 +1,12 @@
 package backend.service.impl;
 
+import backend.exception.model.User.UserNotFoundException;
 import backend.exception.model.teacher.TeacherNotFoundException;
+import backend.exception.model.teacher.TeacherProfileNoRightException;
 import backend.mapper.MajorToTeacherMapper;
 import backend.mapper.TeacherMapper;
 import backend.mapper.UserMapper;
+import backend.model.VO.teacher.TeacherProfileVO;
 import backend.model.VO.teacher.TeacherVO;
 import backend.model.converter.TeacherConverter;
 import backend.model.entity.MajorToTeacher;
@@ -70,6 +73,28 @@ public class TeacherServiceImpl implements TeacherService {
         List<User> users = getTeacherAsync(teachers).join();
 
         return teacherConverter.INSTANCE.TeacherListToTeacherVOList(teachers, users);
+    }
+
+    /**
+     * 获取教师个人信息
+     * @param uid 教师uid
+     * @return 教师个人信息
+     */
+    @Override
+    public TeacherProfileVO getTeacherProfile(Integer uid) {
+        try{
+            if(User.getAuth().getRole() != 2) throw new TeacherProfileNoRightException();
+
+            User user = userMapper.selectUser(User.builder().id(uid).build(), FieldsGenerator.generateFields(User.class)).getFirst();
+
+            Teacher teacher = teacherMapper.selectTeacher(Teacher.builder().userId(uid).build(), FieldsGenerator.generateFields(Teacher.class)).getFirst();
+
+            return teacherConverter.INSTANCE.TeacherAndUserToTeacherProfileVO(teacher, user);
+        }catch(TeacherProfileNoRightException teacherProfileNoRightException){
+            throw new TeacherProfileNoRightException();
+        }catch (Exception e){
+            throw new UserNotFoundException();
+        }
     }
 
     @Async
