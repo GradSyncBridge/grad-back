@@ -58,4 +58,11 @@
         select *
         from Department;
     </select>
+
+
+    <select id="selectDepartmentDetail" resultType="backend.model.entity.Department">
+        select * 
+        from Department
+        where id = #{id}
+    </select>
 </mapper>

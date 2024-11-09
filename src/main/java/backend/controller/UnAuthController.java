@@ -1,5 +1,17 @@
 package backend.controller;
 
+import org.apache.ibatis.annotations.Param;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
+import org.springframework.validation.annotation.Validated;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.RestController;
+
 import backend.model.DTO.UserLoginDTO;
 import backend.model.DTO.UserRegisterDTO;
 import backend.model.VO.user.UserLoginVO;
@@ -9,12 +21,6 @@ import backend.service.MajorService;
 import backend.service.TeacherService;
 import backend.service.UserService;
 import backend.util.ResultEntity;
-import org.apache.ibatis.annotations.Param;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.http.HttpStatus;
-import org.springframework.http.ResponseEntity;
-import org.springframework.validation.annotation.Validated;
-import org.springframework.web.bind.annotation.*;
 
 /**
  * UnAuthController
@@ -80,6 +86,11 @@ public class UnAuthController {
         return ResultEntity.success(200, "Get all teachers successfully", teacherService.getTeacher(department));
     }
 
+    @GetMapping(value = "/department/detail")
+    public ResponseEntity<ResultEntity<Object>> getDepartmentDetail(@RequestParam(value = "departmentID") Integer departmentID){
+        return ResultEntity.success(200, "Get the department's details successfully", departmentService.getDepartmentDetail(departmentID));
+    }
+
     /**
      * 获取所有学院
      * @return 学院列表
@@ -98,4 +109,5 @@ public class UnAuthController {
     public ResponseEntity<ResultEntity<Object>> getTeachersByCatalogue(@RequestParam(value = "majorID") Integer majorID) {
         return ResultEntity.success(200, "Get all departments successfully", teacherService.getTeachersByCatalogue(majorID));
     }
+
 }

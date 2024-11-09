@@ -1,14 +1,19 @@
 package backend.service.impl;
 
-import backend.mapper.DepartmentMapper;
-import backend.model.VO.department.DepartmentVO;
-import backend.model.converter.DepartmentConverter;
-import backend.model.entity.Department;
-import backend.service.DepartmentService;
+import java.util.List;
+import java.util.Map;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
-import java.util.List;
+import backend.mapper.DepartmentMapper;
+import backend.mapper.MajorMapper;
+import backend.model.VO.department.DepartmentDeatilVO;
+import backend.model.VO.department.DepartmentVO;
+import backend.model.converter.DepartmentConverter;
+import backend.model.entity.Department;
+import backend.model.entity.Major;
+import backend.service.DepartmentService;
 
 @Service
 public class DepartmentServiceImpl implements DepartmentService {
@@ -18,6 +23,9 @@ public class DepartmentServiceImpl implements DepartmentService {
 
     @Autowired
     private DepartmentConverter departmentConverter;
+
+    @Autowired
+    private MajorMapper majorMapper;
 
     /**
      * 获取所有部门
@@ -30,6 +38,20 @@ public class DepartmentServiceImpl implements DepartmentService {
 
             return departmentConverter.INSTANCE.DepartmentListTODepartmentVOList(departmentList);
         }catch (Exception e){
+            throw new RuntimeException(e.getMessage());
+        }
+    }
+
+    @Override
+    public DepartmentDeatilVO getDepartmentDetail(Integer departmentID) {
+        try {
+            
+            Department department = departmentMapper.selectDepartmentDetail(departmentID);
+            Integer totalMajor = majorMapper.selectMajor(Major.builder().department(departmentID).build(), Map.of("id",true)).size();
+
+            return departmentConverter.INSTANCE.DepartmentTODepartmentDeatilVO(department, totalMajor);
+            
+        } catch (Exception e) {
             throw new RuntimeException(e.getMessage());
         }
     }

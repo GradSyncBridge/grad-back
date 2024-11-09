@@ -1,10 +1,11 @@
 package backend.mapper;
 
-import backend.model.entity.Department;
-import org.apache.ibatis.annotations.Mapper;
-
 import java.util.List;
 import java.util.Map;
+
+import org.apache.ibatis.annotations.Mapper;
+
+import backend.model.entity.Department;
 
 @Mapper
 public interface DepartmentMapper {
@@ -38,4 +39,6 @@ public interface DepartmentMapper {
      * @return 所有部门
      */
     List<Department> selectAllDepartments();
+
+    Department selectDepartmentDetail(Integer id);
 }
