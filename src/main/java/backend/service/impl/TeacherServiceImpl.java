@@ -14,6 +14,7 @@ import backend.exception.model.user.UserNotFoundException;
 import backend.mapper.MajorToTeacherMapper;
 import backend.mapper.TeacherMapper;
 import backend.mapper.UserMapper;
+import backend.model.DTO.TeacherProfileUpdateDTO;
 import backend.model.VO.teacher.TeacherProfileVO;
 import backend.model.VO.teacher.TeacherVO;
 import backend.model.converter.TeacherConverter;
@@ -129,5 +130,16 @@ public class TeacherServiceImpl implements TeacherService {
         } catch (Exception e) {
             throw new RuntimeException(e.getMessage());
         }
+    }
+
+    @Override
+    public void updateTeacherProfile(TeacherProfileUpdateDTO teacherProfile) {
+        try {
+            Teacher teacherUpdate = teacherConverter.TeacherProfileDTOToTeacher(teacherProfile);
+            teacherMapper.updateTeacher(teacherUpdate, User.getAuth().getTeacher());
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+
     }
 }

@@ -12,9 +12,7 @@ import java.util.List;
 @NoArgsConstructor
 @Builder
 public class MajorSubject {
+    private Integer majorID;
     private String name;
     private String majorNum;
-    private List<Exam> initials;
-    private List<Exam> interviews;
-
 }

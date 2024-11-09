@@ -8,7 +8,7 @@
     <sql id="DynamicFields">
         <trim suffixOverrides=",">
             <if test="scope.id == true"> id, </if>
-            <if test="scope.userId == true"> user_id, </if>
+            <if test="scope.userId == true"> user_id as "userId", </if>
             <if test="scope.sid == true"> sid, </if>
             <if test="scope.grade == true"> grade, </if>
             <if test="scope.disabled == true"> disabled, </if>
@@ -47,6 +47,21 @@
             <include refid="DynamicFields" />
         from StudentGrade
             <include refid="DynamicWhere" />
+    </select>
+
+    <select id="selectGradeWithSubject" resultType="backend.model.VO.student.GradeList">
+        select
+            g.grade as "grade",
+            s.id as "subjectID",
+            s.sid as "subjectNum",
+            s.name as "name"
+        from
+            StudentGrade as g
+            join Subject as s
+            on g.sid = s.id
+        where
+            g.user_id = #{studentGrade.userId} and s.type = #{type}
+
     </select>
 
     <update id="updateStudentGrade">

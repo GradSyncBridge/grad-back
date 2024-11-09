@@ -14,20 +14,48 @@ public class StudentTableDTOValidationImpl implements ConstraintValidator<Studen
 
     @Override
     public boolean isValid(StudentTableDTO studentTableDTO, ConstraintValidatorContext constraintValidatorContext) {
-        return User.getAuth().getRole() == 1 && studentTableDTO != null &&
-                User.getAuth().getStudent().getDisabled() == 1 &&
-                studentTableDTO.getBirth() != null &&
-                studentTableDTO.getExamID() != null && !studentTableDTO.getExamID().isEmpty() &&
-                studentTableDTO.getCertifyID() != null && !studentTableDTO.getCertifyID().isEmpty() &&
-                studentTableDTO.getEmergency() != null && !studentTableDTO.getEmergency().isEmpty() &&
-                studentTableDTO.getAddress() != null && !studentTableDTO.getAddress().isEmpty() &&
-                studentTableDTO.getMajorGrad() != null && !studentTableDTO.getMajorGrad().isEmpty() &&
-                studentTableDTO.getMajorApply() != null &&
-                studentTableDTO.getMajorStudy() != null && !studentTableDTO.getMajorStudy().isEmpty() &&
-                studentTableDTO.getSchool() != null && !studentTableDTO.getSchool().isEmpty() &&
-                studentTableDTO.getType() != null && !studentTableDTO.getType().isEmpty() &&
-                studentTableDTO.getEnrollment() != null &&
-                studentTableDTO.getGrades() != null && !studentTableDTO.getGrades().isEmpty() &&
-                studentTableDTO.getReassign() != null;
+        if (studentTableDTO == null)
+            return false;
+
+        constraintValidatorContext.disableDefaultConstraintViolation();
+
+        if (User.getAuth().getStudent().getDisabled() == 0) {
+            constraintValidatorContext
+                    .buildConstraintViolationWithTemplate(String.format("Student with uid = %d is disabled", User.getAuth().getId()))
+                    .addConstraintViolation();
+            return false;
+        }
+
+
+        if  (
+            studentTableDTO.getBirth() != null &&
+            studentTableDTO.getExamID() != null &&
+            !studentTableDTO.getExamID().isEmpty() &&
+            studentTableDTO.getCertifyID() != null &&
+            !studentTableDTO.getCertifyID().isEmpty() &&
+            studentTableDTO.getEmergency() != null &&
+            !studentTableDTO.getEmergency().isEmpty() &&
+            studentTableDTO.getAddress() != null &&
+            !studentTableDTO.getAddress().isEmpty() &&
+            studentTableDTO.getMajorGrad() != null &&
+            !studentTableDTO.getMajorGrad().isEmpty() &&
+            studentTableDTO.getMajorApply() != null &&
+            studentTableDTO.getMajorStudy() != null &&
+            !studentTableDTO.getMajorStudy().isEmpty() &&
+            studentTableDTO.getSchool() != null &&
+            !studentTableDTO.getSchool().isEmpty() &&
+            studentTableDTO.getType() != null &&
+            !studentTableDTO.getType().isEmpty() &&
+            studentTableDTO.getEnrollment() != null &&
+            studentTableDTO.getGrades() != null &&
+            !studentTableDTO.getGrades().isEmpty() &&
+            studentTableDTO.getReassign() != null
+        )
+            return true;
+
+        constraintValidatorContext
+                .buildConstraintViolationWithTemplate("Student submission table is incomplete, check the required fields")
+                .addConstraintViolation();
+        return false;
     }
 }

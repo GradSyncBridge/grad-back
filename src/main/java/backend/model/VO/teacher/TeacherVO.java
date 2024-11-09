@@ -27,7 +27,7 @@ public class TeacherVO {
 
     private Integer department;
 
-    private String title;
+    private Integer title;
 
     private String description;
 }

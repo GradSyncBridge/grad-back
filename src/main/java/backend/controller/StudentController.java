@@ -1,8 +1,8 @@
 package backend.controller;
 
+import backend.model.DTO.ApplicationSubmitDTO;
 import backend.model.DTO.GradeSubmitListDTO;
 import backend.model.DTO.StudentTableDTO;
-import backend.model.entity.User;
 import backend.service.StudentService;
 import backend.util.ResultEntity;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -30,8 +30,14 @@ public class StudentController {
         return ResultEntity.success(HttpStatus.OK.value(), "Submit grade successfully.");
     }
 
+    @PostMapping(value = "/apply")
+    public ResponseEntity<ResultEntity<Object>> submitApplication(@RequestBody ApplicationSubmitDTO applicationSubmitDTO) {
+        studentService.submitApplication(applicationSubmitDTO);
+        return ResultEntity.success(HttpStatus.OK.value(), "Application info successfully recorded", null);
+    }
+
     @GetMapping
     public ResponseEntity<ResultEntity<Object>> getStudentSubmitTable(){
-        return ResultEntity.success(HttpStatus.OK.value(), "Get Student's submit table successfully", studentService.getStudentSubmitTable());
+        return ResultEntity.success(HttpStatus.OK.value(), "Get Student's submission table successfully", studentService.getStudentSubmitTable());
     }
 }
