@@ -41,7 +41,7 @@ public class StudentServiceImpl implements StudentService {
     public void submitTable(StudentTableDTO studentTableDTO) {
         studentTableDTO.setBirthday(LocalDateTime.parse(studentTableDTO.getBirth() + "T00:00:00"));
         Student student = studentConverter.INSTANCE.StudentTableDTOToStudent(studentTableDTO, studentTableDTO.getMajorStudy().toString());
-        System.out.println(User.getAuth().getStudent());
+
         try {
 
             float totalGrade = 0;
@@ -52,7 +52,7 @@ public class StudentServiceImpl implements StudentService {
                 studentGradeMapper.insertStudentGrade(studentGrade);
             }
 
-            if (User.getAuth().getRole() == 1) student.setGradePrimary(totalGrade);
+            if (User.getAuth().getRole() == 1) student.setGradeFirst(totalGrade);
             else student.setGradeSecond(totalGrade);
 
             studentMapper.updateStudent(student, Student.builder().userId(User.getAuth().getId()).build());
@@ -67,19 +67,19 @@ public class StudentServiceImpl implements StudentService {
         Student student = User.getAuth().getStudent();
 
         try {
-            // Quality files
-            List<Quality> fileList = qualityFileMapper.
-                    selectQualityFile(
-                            QualityFile.builder().userId(user.getId()).build(),
-                            FieldsGenerator.generateFields(QualityFile.class)
-                    ).stream()
+            List<Quality> fileList = StringToList.convert(student.getQuality())
+                    .stream()
+                    .map(f -> {
+                        List<QualityFile> files = qualityFileMapper.selectQualityFile(QualityFile.builder().id(f).build(), FieldsGenerator.generateFields(QualityFile.class));
+                        return files.isEmpty() ? null : files.getFirst();
+                    })
                     .filter(Objects::nonNull)
-                    .map(f -> studentConverter.qualityFileToQuality(f))
+                    .map(f -> studentConverter.INSTANCE.qualityFileToQuality(f))
                     .toList();
 
             // Major application
             List<Major> majorList = majorMapper.selectMajor(Major.builder().id(student.getMajorApply()).build(), FieldsGenerator.generateFields(Major.class));
-            MajorSubject majorApply = majorList.isEmpty() ? null : studentConverter.majorToMajorSubject(majorList.getFirst());
+            MajorSubject majorApply = majorList.isEmpty() ? null : studentConverter.INSTANCE.majorToMajorSubject(majorList.getFirst());
 
             // Major study
             List<Integer> majorStudy = StringToList.convert(student.getMajorStudy());
@@ -87,7 +87,7 @@ public class StudentServiceImpl implements StudentService {
                     .stream()
                     .map(i -> {
                         List<Major> majors = majorMapper.selectMajor(Major.builder().id(i).build(), FieldsGenerator.generateFields(Major.class));
-                        return (majors.isEmpty() ? null : studentConverter.majorToMajorSubject(majors.getFirst()));
+                        return (majors.isEmpty() ? null : studentConverter.INSTANCE.majorToMajorSubject(majors.getFirst()));
                     })
                     .filter(Objects::nonNull)
                     .toList();
@@ -98,10 +98,10 @@ public class StudentServiceImpl implements StudentService {
             // Grades
             List<GradeList> gradeListFirst = studentGradeMapper.selectGradeWithSubject(StudentGrade.builder().userId(user.getId()).build(), 0);
             List<GradeList> gradeListSecond = studentGradeMapper.selectGradeWithSubject(StudentGrade.builder().userId(user.getId()).build(), 1);
-            Score gradeFirst = Score.builder().gradeTotal(student.getGradePrimary()).gradeList(gradeListFirst).build();
+            Score gradeFirst = Score.builder().gradeTotal(student.getGradeFirst()).gradeList(gradeListFirst).build();
             Score gradeSecond = Score.builder().gradeTotal(student.getGradeSecond()).gradeList(gradeListSecond).build();
 
-            return studentConverter.StudentToSubmitTable(student, gradeFirst, gradeSecond, applications, fileList, majorApply, majorStudyList);
+            return studentConverter.INSTANCE.StudentToSubmitTable(student, gradeFirst, gradeSecond, applications, fileList, majorApply, majorStudyList);
 
         } catch (Exception e) {
             e.printStackTrace();
