@@ -18,7 +18,7 @@ public class UserProfileUpdateDTOValidationImpl implements ConstraintValidator<U
     public boolean isValid(UserProfileUpdateDTO userProfileUpdateDTO, ConstraintValidatorContext constraintValidatorContext) {
         String emailRegex = "^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\\.[a-zA-Z]{2,}$";
 
-        Pattern specialCharPattern = Pattern.compile("[^a-zA-Z0-9]");
+        Pattern specialCharPattern = Pattern.compile("[^a-zA-Z0-9\\u4e00-\\u9fa5]");
 
         Pattern pattern = Pattern.compile(emailRegex);
 
