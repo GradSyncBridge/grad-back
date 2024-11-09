@@ -10,7 +10,7 @@
             <if test="scope.id == true"> id, </if>
             <if test="scope.did == true"> did, </if>
             <if test="scope.name == true"> name, </if>
-            <if test="scope.descriptioin == true"> descriptioin, </if>
+            <if test="scope.description == true"> description, </if>
             <if test="scope.logo == true"> logo, </if>
         </trim>
     </sql>
@@ -20,8 +20,8 @@
             <if test="department.id != null"> and id = #{department.id} </if>
             <if test="department.did != null"> and did = #{department.did} </if>
             <if test="department.name != null"> and name = #{department.name} </if>
-            <if test="scope.descriptioin != null"> and description = #{descriptioin}, </if>
-            <if test="scope.logo != null"> and logo = #{logo}, </if>
+            <if test="department.description != null"> and description = #{department.description}, </if>
+            <if test="department.logo != null"> and logo = #{department.logo}, </if>
         </where>
     </sql>
 
