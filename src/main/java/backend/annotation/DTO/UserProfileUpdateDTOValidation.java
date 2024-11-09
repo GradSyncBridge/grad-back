@@ -1,6 +1,5 @@
 package backend.annotation.DTO;
 
-import backend.annotation.DTO.impl.UserLoginDTOValidationImpl;
 import backend.annotation.DTO.impl.UserProfileUpdateDTOValidationImpl;
 import jakarta.validation.Constraint;
 

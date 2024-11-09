@@ -24,11 +24,16 @@ public class UserProfileUpdateDTOValidationImpl implements ConstraintValidator<U
 
         Matcher matcher = pattern.matcher(userProfileUpdateDTO.getEmail());
 
-        return userProfileUpdateDTO.getUsername() != null && !userProfileUpdateDTO.getUsername().isEmpty() && !specialCharPattern.matcher(userProfileUpdateDTO.getUsername()).find() &&
-                userProfileUpdateDTO.getAvatar() != null && !userProfileUpdateDTO.getAvatar().isEmpty() &&
-                userProfileUpdateDTO.getName() != null && !userProfileUpdateDTO.getName().isEmpty() &&
+        return userProfileUpdateDTO.getUsername() != null &&
+                !userProfileUpdateDTO.getUsername().isEmpty() &&
+                !specialCharPattern.matcher(userProfileUpdateDTO.getUsername()).find() &&
+                userProfileUpdateDTO.getName() != null &&
+                !userProfileUpdateDTO.getName().isEmpty() &&
                 matcher.matches() &&
-                userProfileUpdateDTO.getGender() != null && userProfileUpdateDTO.getGender() >= 0 && userProfileUpdateDTO.getGender() <= 2 &&
-                userProfileUpdateDTO.getPhone() != null && !userProfileUpdateDTO.getPhone().isEmpty();
+                userProfileUpdateDTO.getGender() != null &&
+                userProfileUpdateDTO.getGender() >= 0 &&
+                userProfileUpdateDTO.getGender() <= 2 &&
+                userProfileUpdateDTO.getPhone() != null &&
+                !userProfileUpdateDTO.getPhone().isEmpty();
     }
 }
