@@ -15,7 +15,6 @@ import backend.util.FieldsGenerator;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
-import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
@@ -42,16 +41,21 @@ public class EnrollServiceImpl implements EnrollService {
             return enrolls
                     .stream()
                     .map(e -> {
-                        List<User> students = userMapper.selectUser(User.builder().id(e.getSid()).build(), FieldsGenerator.generateFields(User.class));
+                        List<User> students = userMapper.selectUser(User.builder().id(e.getSid()).build(),
+                                FieldsGenerator.generateFields(User.class));
                         User student = students.isEmpty() ? null : students.getFirst();
 
-                        List<User> teachers = userMapper.selectUser(User.builder().id(e.getTid()).build(), Map.of("name", true));
+                        List<User> teachers = userMapper.selectUser(User.builder().id(e.getTid()).build(),
+                                Map.of("name", true));
                         User teacher = teachers.isEmpty() ? null : teachers.getFirst();
 
-                        List<Department> departments = departmentMapper.selectDepartment(Department.builder().id(departmentId).build(), FieldsGenerator.generateFields(Department.class));
+                        List<Department> departments = departmentMapper.selectDepartment(
+                                Department.builder().id(departmentId).build(),
+                                FieldsGenerator.generateFields(Department.class));
                         Department dept = departments.isEmpty() ? null : departments.getFirst();
 
-                        List<Major> majors = majorMapper.selectMajor(Major.builder().id(e.getMid()).build(), FieldsGenerator.generateFields(Major.class));
+                        List<Major> majors = majorMapper.selectMajor(Major.builder().id(e.getMid()).build(),
+                                FieldsGenerator.generateFields(Major.class));
                         Major major = majors.isEmpty() ? null : majors.getFirst();
 
                         if (student == null || teacher == null || dept == null || major == null)
@@ -63,7 +67,6 @@ public class EnrollServiceImpl implements EnrollService {
             e.printStackTrace();
             throw new RuntimeException(e);
         }
-
 
     }
 }
