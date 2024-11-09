@@ -8,24 +8,24 @@
     <sql id="DynamicFields">
         <trim suffixOverrides=",">
             <if test="scope.id == true"> id, </if>
-            <if test="scope.userId == true"> user_id, </if>
+            <if test="scope.userId == true"> user_id as "userId", </if>
             <if test="scope.birth == true"> birth, </if>
             <if test="scope.address == true"> address, </if>
-            <if test="scope.majorGrad == true"> major_grad, </if>
+            <if test="scope.majorGrad == true"> major_grad as "majorGrad", </if>
             <if test="scope.school == true"> school, </if>
             <if test="scope.type == true"> type, </if>
             <if test="scope.enrollment == true"> enrollment, </if>
             <if test="scope.reassign == true"> reassign, </if>
             <if test="scope.valid == true"> valid, </if>
-            <if test="scope.examId  == true"> exam_id , </if>
+            <if test="scope.examId  == true"> exam_id as "examId", </if>
             <if test="scope.emergency == true"> emergency, </if>
-            <if test="scope.gradePrimary == true"> grade_first, </if>
-            <if test="scope.gradeSecond == true"> grade_second, </if>
-            <if test="scope.majorApply == true"> major_apply, </if>
-            <if test="scope.majorStudy == true"> major_study, </if>
+            <if test="scope.gradePrimary == true"> grade_first as "gradeFrist", </if>
+            <if test="scope.gradeSecond == true"> grade_second as "gradeSecond", </if>
+            <if test="scope.majorApply == true"> major_apply as "majorApply", </if>
+            <if test="scope.majorStudy == true"> major_study as "majorStudy", </if>
             <if test="scope.disabled == true"> disabled, </if>
             <if test="scope.quality == true"> quality, </if>
-            <if test="scope.certifyId == true"> certify_id, </if>
+            <if test="scope.certifyId == true"> certify_id as "certifyId", </if>
         </trim>
     </sql>
 

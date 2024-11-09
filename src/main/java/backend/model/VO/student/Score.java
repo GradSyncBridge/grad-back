@@ -12,7 +12,7 @@ import java.util.List;
 @NoArgsConstructor
 @Builder
 public class Score {
-    private Integer gradeTotal;
+    private Float gradeTotal;
 
     private List<GradeList> gradeList;
 }

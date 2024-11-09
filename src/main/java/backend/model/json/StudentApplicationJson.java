@@ -22,7 +22,7 @@ public class StudentApplicationJson {
 
     public StudentGradesJson getEntity(String json) {
         ObjectMapper objectMapper = new ObjectMapper();
-        if (json != null && !json.equals("")) {
+        if (json != null && !json.isEmpty()) {
             try {
                 return objectMapper.readValue(json, StudentGradesJson.class);
             } catch (Exception e) {

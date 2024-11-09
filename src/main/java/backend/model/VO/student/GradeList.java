@@ -13,6 +13,8 @@ public class GradeList {
 
     private Integer grade;
 
+    private Integer subjectID;
+
     private String subjectNum;
 
     private String name;

@@ -1,18 +1,19 @@
 package backend.service.impl;
 
-import backend.mapper.StudentGradeMapper;
-import backend.mapper.StudentMapper;
+import backend.mapper.*;
 import backend.model.DTO.StudentTableDTO;
-import backend.model.VO.student.StudentSubmitTableVO;
+import backend.model.VO.student.*;
 import backend.model.converter.StudentConverter;
-import backend.model.entity.Student;
-import backend.model.entity.StudentGrade;
-import backend.model.entity.User;
+import backend.model.entity.*;
 import backend.service.StudentService;
+import backend.util.FieldsGenerator;
+import backend.util.StringToList;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import java.util.List;
 import java.time.LocalDateTime;
+import java.util.Objects;
 
 
 @Service
@@ -27,6 +28,15 @@ public class StudentServiceImpl implements StudentService {
     @Autowired
     private StudentGradeMapper studentGradeMapper;
 
+    @Autowired
+    private QualityFileMapper qualityFileMapper;
+
+    @Autowired
+    private MajorMapper majorMapper;
+
+    @Autowired
+    private StudentApplyMapper studentApplyMapper;
+
     @Override
     public void submitTable(StudentTableDTO studentTableDTO) {
         studentTableDTO.setBirthday(LocalDateTime.parse(studentTableDTO.getBirth() + "T00:00:00"));
@@ -35,18 +45,18 @@ public class StudentServiceImpl implements StudentService {
         try {
 
             float totalGrade = 0;
-            for(StudentGrade grade : studentTableDTO.getGrades()){
+            for (StudentGrade grade : studentTableDTO.getGrades()) {
                 totalGrade += grade.getGrade();
                 StudentGrade studentGrade =
                         StudentGrade.builder().userId(User.getAuth().getId()).sid(grade.getSid()).grade(grade.getGrade()).build();
                 studentGradeMapper.insertStudentGrade(studentGrade);
             }
 
-            if(User.getAuth().getRole() == 1) student.setGradePrimary(totalGrade);
+            if (User.getAuth().getRole() == 1) student.setGradePrimary(totalGrade);
             else student.setGradeSecond(totalGrade);
 
             studentMapper.updateStudent(student, Student.builder().userId(User.getAuth().getId()).build());
-        }catch (Exception e){
+        } catch (Exception e) {
             throw new RuntimeException(e.getMessage());
         }
     }
@@ -55,6 +65,47 @@ public class StudentServiceImpl implements StudentService {
     public StudentSubmitTableVO getStudentSubmitTable() {
         User user = User.getAuth();
         Student student = User.getAuth().getStudent();
+
+        try {
+            // Quality files
+            List<Quality> fileList = qualityFileMapper.
+                    selectQualityFile(
+                            QualityFile.builder().userId(user.getId()).build(),
+                            FieldsGenerator.generateFields(QualityFile.class)
+                    ).stream()
+                    .filter(Objects::nonNull)
+                    .map(f -> studentConverter.qualityFileToQuality(f))
+                    .toList();
+
+            // Major application
+            List<Major> majorList = majorMapper.selectMajor(Major.builder().id(student.getMajorApply()).build(), FieldsGenerator.generateFields(Major.class));
+            MajorSubject majorApply = majorList.isEmpty() ? null : studentConverter.majorToMajorSubject(majorList.getFirst());
+
+            // Major study
+            List<Integer> majorStudy = StringToList.convert(student.getMajorStudy());
+            List<MajorSubject> majorStudyList = majorStudy
+                    .stream()
+                    .map(i -> {
+                        List<Major> majors = majorMapper.selectMajor(Major.builder().id(i).build(), FieldsGenerator.generateFields(Major.class));
+                        return (majors.isEmpty() ? null : studentConverter.majorToMajorSubject(majors.getFirst()));
+                    })
+                    .filter(Objects::nonNull)
+                    .toList();
+
+            // application
+            List<Application> applications = studentApplyMapper.selectApplicationWithTeacher(StudentApply.builder().userId(user.getId()).build());
+
+            // Grades
+            List<GradeList> gradeListFirst = studentGradeMapper.selectGradeWithSubject(StudentGrade.builder().userId(user.getId()).build(), 0);
+            List<GradeList> gradeListSecond = studentGradeMapper.selectGradeWithSubject(StudentGrade.builder().userId(user.getId()).build(), 1);
+            Score gradeFirst = Score.builder().gradeTotal(student.getGradePrimary()).gradeList(gradeListFirst).build();
+            Score gradeSecond = Score.builder().gradeTotal(student.getGradeSecond()).gradeList(gradeListSecond).build();
+
+            return studentConverter.StudentToSubmitTable(student, gradeFirst, gradeSecond, applications, fileList, majorApply, majorStudyList);
+
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
 
 
         return null;
