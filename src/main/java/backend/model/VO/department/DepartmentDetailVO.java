@@ -9,11 +9,11 @@ import lombok.NoArgsConstructor;
 @AllArgsConstructor
 @NoArgsConstructor
 @Builder
-public class DepartmentDeatilVO {
+public class DepartmentDetailVO {
 
     private String description;
 
-    private String imageUrl;
+    private String logo;
 
     private Integer totalMajor;
 
