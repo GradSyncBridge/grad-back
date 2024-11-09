@@ -1,6 +1,7 @@
 package backend.service.impl;
 
 import backend.mapper.*;
+import backend.model.DTO.ApplicationSubmitDTO;
 import backend.model.DTO.StudentTableDTO;
 import backend.model.VO.student.*;
 import backend.model.converter.StudentConverter;
@@ -14,6 +15,7 @@ import org.springframework.stereotype.Service;
 import java.util.List;
 import java.time.LocalDateTime;
 import java.util.Objects;
+import java.util.concurrent.atomic.AtomicInteger;
 
 
 @Service
@@ -47,13 +49,16 @@ public class StudentServiceImpl implements StudentService {
             float totalGrade = 0;
             for (StudentGrade grade : studentTableDTO.getGrades()) {
                 totalGrade += grade.getGrade();
-                StudentGrade studentGrade =
-                        StudentGrade.builder().userId(User.getAuth().getId()).sid(grade.getSid()).grade(grade.getGrade()).build();
+                StudentGrade studentGrade = StudentGrade
+                        .builder()
+                        .userId(User.getAuth().getId()).sid(grade.getSid()).grade(grade.getGrade()).build();
                 studentGradeMapper.insertStudentGrade(studentGrade);
             }
 
-            if (User.getAuth().getRole() == 1) student.setGradeFirst(totalGrade);
-            else student.setGradeSecond(totalGrade);
+            if (User.getAuth().getRole() == 1)
+                student.setGradeFirst(totalGrade);
+            else
+                student.setGradeSecond(totalGrade);
 
             studentMapper.updateStudent(student, Student.builder().userId(User.getAuth().getId()).build());
         } catch (Exception e) {
@@ -104,10 +109,30 @@ public class StudentServiceImpl implements StudentService {
             return studentConverter.INSTANCE.StudentToSubmitTable(student, gradeFirst, gradeSecond, applications, fileList, majorApply, majorStudyList);
 
         } catch (Exception e) {
-            e.printStackTrace();
+//            e.printStackTrace();
+            throw new RuntimeException(e.getMessage());
+        }
+    }
+
+    @Override
+    public void submitApplication(ApplicationSubmitDTO applicationSubmit) {
+        try {
+            List<Integer> applications = applicationSubmit.getApplication();
+
+            for (int i = 0; i < applications.size(); i++)
+                studentApplyMapper.
+                        insertStudentApply(StudentApply.
+                                builder()
+                                .userId(User.getAuth().getId())
+                                .tid(applications.get(i))
+                                .level(i+1)
+                                .disabled(1).build()
+                        );
+        } catch (Exception e) {
+            throw new RuntimeException(e.getMessage());
         }
 
 
-        return null;
+
     }
 }
