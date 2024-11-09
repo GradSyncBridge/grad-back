@@ -20,11 +20,11 @@ public interface DepartmentMapper {
     /**
      * 查询截止日期
      *
-     * @param departmentMapper 查询条件
+     * @param department 查询条件
      * @param scope      查询返回的字段
      * @return 截止日期列表
      */
-    List<Department> selectDepartment(DepartmentMapper departmentMapper, Map<String, Boolean> scope);
+    List<Department> selectDepartment(Department department, Map<String, Boolean> scope);
 
     /**
      * 更新截止日期
