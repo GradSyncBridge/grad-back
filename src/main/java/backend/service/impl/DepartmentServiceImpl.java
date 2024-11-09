@@ -8,7 +8,7 @@ import org.springframework.stereotype.Service;
 
 import backend.mapper.DepartmentMapper;
 import backend.mapper.MajorMapper;
-import backend.model.VO.department.DepartmentDeatilVO;
+import backend.model.VO.department.DepartmentDetailVO;
 import backend.model.VO.department.DepartmentVO;
 import backend.model.converter.DepartmentConverter;
 import backend.model.entity.Department;
@@ -29,28 +29,30 @@ public class DepartmentServiceImpl implements DepartmentService {
 
     /**
      * 获取所有部门
+     * 
      * @return 所有部门
      */
     @Override
     public List<DepartmentVO> getDepartment() {
-        try{
+        try {
             List<Department> departmentList = departmentMapper.selectAllDepartments();
 
             return departmentConverter.INSTANCE.DepartmentListTODepartmentVOList(departmentList);
-        }catch (Exception e){
+        } catch (Exception e) {
             throw new RuntimeException(e.getMessage());
         }
     }
 
     @Override
-    public DepartmentDeatilVO getDepartmentDetail(Integer departmentID) {
+    public DepartmentDetailVO getDepartmentDetail(Integer departmentID) {
         try {
-            
-            Department department = departmentMapper.selectDepartmentDetail(departmentID);
-            Integer totalMajor = majorMapper.selectMajor(Major.builder().department(departmentID).build(), Map.of("id",true)).size();
 
-            return departmentConverter.INSTANCE.DepartmentTODepartmentDeatilVO(department, totalMajor);
-            
+            Department department = departmentMapper.selectDepartmentDetail(departmentID);
+            Integer totalMajor = majorMapper
+                    .selectMajor(Major.builder().department(departmentID).build(), Map.of("id", true)).size();
+
+            return departmentConverter.INSTANCE.DepartmentTODepartmentDetailVO(department, totalMajor);
+
         } catch (Exception e) {
             throw new RuntimeException(e.getMessage());
         }

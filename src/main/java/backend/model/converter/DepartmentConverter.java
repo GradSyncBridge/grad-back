@@ -6,7 +6,7 @@ import org.mapstruct.Mapper;
 import org.mapstruct.Mapping;
 import org.mapstruct.factory.Mappers;
 
-import backend.model.VO.department.DepartmentDeatilVO;
+import backend.model.VO.department.DepartmentDetailVO;
 import backend.model.VO.department.DepartmentVO;
 import backend.model.entity.Department;
 
@@ -20,5 +20,5 @@ public interface DepartmentConverter {
 
     List<DepartmentVO> DepartmentListTODepartmentVOList(List<Department> departmentList);
 
-    DepartmentDeatilVO DepartmentTODepartmentDeatilVO(Department department, Integer totalMajor);
+    DepartmentDetailVO DepartmentTODepartmentDetailVO(Department department, Integer totalMajor);
 }

@@ -26,5 +26,5 @@ public class Department {
 
     private String description;
 
-    private String imageUrl;
+    private String logo;
 }
