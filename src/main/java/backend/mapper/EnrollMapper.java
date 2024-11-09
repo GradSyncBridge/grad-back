@@ -25,6 +25,8 @@ public interface EnrollMapper {
      */
     List<Enroll> selectEnroll(Enroll enroll, Map<String, Boolean> scope);
 
+    List<Enroll> selectEnrollWithDept(Integer department, Integer year);
+
     /**
      * 更新选课记录
      *
