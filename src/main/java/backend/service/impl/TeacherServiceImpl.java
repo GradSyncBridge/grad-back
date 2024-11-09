@@ -1,8 +1,16 @@
 package backend.service.impl;
 
-import backend.exception.model.User.UserNotFoundException;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.concurrent.CompletableFuture;
+
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.scheduling.annotation.Async;
+import org.springframework.stereotype.Service;
+
 import backend.exception.model.teacher.TeacherNotFoundException;
 import backend.exception.model.teacher.TeacherProfileNoRightException;
+import backend.exception.model.user.UserNotFoundException;
 import backend.mapper.MajorToTeacherMapper;
 import backend.mapper.TeacherMapper;
 import backend.mapper.UserMapper;
@@ -14,13 +22,6 @@ import backend.model.entity.Teacher;
 import backend.model.entity.User;
 import backend.service.TeacherService;
 import backend.util.FieldsGenerator;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.scheduling.annotation.Async;
-import org.springframework.stereotype.Service;
-
-import java.util.ArrayList;
-import java.util.List;
-import java.util.concurrent.CompletableFuture;
 
 @Service
 public class TeacherServiceImpl implements TeacherService {
