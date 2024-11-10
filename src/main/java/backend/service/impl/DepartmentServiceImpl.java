@@ -35,9 +35,7 @@ public class DepartmentServiceImpl implements DepartmentService {
     @Override
     public List<DepartmentVO> getDepartment() {
         try {
-            List<Department> departmentList = departmentMapper.selectAllDepartments();
-
-            return departmentConverter.INSTANCE.DepartmentListTODepartmentVOList(departmentList);
+            return departmentConverter.INSTANCE.DepartmentListTODepartmentVOList(departmentMapper.selectAllDepartments());
         } catch (Exception e) {
             throw new RuntimeException(e.getMessage());
         }
