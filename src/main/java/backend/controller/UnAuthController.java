@@ -1,20 +1,23 @@
 package backend.controller;
 
-import backend.model.DTO.UserLoginDTO;
-import backend.model.DTO.UserRegisterDTO;
-import backend.model.VO.user.UserLoginVO;
-import backend.model.VO.user.UserRegisterVO;
-import backend.service.DepartmentService;
-import backend.service.MajorService;
-import backend.service.TeacherService;
-import backend.service.UserService;
-import backend.util.ResultEntity;
+import backend.service.*;
 import org.apache.ibatis.annotations.Param;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.validation.annotation.Validated;
-import org.springframework.web.bind.annotation.*;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.RestController;
+
+import backend.model.DTO.UserLoginDTO;
+import backend.model.DTO.UserRegisterDTO;
+import backend.model.VO.user.UserLoginVO;
+import backend.model.VO.user.UserRegisterVO;
+import backend.util.ResultEntity;
 
 /**
  * UnAuthController
@@ -37,6 +40,9 @@ public class UnAuthController {
 
     @Autowired
     private TeacherService teacherService;
+
+    @Autowired
+    private EnrollService enrollService;
 
     /**
      * 处理登录请求
@@ -64,6 +70,7 @@ public class UnAuthController {
 
     /**
      * 获取所有专业
+     *
      * @param department 学院
      * @return 专业列表
      */
@@ -80,8 +87,14 @@ public class UnAuthController {
         return ResultEntity.success(200, "Get all teachers successfully", teacherService.getTeacher(department));
     }
 
+    @GetMapping(value = "/department/detail")
+    public ResponseEntity<ResultEntity<Object>> getDepartmentDetail(@RequestParam(value = "departmentID") Integer departmentID) {
+        return ResultEntity.success(200, "Get the department's details successfully", departmentService.getDepartmentDetail(departmentID));
+    }
+
     /**
      * 获取所有学院
+     *
      * @return 学院列表
      */
     @GetMapping(value = "/department")
@@ -91,6 +104,7 @@ public class UnAuthController {
 
     /**
      * 获取对应二级学科教师列表
+     *
      * @param majorID 二级学科
      * @return 教师列表
      */
@@ -98,4 +112,11 @@ public class UnAuthController {
     public ResponseEntity<ResultEntity<Object>> getTeachersByCatalogue(@RequestParam(value = "majorID") Integer majorID) {
         return ResultEntity.success(200, "Get all departments successfully", teacherService.getTeachersByCatalogue(majorID));
     }
+
+
+    @GetMapping(value = "/enroll")
+    public ResponseEntity<ResultEntity<Object>> getEnrollTable(@RequestParam(value = "departmentID") Integer departmentId, @RequestParam(value = "year") Integer year) {
+        return ResultEntity.success(200, "Get enroll table successfully", enrollService.getEnrollTable(departmentId, year));
+    }
+
 }

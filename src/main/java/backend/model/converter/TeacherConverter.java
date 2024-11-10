@@ -34,6 +34,7 @@ public interface TeacherConverter {
     @Mapping(target = "department", source = "teacher.department")
     @Mapping(target = "title", source = "teacher.title")
     @Mapping(target = "description", source = "teacher.description")
+    @Mapping(target = "total", source = "teacher.total")
     TeacherVO TeacherAndUserToTeacherVO(Teacher teacher, User user);
 
     @Mapping(target = "uid", source = "user.id")

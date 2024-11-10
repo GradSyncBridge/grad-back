@@ -1,4 +1,4 @@
-package backend.exception.model.User;
+package backend.exception.model.user;
 
 import backend.exception.model.BaseException;
 

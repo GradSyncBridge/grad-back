@@ -1,8 +1,16 @@
 package backend.service.impl;
 
-import backend.exception.model.User.UserNotFoundException;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.concurrent.CompletableFuture;
+
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.scheduling.annotation.Async;
+import org.springframework.stereotype.Service;
+
 import backend.exception.model.teacher.TeacherNotFoundException;
 import backend.exception.model.teacher.TeacherProfileNoRightException;
+import backend.exception.model.user.UserNotFoundException;
 import backend.mapper.MajorToTeacherMapper;
 import backend.mapper.TeacherMapper;
 import backend.mapper.UserMapper;
@@ -15,13 +23,6 @@ import backend.model.entity.Teacher;
 import backend.model.entity.User;
 import backend.service.TeacherService;
 import backend.util.FieldsGenerator;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.scheduling.annotation.Async;
-import org.springframework.stereotype.Service;
-
-import java.util.ArrayList;
-import java.util.List;
-import java.util.concurrent.CompletableFuture;
 
 @Service
 public class TeacherServiceImpl implements TeacherService {
@@ -48,7 +49,8 @@ public class TeacherServiceImpl implements TeacherService {
         List<Teacher> teachers =
                 teacherMapper.selectTeacher(Teacher.builder().department(department).build(), FieldsGenerator.generateFields(Teacher.class));
 
-        if(teachers.isEmpty()) throw new TeacherNotFoundException();
+        if(teachers.isEmpty())
+            return new ArrayList<>();
 
         List<User> users = getTeacherAsync(teachers).join();
 
@@ -104,13 +106,12 @@ public class TeacherServiceImpl implements TeacherService {
         List<CompletableFuture<User>> futures = new ArrayList<>();
 
         try{
-
-            for (Teacher interviewId : teachers) {
+            for (Teacher teacher : teachers) {
                 CompletableFuture<User> future = CompletableFuture.supplyAsync(() -> {
                     try {
-                        return userMapper.selectUser(User.builder().id(interviewId.getId()).build(), FieldsGenerator.generateFields(User.class)).getFirst();
+                        return userMapper.selectUser(User.builder().id(teacher.getUserId()).build(), FieldsGenerator.generateFields(User.class)).getFirst();
                     } catch (Exception e) {
-                        throw new RuntimeException();
+                        throw new RuntimeException(e);
                     }
                 });
                 futures.add(future);

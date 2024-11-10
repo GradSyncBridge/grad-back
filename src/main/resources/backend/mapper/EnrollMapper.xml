@@ -53,6 +53,25 @@
             <include refid="DynamicWhere" />
     </select>
 
+    <select id="selectEnrollWithDept" resultType="backend.model.entity.Enroll">
+        select
+            e.id as "id",
+            e.sid as "sid",
+            e.mid as "mid",
+            e.tid as "tid",
+            e.year as "year",
+            e.disabled as "disabled"
+        from
+            Enroll as e
+            join Teacher as t
+            on e.tid = t.user_id
+        where
+            t.department = #{department}
+            and e.year = #{year}
+            and e.disabled = 1
+
+    </select>
+
     <update id="updateEnroll">
         update Enroll
         <set>

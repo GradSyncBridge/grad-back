@@ -1,9 +1,18 @@
 package backend.service.impl;
 
+import java.util.List;
+import java.util.Map;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
+
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
+import org.springframework.stereotype.Service;
+
 import backend.config.JwtService;
-import backend.exception.model.User.DuplicateUserEmailException;
-import backend.exception.model.User.DuplicateUserException;
-import backend.exception.model.User.LoginFailedException;
+import backend.exception.model.user.DuplicateUserEmailException;
+import backend.exception.model.user.DuplicateUserException;
+import backend.exception.model.user.LoginFailedException;
 import backend.mapper.StudentMapper;
 import backend.mapper.TeacherMapper;
 import backend.mapper.UserMapper;
@@ -20,15 +29,6 @@ import backend.model.entity.User;
 import backend.service.UserService;
 import backend.util.FieldsGenerator;
 import backend.util.FileManager;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.autoconfigure.liquibase.LiquibaseProperties;
-import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
-import org.springframework.stereotype.Service;
-
-import java.util.List;
-import java.util.Map;
-import java.util.regex.Matcher;
-import java.util.regex.Pattern;
 
 @Service
 public class UserServiceImpl implements UserService {

@@ -1,11 +1,12 @@
 package backend.service.impl;
 
-import backend.config.JwtService;
-import backend.exception.model.User.UserNotFoundException;
-import backend.mapper.UserMapper;
-import backend.model.entity.User;
-import backend.service.EmailService;
-import jakarta.mail.internet.MimeMessage;
+import java.net.URLEncoder;
+import java.nio.charset.StandardCharsets;
+import java.nio.file.Files;
+import java.util.List;
+import java.util.Map;
+import java.util.UUID;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.ApplicationContext;
@@ -17,12 +18,12 @@ import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.web.servlet.view.RedirectView;
 
-import java.net.URLEncoder;
-import java.nio.charset.StandardCharsets;
-import java.nio.file.Files;
-import java.util.List;
-import java.util.Map;
-import java.util.UUID;
+import backend.config.JwtService;
+import backend.exception.model.user.UserNotFoundException;
+import backend.mapper.UserMapper;
+import backend.model.entity.User;
+import backend.service.EmailService;
+import jakarta.mail.internet.MimeMessage;
 
 @Service
 public class EmailServiceImpl implements EmailService {
