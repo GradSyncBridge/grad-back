@@ -1,0 +1,7 @@
+services:
+  web:
+    build: .  
+    volumes:
+      - /home/alexander/GradSyncBridge/media:/app/src/main/resources/media
+    ports:
+      - "8081:8081" 
