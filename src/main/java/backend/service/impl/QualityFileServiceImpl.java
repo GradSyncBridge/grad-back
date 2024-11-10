@@ -10,6 +10,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 
+import java.time.LocalDateTime;
+
 @Service
 public class QualityFileServiceImpl implements QualityFileService {
 
@@ -21,7 +23,7 @@ public class QualityFileServiceImpl implements QualityFileService {
         try {
             String filePath = FileManager.store(file);
 
-            QualityFile qualityFile = QualityFile.builder().userId(User.getAuth().getId()).file(filePath).build();
+            QualityFile qualityFile = QualityFile.builder().userId(User.getAuth().getId()).file(filePath).created(LocalDateTime.now()).build();
             qualityFileMapper.insertQualityFile(qualityFile);
 
             return FileUploadVO.builder().fileID(qualityFile.getId()).filePath(filePath).build();

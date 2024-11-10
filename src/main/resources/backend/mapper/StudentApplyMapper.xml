@@ -9,7 +9,7 @@
     <sql id="DynamicFields">
         <trim suffixOverrides=",">
             <if test="scope.id == true"> id, </if>
-            <if test="scope.userId == true"> user_id, </if>
+            <if test="scope.userId == true"> user_id as "userId", </if>
             <if test="scope.tid == true"> tid, </if>
             <if test="scope.level == true"> level, </if>
             <if test="scope.disabled == true"> disabled, </if>
@@ -48,6 +48,21 @@
             <include refid="DynamicFields" />
         from StudentApply
             <include refid="DynamicWhere" />
+    </select>
+
+    <select id="selectApplicationWithTeacher" resultType="backend.model.VO.student.Application">
+        select
+            u.avatar as "avatar",
+            u.name as "name",
+            t.title as "title"
+        from
+            StudentApply as s
+            join Teacher as t
+            on t.user_id = s.tid
+            join User as u
+            on t.user_id = u.id
+        where
+            s.user_id = #{userId}
     </select>
 
     <update id="updateStudentApply">

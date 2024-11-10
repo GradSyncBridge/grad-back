@@ -15,5 +15,5 @@ public class Application {
 
     private String name;
 
-    private String title;
+    private Integer title;
 }

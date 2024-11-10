@@ -62,7 +62,7 @@ public class Student {
 
     private String emergency;
 
-    private Float gradePrimary;
+    private Float gradeFirst;
 
     private Float gradeSecond;
 

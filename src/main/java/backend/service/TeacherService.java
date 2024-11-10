@@ -1,5 +1,6 @@
 package backend.service;
 
+import backend.model.DTO.TeacherProfileUpdateDTO;
 import backend.model.VO.teacher.TeacherProfileVO;
 import backend.model.VO.teacher.TeacherVO;
 
@@ -26,4 +27,6 @@ public interface TeacherService {
      * @return 教师个人信息
      */
     TeacherProfileVO getTeacherProfile(Integer uid);
+
+    void updateTeacherProfile(TeacherProfileUpdateDTO teacherProfile);
 }

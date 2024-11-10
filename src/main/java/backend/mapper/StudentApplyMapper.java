@@ -1,6 +1,7 @@
 package backend.mapper;
 
 
+import backend.model.VO.student.Application;
 import backend.model.entity.StudentApply;
 import org.apache.ibatis.annotations.Mapper;
 
@@ -25,6 +26,14 @@ public interface StudentApplyMapper {
      * @return 学生志愿申请列表
      */
     List<StudentApply> selectStudentApply(StudentApply studentApply, Map<String, Boolean> scope);
+
+    /**
+     * 查询志愿申请项并获取对应的教师字段
+     *
+     * @param studentApply 查询条件
+     * @return 志愿申请项目下的教师字段
+     * */
+    List<Application> selectApplicationWithTeacher(StudentApply studentApply);
 
     /**
      * 更新学生志愿申请项
