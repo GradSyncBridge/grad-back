@@ -49,7 +49,8 @@ public class TeacherServiceImpl implements TeacherService {
         List<Teacher> teachers =
                 teacherMapper.selectTeacher(Teacher.builder().department(department).build(), FieldsGenerator.generateFields(Teacher.class));
 
-        if(teachers.isEmpty()) throw new TeacherNotFoundException();
+        if(teachers.isEmpty())
+            return new ArrayList<>();
 
         List<User> users = getTeacherAsync(teachers).join();
 
@@ -105,13 +106,12 @@ public class TeacherServiceImpl implements TeacherService {
         List<CompletableFuture<User>> futures = new ArrayList<>();
 
         try{
-
-            for (Teacher interviewId : teachers) {
+            for (Teacher teacher : teachers) {
                 CompletableFuture<User> future = CompletableFuture.supplyAsync(() -> {
                     try {
-                        return userMapper.selectUser(User.builder().id(interviewId.getId()).build(), FieldsGenerator.generateFields(User.class)).getFirst();
+                        return userMapper.selectUser(User.builder().id(teacher.getUserId()).build(), FieldsGenerator.generateFields(User.class)).getFirst();
                     } catch (Exception e) {
-                        throw new RuntimeException();
+                        throw new RuntimeException(e);
                     }
                 });
                 futures.add(future);

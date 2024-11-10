@@ -4,6 +4,16 @@
         "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
 
 <mapper namespace="backend.mapper.TeacherMapper">
+    <resultMap id="teacherEntityMap" type="backend.model.entity.Teacher">
+        <id property="id" column="id" />
+        <result property="title" column="title"/>
+        <result property="description" column="description"/>
+        <result property="identity" column="identity"/>
+        <result property="userId" column="user_id"/>
+        <result property="department" column="department"/>
+        <result property="total" column="total"/>
+        <result property="remnant" column="remnant"/>
+    </resultMap>
 
     <sql id="DynamicFields">
         <trim suffixOverrides=",">
@@ -11,7 +21,7 @@
             <if test="scope.title == true"> title, </if>
             <if test="scope.description == true"> description, </if>
             <if test="scope.identity == true"> identity, </if>
-            <if test="scope.userId == true"> user_id, </if>
+            <if test="scope.userId == true"> user_id as "userId", </if>
             <if test="scope.department == true"> department, </if>
             <if test="scope.total == true"> total, </if>
             <if test="scope.remnant == true"> remnant, </if>
@@ -85,9 +95,9 @@
 
     </update>
 
-    <select id="selectTeacherForeach" resultType="backend.model.entity.Teacher">
+    <select id="selectTeacherForeach" resultMap="teacherEntityMap">
         SELECT * FROM Teacher
-        WHERE id IN
+        WHERE user_id IN
         <foreach collection="majorToTeachers" item="majorToTeacher" open="(" separator="," close=")">
             #{majorToTeacher.tid}
         </foreach>

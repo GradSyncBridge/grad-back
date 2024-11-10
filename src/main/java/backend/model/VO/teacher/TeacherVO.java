@@ -30,4 +30,6 @@ public class TeacherVO {
     private Integer title;
 
     private String description;
+
+    private Integer total;
 }
