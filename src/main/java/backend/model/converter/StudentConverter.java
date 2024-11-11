@@ -19,7 +19,8 @@ public interface StudentConverter {
     @Mapping(target = "certifyId", source = "studentTableDTO.certifyID")
     @Mapping(target = "majorStudy", source = "majorStudy")
     @Mapping(target = "birth", source = "studentTableDTO.birthday")
-    Student StudentTableDTOToStudent(StudentTableDTO studentTableDTO, String majorStudy);
+    @Mapping(target = "quality", source = "quality")
+    Student StudentTableDTOToStudent(StudentTableDTO studentTableDTO, String majorStudy, String quality);
 
     @Mapping(target = "majorID", source = "id")
     @Mapping(target = "majorNum", source = "mid")
