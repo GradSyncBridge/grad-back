@@ -19,5 +19,6 @@ public interface EnrollConverter {
     @Mapping(target = "departmentName", source = "dept.name")
     @Mapping(target = "majorNum", source = "major.mid")
     @Mapping(target = "majorName", source = "major.name")
-    EnrollVO MultiAttributesToEnrollVO(User student, User teacher, Department dept, Major major);
+    @Mapping(target = "enrollmentID", source = "enrollmentID")
+    EnrollVO MultiAttributesToEnrollVO(User student, User teacher, Department dept, Major major, Integer enrollmentID);
 }

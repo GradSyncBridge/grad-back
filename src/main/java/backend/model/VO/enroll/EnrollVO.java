@@ -9,6 +9,7 @@ import lombok.NoArgsConstructor;
 @AllArgsConstructor
 
 public class EnrollVO {
+    private Integer enrollmentID;
     private String student;
     private String teacher;
     private Integer gender;

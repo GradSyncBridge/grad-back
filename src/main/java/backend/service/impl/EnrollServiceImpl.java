@@ -33,6 +33,9 @@ public class EnrollServiceImpl implements EnrollService {
     @Autowired
     private DepartmentMapper departmentMapper;
 
+    @Autowired
+    private EnrollConverter enrollConverter;
+
     @Override
     public List<EnrollVO> getEnrollTable(Integer departmentId, Integer year) {
         List<Enroll> enrolls = enrollMapper.selectEnrollWithDept(departmentId, year);
@@ -60,7 +63,8 @@ public class EnrollServiceImpl implements EnrollService {
 
                         if (student == null || teacher == null || dept == null || major == null)
                             return null;
-                        return EnrollConverter.INSTANCE.MultiAttributesToEnrollVO(student, teacher, dept, major);
+                        return enrollConverter.INSTANCE.MultiAttributesToEnrollVO(student, teacher, dept, major,
+                                e.getId());
                     })
                     .filter(Objects::nonNull).toList();
         } catch (Exception e) {
