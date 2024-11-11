@@ -14,6 +14,8 @@ import java.util.List;
 @NoArgsConstructor
 @StudentTableDTOValidation
 public class StudentTableDTO {
+    private Integer targetUid;
+
     private String birth;
 
     private LocalDateTime birthday;
@@ -35,6 +37,8 @@ public class StudentTableDTO {
     private String school;
 
     private String type;
+
+    private List<Integer> quality;
 
     private Integer enrollment;
 

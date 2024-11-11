@@ -36,8 +36,19 @@ public class StudentController {
         return ResultEntity.success(HttpStatus.OK.value(), "Application info successfully recorded", null);
     }
 
+    @PutMapping(value = "/apply")
+    public ResponseEntity<ResultEntity<Object>> modifyApplication(@RequestBody ApplicationSubmitDTO applicationSubmitDTO) {
+        studentService.modifyApplication(applicationSubmitDTO);
+        return ResultEntity.success(HttpStatus.OK.value(), "Application info successfully modified", null);
+    }
+
     @GetMapping
-    public ResponseEntity<ResultEntity<Object>> getStudentSubmitTable(){
-        return ResultEntity.success(HttpStatus.OK.value(), "Get Student's submission table successfully", studentService.getStudentSubmitTable());
+    public ResponseEntity<ResultEntity<Object>> getStudentSubmitTable(@RequestParam(value = "targetUid", defaultValue = "-1") Integer targetUid) {
+        return ResultEntity.success(HttpStatus.OK.value(), "Get Student's submission table successfully", studentService.getStudentSubmitTable(targetUid));
+    }
+
+    @GetMapping(value = "/search")
+    public ResponseEntity<ResultEntity<Object>> searchStudent(@RequestParam(value = "key") String key) {
+        return ResultEntity.success(HttpStatus.OK.value(), "Search result displayed successfully", studentService.searchStudent(key));
     }
 }
