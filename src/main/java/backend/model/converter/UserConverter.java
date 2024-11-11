@@ -6,6 +6,7 @@ import backend.model.DTO.UserRegisterDTO;
 import backend.model.VO.user.UserProfileVO;
 import backend.model.entity.User;
 import org.mapstruct.Mapper;
+import org.mapstruct.Mapping;
 import org.mapstruct.factory.Mappers;
 
 @Mapper(componentModel = "spring")
@@ -17,6 +18,7 @@ public interface UserConverter {
 
     UserLoginDTO UserToUserLoginDTO(User user);
 
+    @Mapping(target = "uid", source = "id")
     UserProfileVO UserToUserProfileVO(User user);
 
     User UserRegisterDTOToUser(UserRegisterDTO userRegisterDTO);

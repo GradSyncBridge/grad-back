@@ -63,11 +63,10 @@ public class UserServiceImpl implements UserService {
 
         User selectUser;
         List<String> fields;
-        if(matcher.matches()) {
+        if (matcher.matches()) {
             fields = List.of("id", "username", "password", "email", "role");
             selectUser = User.builder().email(userLoginDTO.getUsername()).build();
-        }
-        else {
+        } else {
             fields = List.of("id", "username", "password", "role");
             selectUser = User.builder().username(userLoginDTO.getUsername()).build();
         }
@@ -123,7 +122,8 @@ public class UserServiceImpl implements UserService {
             if (!userList.isEmpty()) throw new DuplicateUserException();
 
             userMapper.insertUser(user);
-            if(user.getRole() == 1) studentMapper.insertStudent(Student.builder().userId(user.getId()).valid(-1).disabled(1).build());
+            if (user.getRole() == 1)
+                studentMapper.insertStudent(Student.builder().userId(user.getId()).valid(-1).disabled(1).build());
             else teacherMapper.insertTeacher(backend.model.entity.Teacher.builder().userId(user.getId()).build());
         } catch (DuplicateUserException ex) {
             throw new DuplicateUserException();
@@ -147,19 +147,19 @@ public class UserServiceImpl implements UserService {
         String username = userProfileUpdateDTO.getUsername();
         String email = userProfileUpdateDTO.getEmail();
         try {
-            if(!username.equals(User.getAuth().getUsername())) {
+            if (!username.equals(User.getAuth().getUsername())) {
                 List<User> userList = userMapper.selectUser(User.builder().username(userProfileUpdateDTO.getUsername()).build(), Map.of("username", true));
 
                 if (!userList.isEmpty()) throw new DuplicateUserException();
-            }else{
+            } else {
                 userProfileUpdateDTO.setUsername(null);
             }
 
-            if(!email.equals(User.getAuth().getEmail())) {
+            if (!email.equals(User.getAuth().getEmail())) {
                 List<User> userList = userMapper.selectUser(User.builder().email(email).build(), Map.of("email", true));
 
                 if (!userList.isEmpty()) throw new DuplicateUserEmailException();
-            }else {
+            } else {
                 userProfileUpdateDTO.setEmail(null);
             }
 
@@ -169,7 +169,7 @@ public class UserServiceImpl implements UserService {
             userMapper.updateUser(user, User.getAuth());
         } catch (DuplicateUserException duplicateUserException) {
             throw new DuplicateUserException();
-        } catch (DuplicateUserEmailException duplicateUserEmailException){
+        } catch (DuplicateUserEmailException duplicateUserEmailException) {
             throw new DuplicateUserEmailException();
         } catch (Exception e) {
             throw new RuntimeException(e.getMessage());
