@@ -1,7 +1,6 @@
 package backend.exception.model.teacher;
 
 import backend.exception.model.BaseException;
-import backend.model.entity.Teacher;
 
 public class TeacherNotFoundException extends BaseException {
 
