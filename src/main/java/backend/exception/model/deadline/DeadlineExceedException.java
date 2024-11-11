@@ -1,6 +1,6 @@
 package backend.exception.model.deadline;
 
-import backend.Enums.DeadlineEnum;
+import backend.enums.DeadlineEnum;
 import backend.exception.model.BaseException;
 
 public class DeadlineExceedException extends BaseException {
