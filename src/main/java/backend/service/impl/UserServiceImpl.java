@@ -5,6 +5,7 @@ import java.util.Map;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
+import backend.config.GlobalConfig;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
@@ -55,14 +56,12 @@ public class UserServiceImpl implements UserService {
      */
     @Override
     public UserLoginVO login(UserLoginDTO userLoginDTO) {
-        String emailRegex = "^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\\.[a-zA-Z]{2,}$";
-
-        Pattern pattern = Pattern.compile(emailRegex);
-
+        Pattern pattern = Pattern.compile(GlobalConfig.emailPattern);
         Matcher matcher = pattern.matcher(userLoginDTO.getUsername());
 
         User selectUser;
         List<String> fields;
+
         if (matcher.matches()) {
             fields = List.of("id", "username", "password", "email", "role");
             selectUser = User.builder().email(userLoginDTO.getUsername()).build();
@@ -162,7 +161,7 @@ public class UserServiceImpl implements UserService {
             } else {
                 userProfileUpdateDTO.setEmail(null);
             }
-            if(userProfileUpdateDTO.getAvatar() != null)
+            if (userProfileUpdateDTO.getAvatar() != null)
                 userProfileUpdateDTO.setAvatar(FileManager.saveBase64Image(userProfileUpdateDTO.getAvatar()));
             else
                 userProfileUpdateDTO.setAvatar(null);
@@ -180,6 +179,7 @@ public class UserServiceImpl implements UserService {
 
         userProfileUpdateDTO.setUsername(username);
         userProfileUpdateDTO.setEmail(email);
+
         return userProfileUpdateDTO;
     }
 }

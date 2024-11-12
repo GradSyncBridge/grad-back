@@ -8,12 +8,17 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Service;
 
+import backend.exception.model.user.DuplicateUserEmailException;
+import backend.exception.model.user.DuplicateUserException;
+
 import backend.exception.model.teacher.TeacherNotFoundException;
 import backend.exception.model.teacher.TeacherProfileNoRightException;
 import backend.exception.model.user.UserNotFoundException;
+
 import backend.mapper.MajorToTeacherMapper;
 import backend.mapper.TeacherMapper;
 import backend.mapper.UserMapper;
+
 import backend.model.DTO.TeacherProfileUpdateDTO;
 import backend.model.VO.teacher.TeacherProfileVO;
 import backend.model.VO.teacher.TeacherVO;
@@ -21,8 +26,11 @@ import backend.model.converter.TeacherConverter;
 import backend.model.entity.MajorToTeacher;
 import backend.model.entity.Teacher;
 import backend.model.entity.User;
+
 import backend.service.TeacherService;
+
 import backend.util.FieldsGenerator;
+import backend.util.FileManager;
 
 @Service
 public class TeacherServiceImpl implements TeacherService {
@@ -135,11 +143,47 @@ public class TeacherServiceImpl implements TeacherService {
     @Override
     public void updateTeacherProfile(TeacherProfileUpdateDTO teacherProfile) {
         try {
-            Teacher teacherUpdate = teacherConverter.TeacherProfileDTOToTeacher(teacherProfile);
-            teacherMapper.updateTeacher(teacherUpdate, User.getAuth().getTeacher());
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
+            User targetUser = User.getAuth();
+            Teacher targetTeacher = targetUser.getTeacher();
+            List<User> possibleUsers;
 
+            String username = teacherProfile.getUsername();
+            if (!username.equals(targetUser.getUsername())) {
+                possibleUsers = userMapper.selectUser(User.builder().username(username).build(), FieldsGenerator.generateFields(User.class));
+
+                if (!possibleUsers.isEmpty())
+                    throw new DuplicateUserException();
+                targetUser.setUsername(username);
+            }
+
+            String email = teacherProfile.getEmail();
+            if (!email.equals(targetUser.getEmail())) {
+                possibleUsers = userMapper.selectUser(User.builder().email(email).build(), FieldsGenerator.generateFields(User.class));
+
+                if (!possibleUsers.isEmpty())
+                    throw new DuplicateUserEmailException();
+                targetUser.setEmail(email);
+            }
+
+            if (teacherProfile.getAvatar() != null) {
+                String avatar = targetUser.getAvatar();
+                if (avatar != null && !avatar.isEmpty())
+                    FileManager.remove(avatar);
+                targetUser.setAvatar(FileManager.saveBase64Image(teacherProfile.getAvatar()));
+            } else
+                targetUser.setAvatar(targetUser.getAvatar());
+
+            targetTeacher.setDescription(teacherProfile.getDescription());
+
+            userMapper.updateUser(targetUser, User.builder().id(targetTeacher.getId()).build());
+            teacherMapper.updateTeacher(targetTeacher, Teacher.builder().userId(targetTeacher.getUserId()).build());
+
+        } catch (DuplicateUserException duplicateUserException) {
+            throw new DuplicateUserException();
+        } catch (DuplicateUserEmailException duplicateUserEmailException) {
+            throw new DuplicateUserEmailException();
+        } catch (Exception e) {
+            throw new RuntimeException(e.getMessage());
+        }
     }
 }
