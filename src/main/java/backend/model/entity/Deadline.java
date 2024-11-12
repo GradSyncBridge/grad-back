@@ -27,4 +27,6 @@ public class Deadline {
 
     // 0: 提交初试材料截止；1: 提交复试材料截止；2: 第一轮录取结束；3: 第二轮录取结束；4: 第三轮录取结束
     private Integer type;
+
+    private String name;
 }
