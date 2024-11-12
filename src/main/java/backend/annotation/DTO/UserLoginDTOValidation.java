@@ -10,7 +10,7 @@ import java.lang.annotation.*;
 @Constraint(validatedBy = UserLoginDTOValidationImpl.class)
 public @interface UserLoginDTOValidation {
 
-    String message() default "Invalid User";
+    String message() default "Invalid user";
 
     Class<?>[] groups() default {};
 

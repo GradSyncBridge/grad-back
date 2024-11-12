@@ -1,5 +1,6 @@
 package backend.config;
 
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Configuration;
 
 import org.springframework.context.annotation.Bean;
@@ -31,6 +32,9 @@ public class SecurityConfig implements WebMvcConfigurer {
     @Autowired
     private UserDetailsService userDetailsService;
 
+    @Value("${rate.max}")
+    private int maxRequestsPerMinute;
+
     @Autowired
     private JWTFilter jwtFilter;
 
@@ -42,9 +46,10 @@ public class SecurityConfig implements WebMvcConfigurer {
     @Lazy
     private CorsConfigurationSourceImpl corsConfigurationSource;
 
-    @Autowired
-    @Lazy
-    private RateLimitingFilter rateLimitingFilter;
+    @Bean
+    public RateLimitingFilter rateLimitingFilter(){
+        return new RateLimitingFilter(maxRequestsPerMinute);
+    }
     /**
      * 密码加密
      *
@@ -73,7 +78,7 @@ public class SecurityConfig implements WebMvcConfigurer {
                 // httpBasic(Customizer.withDefaults()) // prod mode, disable view for security
                 .sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
                 .addFilterBefore(jwtFilter, UsernamePasswordAuthenticationFilter.class)
-                .addFilterBefore(rateLimitingFilter, UsernamePasswordAuthenticationFilter.class)
+                .addFilterBefore(rateLimitingFilter(), UsernamePasswordAuthenticationFilter.class)
                 .exceptionHandling(exceptionHandling ->
                         exceptionHandling.authenticationEntryPoint(authEntryPoint)
                 )

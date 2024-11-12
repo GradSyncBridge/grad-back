@@ -12,7 +12,7 @@ import java.lang.annotation.Target;
 @Retention(RetentionPolicy.RUNTIME)
 @Constraint(validatedBy = UserProfileUpdateDTOValidationImpl.class)
 public @interface UserProfileUpdateDTOValidation {
-    String message() default "Invalid User";
+    String message() default "Invalid user";
 
     Class<?>[] groups() default {};
 

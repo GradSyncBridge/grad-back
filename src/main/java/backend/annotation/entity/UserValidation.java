@@ -11,7 +11,7 @@ import java.lang.annotation.*;
 @Constraint(validatedBy = UserValidationImpl.class)
 @Repeatable(UserValidations.class)
 public @interface UserValidation {
-    String message() default "Invalid User";
+    String message() default "Invalid user";
 
     Class<?>[] groups() default {};
 
