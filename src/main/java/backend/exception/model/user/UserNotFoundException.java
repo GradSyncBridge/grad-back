@@ -4,6 +4,6 @@ import backend.exception.model.BaseException;
 
 public class UserNotFoundException extends BaseException {
     public UserNotFoundException() {
-        super("User not found", 404);
+        super("user not found", 404);
     }
 }

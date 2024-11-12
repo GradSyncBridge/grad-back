@@ -14,7 +14,7 @@ import java.time.LocalDateTime;
  * @field id 主键 int
  * @field content 站内信内容 text
  * @field created 创建时间
- * @field sender 创建人/发件人 User.id
+ * @field sender 创建人/发件人 user.id
  * @field draft 是否为草稿 是 -- 1 否 -- 0
  * @field disabled 是否删除 删除 -- 0 启用 -- 1
  */
@@ -31,7 +31,7 @@ public class MessageContent {
 
     private LocalDateTime created;
 
-    // User.id
+    // user.id
     private Integer sender;
 
     private Integer draft;

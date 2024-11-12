@@ -45,7 +45,7 @@ public class UserDetailsServiceImpl implements UserDetailsService {
         try {
             user = userMapper.selectUser(User.builder().username(username).build(), scope).getFirst();
         } catch (Exception e) {
-            throw new UsernameNotFoundException("User not found");
+            throw new UsernameNotFoundException("user not found");
         }
 
         return user;
@@ -69,7 +69,7 @@ public class UserDetailsServiceImpl implements UserDetailsService {
             }
         } catch (Exception e) {
             System.out.println(e.getMessage());
-            throw new UsernameNotFoundException("User not found");
+            throw new UsernameNotFoundException("user not found");
         }
 
         return user;

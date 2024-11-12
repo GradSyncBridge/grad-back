@@ -26,7 +26,7 @@ public class StudentController {
 
     @PostMapping(value = "/grade")
     public ResponseEntity<ResultEntity<Object>> submitGrades(@RequestBody GradeSubmitListDTO gradeSubmitListDTO) {
-        // studentService.submitGrade(User.getAuth().getId())
+        // studentService.submitGrade(user.getAuth().getId())
         return ResultEntity.success(HttpStatus.OK.value(), "Submit grade successfully.");
     }
 

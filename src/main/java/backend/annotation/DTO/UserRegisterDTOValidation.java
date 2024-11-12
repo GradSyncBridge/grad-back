@@ -13,7 +13,7 @@ import java.lang.annotation.Target;
 @Constraint(validatedBy = UserRegisterDTOValidationImpl.class)
 public @interface UserRegisterDTOValidation {
 
-    String message() default "Invalid User";
+    String message() default "Invalid user";
 
     Class<?>[] groups() default {};
 

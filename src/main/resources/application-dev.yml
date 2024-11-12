@@ -33,3 +33,6 @@ jwt:
   token-name: Authorization
   uid: uid # Private token claims
   role: role
+
+rate:
+   max: 2000

@@ -10,7 +10,7 @@ import lombok.NoArgsConstructor;
  *
  * @field id 主键 int
  * @field cid 内容ID -> MessageContent.id;
- * @field receiver 收件人 int -> User.id;
+ * @field receiver 收件人 int -> user.id;
  * @field isRead 已读/未读 int (1/0);
  * @field disabled 是否删除 0 -- 删除 1 -- 启用;
  */
@@ -26,7 +26,7 @@ public class Message {
     // MessageContent.id
     private Integer cid;
 
-    // User.id
+    // user.id
     private Integer receiver;
 
     // 0 -- unread, 1 -- read
