@@ -127,8 +127,8 @@ public class FileManager {
 
     public static void remove(String path) {
         File file = new File(basePath.substring(0, basePath.lastIndexOf("/")) + "/" + path);
-        System.out.println(file.getPath());
-        if (file.exists())  file.delete();
+        if (file.exists())
+            file.delete();
     }
 
     private static void saveFile(MultipartFile file, File storeFile) {

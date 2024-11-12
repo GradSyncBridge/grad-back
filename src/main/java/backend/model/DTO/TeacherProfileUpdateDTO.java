@@ -10,9 +10,11 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor
 @TeacherProfileUpdateDTOValidation
 public class TeacherProfileUpdateDTO {
-    private Integer title;
+    private String username;
+    private String avatar;
+    private String name;
+    private String email;
+    private Integer gender;
+    private String phone;
     private String description;
-    private Integer total;
-    private Integer remnant;
-    private Integer identity;
 }
