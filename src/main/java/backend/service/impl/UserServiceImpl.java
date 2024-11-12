@@ -162,13 +162,11 @@ public class UserServiceImpl implements UserService {
             } else {
                 userProfileUpdateDTO.setEmail(null);
             }
-
-            if(userProfileUpdateDTO.getAvatar() != null) {
+            if(userProfileUpdateDTO.getAvatar() != null)
                 userProfileUpdateDTO.setAvatar(FileManager.saveBase64Image(userProfileUpdateDTO.getAvatar()));
-                FileManager.remove(User.getAuth().getAvatar());
-            }
             else
                 userProfileUpdateDTO.setAvatar(null);
+
             User user = UserConverter.INSTANCE.UserProfileUpdateDTOToUser(userProfileUpdateDTO);
 
             userMapper.updateUser(user, User.getAuth());
