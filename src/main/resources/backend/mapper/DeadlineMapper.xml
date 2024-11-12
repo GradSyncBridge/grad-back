@@ -10,6 +10,7 @@
             <if test="scope.id == true"> id, </if>
             <if test="scope.time == true"> time, </if>
             <if test="scope.type == true"> type, </if>
+            <if test="scope.name == true"> name, </if>
         </trim>
     </sql>
 
@@ -18,6 +19,7 @@
             <if test="deadline.id != null"> and id = #{deadline.id} </if>
             <if test="deadline.time != null"> and time = #{deadline.time} </if>
             <if test="deadline.type != null"> and type = #{deadline.type} </if>
+            <if test="deadline.name != null"> and name = #{deadline.name} </if>
         </where>
     </sql>
 
@@ -40,11 +42,13 @@
         <set>
             <if test="deadlineUpdate.time != null"> time = #{deadlineUpdate.time}, </if>
             <if test="deadlineUpdate.type != null"> type = #{deadlineUpdate.type}, </if>
+            <if test="deadlineUpdate.name != null"> name = #{deadlineUpdate.name}, </if>
         </set>
         <where>
             <if test="deadlineQuery.id != null"> and id = #{deadlineQuery.id} </if>
             <if test="deadlineQuery.time != null"> and time = #{deadlineQuery.time} </if>
             <if test="deadlineQuery.type != null"> and type = #{deadlineQuery.type} </if>
+            <if test="deadlineUpdate.name != null"> and name = #{deadlineQuery.name} </if>
         </where>
     </update>
 </mapper>
