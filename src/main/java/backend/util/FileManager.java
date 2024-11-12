@@ -35,7 +35,7 @@ public class FileManager {
         byte[] data = DatatypeConverter.parseBase64Binary(parts[1]);
 
         if (data.length > MAX_IMAGE_SIZE) {
-            throw new FileStorageException(HttpStatus.BAD_REQUEST.value(), "File size exceeds the limit");
+            throw new FileStorageException(HttpStatus.BAD_REQUEST.value(), "file size exceeds the limit");
         }
 
         String uuid = UUID.randomUUID().toString();
@@ -73,7 +73,7 @@ public class FileManager {
     public static String store(MultipartFile file) {
         try {
             if (file.getSize() > MAX_FILE_SIZE) {
-                throw new FileStorageException(HttpStatus.BAD_REQUEST.value(), "File size exceeds the limit");
+                throw new FileStorageException(HttpStatus.BAD_REQUEST.value(), "file size exceeds the limit");
             }
 
             String fileName = file.getOriginalFilename();
@@ -89,7 +89,7 @@ public class FileManager {
             if (extensionIndex > 0) {
                 fileExtension = fileName.substring(extensionIndex); // 例如: ".pdf" 或 ".png"
             } else {
-                throw new FileStorageException(HttpStatus.INTERNAL_SERVER_ERROR.value(), "File extension is missing");
+                throw new FileStorageException(HttpStatus.INTERNAL_SERVER_ERROR.value(), "file extension is missing");
             }
 
             // 存储
@@ -121,8 +121,14 @@ public class FileManager {
 
             return relativePath;
         } catch (Exception e) {
-            throw new FileStorageException(HttpStatus.INTERNAL_SERVER_ERROR.value(), "File upload failed: " + e.getMessage());
+            throw new FileStorageException(HttpStatus.INTERNAL_SERVER_ERROR.value(), "file upload failed: " + e.getMessage());
         }
+    }
+
+    public static void remove(String path) {
+        File file = new File(basePath.substring(0, basePath.lastIndexOf("/")) + "/" + path);
+        System.out.println(file.getPath());
+        if (file.exists())  file.delete();
     }
 
     private static void saveFile(MultipartFile file, File storeFile) {
