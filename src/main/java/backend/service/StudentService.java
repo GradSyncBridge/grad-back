@@ -16,5 +16,5 @@ public interface StudentService {
 
     void modifyApplication(ApplicationSubmitDTO applicationSubmitDTO);
 
-    List<UserProfileVO> searchStudent(String key);
+    List<UserProfileVO> searchStudent(String key, Integer valid);
 }

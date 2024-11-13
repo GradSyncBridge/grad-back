@@ -47,7 +47,7 @@ public class StudentController {
     }
 
     @GetMapping(value = "/search")
-    public ResponseEntity<ResultEntity<Object>> searchStudent(@RequestParam(value = "key") String key) {
-        return ResultEntity.success(HttpStatus.OK.value(), "Search result displayed successfully", studentService.searchStudent(key));
+    public ResponseEntity<ResultEntity<Object>> searchStudent(@RequestParam(value = "key", required = false) String key, @RequestParam(value = "valid", defaultValue = "0") Integer valid) {
+        return ResultEntity.success(HttpStatus.OK.value(), "Search result displayed successfully", studentService.searchStudent(key, valid));
     }
 }

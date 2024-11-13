@@ -149,4 +149,19 @@
         where username = #{username}
     </delete>
 
+    <select id="searchStudent" resultType="backend.model.entity.User">
+        select
+            User.*
+        from
+            User join Student
+            on User.id = Student.user_id
+        <where>
+            User.disabled = 1
+            <if test="valid != null"> and Student.valid = #{valid} </if>
+            <if test="user.id != null"> and User.id = #{user.id} </if>
+            <if test="user.email != null"> and User.email = #{user.email}</if>
+            <if test="user.name != null"> and User.name like concat('%', #{user.name}, '%') </if>
+        </where>
+    </select>
+
 </mapper>

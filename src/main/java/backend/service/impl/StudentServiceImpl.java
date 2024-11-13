@@ -1,5 +1,6 @@
 package backend.service.impl;
 
+import backend.config.GlobalConfig;
 import backend.mapper.*;
 
 import backend.model.DTO.ApplicationSubmitDTO;
@@ -26,6 +27,7 @@ import org.springframework.stereotype.Service;
 import java.util.Comparator;
 import java.util.List;
 import java.time.LocalDateTime;
+import java.util.Map;
 import java.util.Objects;
 
 @Service
@@ -251,27 +253,28 @@ public class StudentServiceImpl implements StudentService {
     }
 
     @Override
-    public List<UserProfileVO> searchStudent(String key) {
+    public List<UserProfileVO> searchStudent(String key, Integer valid) {
         try {
-            List<User> users;
+            User query = User.builder().build();
 
-            if (key.matches("\\d+"))
-                users = userMapper.selectUser(User.builder().id(Integer.parseInt(key)).build(),
-                        FieldsGenerator.generateFields(User.class));
-            else if (key.matches("^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\\.[a-zA-Z]{2,}$"))
-                users = userMapper.selectUser(User.builder().email(key).build(),
-                        FieldsGenerator.generateFields(User.class));
-            else
-                users = userMapper.selectUser(User.builder().name(key).build(),
-                        FieldsGenerator.generateFields(User.class));
+            if (key != null && !key.isEmpty()) {
+                if (key.matches(GlobalConfig.uidPattern))
+                    query.setId(Integer.parseInt(key));
 
-            return users
+                else if (key.matches(GlobalConfig.emailPattern))
+                    query.setEmail(key);
+                else
+                    query.setName(key);
+            }
+
+            return userMapper
+                    .searchStudent(query, valid)
                     .stream()
                     .map(u -> userConverter.UserToUserProfileVO(u))
                     .filter(Objects::nonNull)
                     .toList();
         } catch (Exception e) {
-            // e.printStackTrace();
+             e.printStackTrace();
             throw new RuntimeException(e);
         }
     }
