@@ -13,6 +13,7 @@
             <if test="scope.mid == true"> mid, </if>
             <if test="scope.valid == true"> valid, </if>
             <if test="scope.metric == true"> metric, </if>
+            <if test="scope.remnant == true"> remnant, </if>
         </trim>
     </sql>
 
@@ -23,6 +24,7 @@
             <if test="majorToTeacher.mid != null"> and mid = #{majorToTeacher.mid} </if>
             <if test="majorToTeacher.valid != null"> and valid = #{majorToTeacher.valid} </if>
             <if test="majorToTeacher.metric != null"> and metric = #{majorToTeacher.metric} </if>
+            <if test="majorToTeacher.remnant != null"> and remnant = #{majorToTeacher.remnant} </if>
         </where>
     </sql>
     
@@ -32,14 +34,16 @@
             tid,
             mid,
             valid,
-            metric
+            metric,
+            remnant
         )
         values
         (
             #{tid},
             #{mid},
             #{valid},
-            #{metric}
+            #{metric},
+            #{remnant}
         )
     </insert>
 
@@ -57,6 +61,7 @@
             <if test="majorToTeacherUpdate.mid != null"> mid = #{majorToTeacherUpdate.mid}, </if>
             <if test="majorToTeacherUpdate.valid != null"> valid = #{majorToTeacherUpdate.valid}, </if>
             <if test="majorToTeacherUpdate.metric != null"> metric = #{majorToTeacherUpdate.metric}, </if>
+            <if test="majorToTeacherUpdate.remnant != null"> remnant = #{majorToTeacherUpdate.remnant}, </if>
         </set>
         <where>
             <if test="majorToTeacherQuery.id != null"> and id = #{majorToTeacherQuery.id} </if>
@@ -64,6 +69,7 @@
             <if test="majorToTeacherQuery.mid != null"> and mid = #{majorToTeacherQuery.mid} </if>
             <if test="majorToTeacherQuery.valid != null"> and valid = #{majorToTeacherQuery.valid} </if>
             <if test="majorToTeacherQuery.metric != null"> and metric = #{majorToTeacherQuery.metric} </if>
+            <if test="majorToTeacherQuery.remnant != null"> and remnant = #{majorToTeacherQuery.remnant} </if>
         </where>
     </update>
 

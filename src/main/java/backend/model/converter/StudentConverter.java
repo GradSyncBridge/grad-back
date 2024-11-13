@@ -24,6 +24,7 @@ public interface StudentConverter {
     @Mapping(target = "filePath", source = "file")
     Quality qualityFileToQuality(QualityFile qualityFile);
 
+    @Mapping(target = "department", source = "student.department")
     @Mapping(target = "examID", source = "student.examId")
     @Mapping(target = "certifyID", source = "student.certifyId")
     @Mapping(target = "majorApply", source = "majorApply")

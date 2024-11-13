@@ -12,6 +12,8 @@ import java.util.List;
 @NoArgsConstructor
 @StudentSubmitDTOValidation
 public class StudentSubmitDTO {
+    private Integer department;
+
     private String birth;
 
     private String examID;

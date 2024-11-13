@@ -11,7 +11,7 @@ import java.time.LocalDateTime;
  * 学生表
  *
  * @field id 表id int
- * @field userId userId int
+ * @field userId int
  * @field birth 出生日期 datetime
  * @field address 生源地 varchar
  * @field majorGrad 专业 varchar
@@ -40,6 +40,8 @@ public class Student {
     private Integer id;
 
     private Integer userId;
+
+    private Integer department;
 
     private LocalDateTime birth;
 
