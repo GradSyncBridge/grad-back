@@ -32,4 +32,6 @@ public class MajorToTeacher {
 
     private Integer metric;
 
+    private Integer remnant;
+
 }
