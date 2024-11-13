@@ -10,6 +10,10 @@ import java.util.List;
 @Data
 @AllArgsConstructor
 @NoArgsConstructor
-public class ApplicationSubmitDTO {
+public class StudentApplicationSubmitDTO {
     private List<Integer> application;
+
+    private List<Integer> majorStudy;
+
+    private Integer reassign;
 }

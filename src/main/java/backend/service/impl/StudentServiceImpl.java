@@ -3,19 +3,22 @@ package backend.service.impl;
 import backend.config.GlobalConfig;
 import backend.mapper.*;
 
+import backend.model.DTO.StudentApplicationSubmitDTO;
 import backend.model.DTO.StudentGradeModifyDTO;
 import backend.model.DTO.StudentGradeSubmitDTO;
 import backend.model.DTO.StudentSubmitDTO;
+
 import backend.model.VO.student.*;
 import backend.model.VO.user.UserProfileVO;
+
 import backend.model.converter.StudentConverter;
 import backend.model.converter.UserConverter;
+
 import backend.model.entity.*;
 
 import backend.service.StudentService;
 
 import backend.enums.DeadlineEnum;
-
 import backend.exception.model.deadline.DeadlineExceedException;
 import backend.exception.model.deadline.DeadlineNotFoundException;
 
@@ -27,6 +30,7 @@ import org.springframework.stereotype.Service;
 
 import java.util.List;
 import java.time.LocalDateTime;
+import java.util.Map;
 import java.util.Objects;
 
 @Service
@@ -216,7 +220,10 @@ public class StudentServiceImpl implements StudentService {
                     .getGrades()
                     .forEach(g ->
                             studentGradeMapper.insertStudentGrade(
-                                    StudentGrade.builder().grade(g.getGrade()).sid(g.getSubjectID()).disabled(1).userId(studentID).build())
+                                    StudentGrade
+                                            .builder().grade(g.getGrade()).sid(g.getSubjectID())
+                                            .disabled(1).userId(studentID).build()
+                            )
                     );
 
             Double totalGrade = studentGrade
@@ -280,6 +287,43 @@ public class StudentServiceImpl implements StudentService {
             throw new DeadlineNotFoundException(type.getValue());
         } catch (DeadlineExceedException deadlineExceedException) {
             throw new DeadlineExceedException(type, role == 1 ? 4031 : 4032);
+        } catch (Exception e) {
+//            e.printStackTrace();
+            throw new RuntimeException(e.getMessage());
+        }
+    }
+
+    @Override
+    public void studentApplicationSubmit(StudentApplicationSubmitDTO studentApplication) {
+        DeadlineEnum type = DeadlineEnum.SECOND_SUBMISSION;
+
+        Student student = User.getAuth().getStudent();
+        Integer uid = student.getUserId();
+
+        try {
+            verifyDeadline(type);
+
+            if (!studentApplyMapper.selectStudentApply(
+                    StudentApply.builder().userId(uid).disabled(1).build(),
+                    Map.of("id", true)).isEmpty()
+            )
+                return;
+
+            List<Integer> applications = studentApplication.getApplication();
+            for (int i = 0; i < applications.size(); i++)
+                studentApplyMapper.insertStudentApply(
+                        StudentApply.builder().tid(applications.get(i)).level(i+1).userId(uid).disabled(1).build()
+                );
+
+            student.setMajorStudy(studentApplication.getApplication().toString());
+            student.setReassign(studentApplication.getReassign());
+
+            studentMapper.updateStudent(student, Student.builder().userId(uid).build());
+
+        } catch (DeadlineNotFoundException deadlineNotFoundException) {
+            throw new DeadlineNotFoundException(type.getValue());
+        } catch (DeadlineExceedException deadlineExceedException) {
+            throw new DeadlineExceedException(type, 403);
         } catch (Exception e) {
 //            e.printStackTrace();
             throw new RuntimeException(e.getMessage());

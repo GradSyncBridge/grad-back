@@ -1,5 +1,6 @@
 package backend.controller;
 
+import backend.model.DTO.StudentApplicationSubmitDTO;
 import backend.model.DTO.StudentGradeModifyDTO;
 import backend.model.DTO.StudentGradeSubmitDTO;
 import backend.model.DTO.StudentSubmitDTO;
@@ -81,4 +82,16 @@ public class StudentController {
     }
 
 
+    @PostMapping(value = "/apply")
+    public ResponseEntity<ResultEntity<Object>> submitStudentApplication(
+            @RequestBody StudentApplicationSubmitDTO studentApplication
+    ) {
+        studentService.studentApplicationSubmit(studentApplication);
+
+        return ResultEntity.success(
+          HttpStatus.OK.value(),
+          "Student's application submitted successfully",
+          null
+        );
+    }
 }

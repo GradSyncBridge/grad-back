@@ -1,5 +1,6 @@
 package backend.service;
 
+import backend.model.DTO.StudentApplicationSubmitDTO;
 import backend.model.DTO.StudentGradeModifyDTO;
 import backend.model.DTO.StudentGradeSubmitDTO;
 import backend.model.DTO.StudentSubmitDTO;
@@ -20,4 +21,6 @@ public interface StudentService {
     void studentGradeSubmit(StudentGradeSubmitDTO submitDTO);
 
     void studentGradeModify(StudentGradeModifyDTO modifyDTO);
+
+    void studentApplicationSubmit(StudentApplicationSubmitDTO submitDTO);
 }
