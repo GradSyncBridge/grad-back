@@ -51,6 +51,7 @@
 
     <select id="selectGradeWithSubject" resultType="backend.model.VO.student.GradeList">
         select
+            g.id as "gradeID",
             g.grade as "grade",
             s.id as "subjectID",
             s.sid as "subjectNum",
@@ -61,8 +62,9 @@
             on g.sid = s.id
         <where>
             g.user_id = #{studentGrade.userId}
-            <if test="type = 1"> and s.type = 2 </if>
-            <if test="type = 0"> and (s.type = 0 or s.type = 1) </if>
+            and g.disabled = #{studentGrade.disabled}
+            <if test="type == 0"> and (s.type = 1 or s.type = 0) </if>
+            <if test="type == 1"> and s.type = 2 </if>
         </where>
 
     </select>

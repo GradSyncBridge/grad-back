@@ -13,7 +13,6 @@ public interface StudentService {
 
     StudentSubmitTableVO getStudentSubmitTable(Integer targetUid);
 
-    // Newer interfaces
     List<UserProfileVO> searchStudent(String key, Integer valid);
 
     void studentSubmit(StudentSubmitDTO submitDTO);

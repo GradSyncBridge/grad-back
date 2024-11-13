@@ -1,5 +1,6 @@
 package backend.model.VO.student;
 
+import backend.model.VO.teacher.TeacherVO;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
@@ -18,14 +19,14 @@ public class StudentSubmitTableVO {
     private String emergency;
     private String address;
     private String majorGrad;
-    private MajorSubject majorApply; // query the `Major` table
-    private List<MajorSubject> majorStudy; // query the `Major` table n times
+    private MajorSubject majorApply;
+    private List<MajorSubject> majorStudy;
     private String school;
     private String type;
-    private List<Quality> quality; // query the `Quality` table n times
+    private List<Quality> quality;
     private Integer enrollment;
     private Integer reassign;
-    private Score gradeFirst; // Query the `StudentGrade` table
-    private Score gradeSecond; // Query the `StudentGrade` table
-    private List<Application> application; // Query both `StudentApply` and `Teacher` table
+    private Score gradeFirst;
+    private Score gradeSecond;
+    private List<TeacherVO> application;
 }

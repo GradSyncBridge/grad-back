@@ -11,6 +11,8 @@ import lombok.NoArgsConstructor;
 @Builder
 public class GradeList {
 
+    private Integer gradeID;
+
     private Integer grade;
 
     private Integer subjectID;

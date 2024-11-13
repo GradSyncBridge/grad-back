@@ -2,6 +2,7 @@ package backend.model.converter;
 
 import backend.model.DTO.StudentSubmitDTO;
 import backend.model.VO.student.*;
+import backend.model.VO.teacher.TeacherVO;
 import backend.model.entity.Major;
 import backend.model.entity.QualityFile;
 import backend.model.entity.Student;
@@ -31,7 +32,7 @@ public interface StudentConverter {
     @Mapping(target = "gradeFirst", source = "gradeFirst")
     @Mapping(target = "gradeSecond", source = "gradeSecond")
     @Mapping(target = "application", source = "application")
-    StudentSubmitTableVO StudentToSubmitTable(Student student, Score gradeFirst, Score gradeSecond, List<Application> application, List<Quality> qualityList, MajorSubject majorApply, List<MajorSubject> majorStudyList);
+    StudentSubmitTableVO StudentToSubmitTable(Student student, Score gradeFirst, Score gradeSecond, List<TeacherVO> application, List<Quality> qualityList, MajorSubject majorApply, List<MajorSubject> majorStudyList);
 
     // Newer Interfaces
 

@@ -15,4 +15,5 @@ public class MajorSubject {
     private Integer majorID;
     private String name;
     private String majorNum;
+    private Integer department;
 }

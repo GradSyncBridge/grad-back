@@ -9,6 +9,7 @@ import backend.model.DTO.StudentGradeSubmitDTO;
 import backend.model.DTO.StudentSubmitDTO;
 
 import backend.model.VO.student.*;
+import backend.model.VO.teacher.TeacherVO;
 import backend.model.VO.user.UserProfileVO;
 
 import backend.model.converter.StudentConverter;
@@ -104,7 +105,7 @@ public class StudentServiceImpl implements StudentService {
                     .map(f -> studentConverter.INSTANCE.qualityFileToQuality(f))
                     .toList();
 
-            // Major application
+            // Major apply
             List<Major> majorList = majorMapper.selectMajor(Major.builder().id(student.getMajorApply()).build(),
                     FieldsGenerator.generateFields(Major.class));
             MajorSubject majorApply = majorList.isEmpty() ? null
@@ -124,19 +125,18 @@ public class StudentServiceImpl implements StudentService {
                     .toList();
 
             // application
-            List<Application> applications = studentApplyMapper
-                    .selectApplicationWithTeacher(StudentApply.builder().userId(user.getId()).build());
+            List<TeacherVO> applications = studentApplyMapper
+                    .selectApplicationWithTeacher(StudentApply.builder().userId(student.getUserId()).build());
 
             // Grades
             List<GradeList> gradeListFirst = studentGradeMapper
-                    .selectGradeWithSubject(StudentGrade.builder().userId(user.getId()).build(), 0);
+                    .selectGradeWithSubject(StudentGrade.builder().userId(student.getUserId()).disabled(1).build(), 0);
             List<GradeList> gradeListSecond = studentGradeMapper
-                    .selectGradeWithSubject(StudentGrade.builder().userId(user.getId()).build(), 1);
+                    .selectGradeWithSubject(StudentGrade.builder().userId(student.getUserId()).disabled(1).build(), 1);
             Score gradeFirst = Score.builder().gradeTotal(student.getGradeFirst()).gradeList(gradeListFirst).build();
             Score gradeSecond = Score.builder().gradeTotal(student.getGradeSecond()).gradeList(gradeListSecond).build();
 
-            return studentConverter.INSTANCE.StudentToSubmitTable(student, gradeFirst, gradeSecond, applications,
-                    fileList, majorApply, majorStudyList);
+            return studentConverter.INSTANCE.StudentToSubmitTable(student, gradeFirst, gradeSecond, applications, fileList, majorApply, majorStudyList);
 
         } catch (Exception e) {
             // e.printStackTrace();
@@ -144,7 +144,6 @@ public class StudentServiceImpl implements StudentService {
         }
     }
 
-    // Newer interfaces
     @Override
     public List<UserProfileVO> searchStudent(String key, Integer valid) {
         try {
@@ -329,5 +328,6 @@ public class StudentServiceImpl implements StudentService {
             throw new RuntimeException(e.getMessage());
         }
     }
+
 
 }
