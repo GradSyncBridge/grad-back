@@ -7,14 +7,16 @@ import java.util.List;
 @Data
 @AllArgsConstructor
 @NoArgsConstructor
-public class GradeSubmitListDTO {
+public class StudentGradeSubmitDTO {
 
-    private List<GradeSubmitDTO> grades;
+    private List<GradeSingleDTO> grades;
+
+    private Integer studentID;
 
     @Getter
     @Setter
-    public static class GradeSubmitDTO {
-        private Integer grade;
+    public static class GradeSingleDTO {
+        private Double grade;
         private Integer subjectID;
     }
 }

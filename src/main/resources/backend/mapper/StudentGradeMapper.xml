@@ -59,8 +59,11 @@
             StudentGrade as g
             join Subject as s
             on g.sid = s.id
-        where
-            g.user_id = #{studentGrade.userId} and s.type = #{type}
+        <where>
+            g.user_id = #{studentGrade.userId}
+            <if test="type = 1"> and s.type = 2 </if>
+            <if test="type = 0"> and (s.type = 0 or s.type = 1) </if>
+        </where>
 
     </select>
 

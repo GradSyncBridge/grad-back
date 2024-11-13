@@ -28,7 +28,7 @@ public class StudentGrade {
 
     private Integer sid;
 
-    private float grade;
+    private Double grade;
 
     private Integer disabled;
 }

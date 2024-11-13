@@ -34,10 +34,18 @@ public interface StudentConverter {
     StudentSubmitTableVO StudentToSubmitTable(Student student, Score gradeFirst, Score gradeSecond, List<Application> application, List<Quality> qualityList, MajorSubject majorApply, List<MajorSubject> majorStudyList);
 
     // Newer Interfaces
+
+    /*
+     * Student submit table to Student entity
+     *
+     * Usage: POST /student
+     * */
     @Mapping(target = "examId", source = "submitDTO.examID")
     @Mapping(target = "certifyId", source = "submitDTO.certifyID")
     @Mapping(target = "quality", source = "quality")
     Student StudentSubmitDTOToStudent(StudentSubmitDTO submitDTO, String quality);
+
+
 }
 
 

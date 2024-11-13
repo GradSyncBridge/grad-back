@@ -3,7 +3,8 @@ package backend.service.impl;
 import backend.config.GlobalConfig;
 import backend.mapper.*;
 
-import backend.model.DTO.ApplicationSubmitDTO;
+import backend.model.DTO.StudentGradeModifyDTO;
+import backend.model.DTO.StudentGradeSubmitDTO;
 import backend.model.DTO.StudentSubmitDTO;
 import backend.model.VO.student.*;
 import backend.model.VO.user.UserProfileVO;
@@ -24,7 +25,6 @@ import backend.util.StringToList;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
-import java.util.Comparator;
 import java.util.List;
 import java.time.LocalDateTime;
 import java.util.Objects;
@@ -140,79 +140,6 @@ public class StudentServiceImpl implements StudentService {
         }
     }
 
-    @Override
-    public void submitApplication(ApplicationSubmitDTO applicationSubmit) {
-        DeadlineEnum type = DeadlineEnum.SECOND_SUBMISSION;
-
-        try {
-            List<Deadline> deadlines = deadlineMapper.selectDeadline(Deadline.builder().type(type.getValue()).build(),
-                    FieldsGenerator.generateFields(Deadline.class));
-            Deadline targetDeadline = deadlines.isEmpty() ? null : deadlines.getFirst();
-
-            if (targetDeadline == null)
-                throw new DeadlineNotFoundException();
-
-            if (LocalDateTime.now().isAfter(targetDeadline.getTime()))
-                throw new DeadlineExceedException();
-
-            List<Integer> applications = applicationSubmit.getApplication();
-
-            for (int i = 0; i < applications.size(); i++)
-                studentApplyMapper.insertStudentApply(StudentApply.builder()
-                        .userId(User.getAuth().getId())
-                        .tid(applications.get(i))
-                        .level(i + 1)
-                        .disabled(1).build());
-        } catch (DeadlineNotFoundException deadlineNotFoundException) {
-            throw new DeadlineNotFoundException(type.getValue());
-        } catch (DeadlineExceedException deadlineExceedException) {
-            throw new DeadlineExceedException(type, 403);
-        } catch (Exception e) {
-            throw new RuntimeException(e.getMessage());
-        }
-
-    }
-
-    @Override
-    public void modifyApplication(ApplicationSubmitDTO applicationSubmit) {
-        DeadlineEnum type = DeadlineEnum.SECOND_SUBMISSION;
-
-        try {
-            List<Deadline> deadlines = deadlineMapper.selectDeadline(Deadline.builder().type(type.getValue()).build(),
-                    FieldsGenerator.generateFields(Deadline.class));
-            Deadline targetDeadline = deadlines.isEmpty() ? null : deadlines.getFirst();
-
-            if (targetDeadline == null)
-                throw new DeadlineNotFoundException();
-
-            if (LocalDateTime.now().isAfter(targetDeadline.getTime()))
-                throw new DeadlineExceedException();
-
-            List<StudentApply> applications = studentApplyMapper
-                    .selectStudentApply(StudentApply.builder().userId(User.getAuth().getId()).disabled(1).build(),
-                            FieldsGenerator.generateFields(StudentApply.class))
-                    .stream()
-                    .sorted(Comparator.comparingInt(StudentApply::getLevel))
-                    .toList();
-
-            for (int i = 0; i != applicationSubmit.getApplication().size(); i++) {
-                studentApplyMapper.updateStudentApply(
-                        StudentApply.builder().userId(User.getAuth().getId())
-                                .tid(applicationSubmit.getApplication().get(i)).level(i + 1).build(),
-                        applications.get(i));
-            }
-
-        } catch (DeadlineNotFoundException deadlineNotFoundException) {
-            throw new DeadlineNotFoundException(type.getValue());
-        } catch (DeadlineExceedException deadlineExceedException) {
-            throw new DeadlineExceedException(type, 403);
-        } catch (Exception e) {
-            e.printStackTrace();
-            throw new RuntimeException(e.getMessage());
-        }
-    }
-
-
     // Newer interfaces
     @Override
     public List<UserProfileVO> searchStudent(String key, Integer valid) {
@@ -236,7 +163,7 @@ public class StudentServiceImpl implements StudentService {
                     .filter(Objects::nonNull)
                     .toList();
         } catch (Exception e) {
-             e.printStackTrace();
+//             e.printStackTrace();
             throw new RuntimeException(e);
         }
     }
@@ -267,4 +194,96 @@ public class StudentServiceImpl implements StudentService {
             throw new RuntimeException(e.getMessage());
         }
     }
+
+    @Override
+    public void studentGradeSubmit(StudentGradeSubmitDTO studentGrade) {
+        Integer role = User.getAuth().getRole();
+
+        DeadlineEnum type = role == 1 ? DeadlineEnum.INITIAL_SUBMISSION : DeadlineEnum.SECOND_SUBMISSION;
+        Integer studentID = role == 1 ? User.getAuth().getId() : studentGrade.getStudentID();
+
+        Student student = role == 1 ?
+                User.getAuth().getStudent() :
+                studentMapper.selectStudent(
+                        Student.builder().userId(studentID).build(),
+                        FieldsGenerator.generateFields(Student.class)
+                ).getFirst();
+
+        try {
+            verifyDeadline(type);
+
+            studentGrade
+                    .getGrades()
+                    .forEach(g ->
+                            studentGradeMapper.insertStudentGrade(
+                                    StudentGrade.builder().grade(g.getGrade()).sid(g.getSubjectID()).disabled(1).userId(studentID).build())
+                    );
+
+            Double totalGrade = studentGrade
+                    .getGrades()
+                    .stream()
+                    .mapToDouble(StudentGradeSubmitDTO.GradeSingleDTO::getGrade)
+                    .sum();
+            if (role == 1)
+                student.setGradeFirst(totalGrade);
+            else
+                student.setGradeSecond(totalGrade);
+            studentMapper.updateStudent(student, Student.builder().userId(studentID).build());
+
+        } catch (DeadlineNotFoundException deadlineNotFoundException) {
+            throw new DeadlineNotFoundException(type.getValue());
+        } catch (DeadlineExceedException deadlineExceedException) {
+            throw new DeadlineExceedException(type, role == 1 ? 4031 : 4032);
+        } catch (Exception e) {
+//            e.printStackTrace();
+            throw new RuntimeException(e.getMessage());
+        }
+    }
+
+    @Override
+    public void studentGradeModify(StudentGradeModifyDTO studentGrade) {
+        Integer role = User.getAuth().getRole();
+
+        DeadlineEnum type = role == 1 ? DeadlineEnum.INITIAL_SUBMISSION : DeadlineEnum.SECOND_SUBMISSION;
+        Integer studentID = role == 1 ? User.getAuth().getId() : studentGrade.getStudentID();
+
+        Student student = role == 1 ?
+                User.getAuth().getStudent() :
+                studentMapper.selectStudent(
+                        Student.builder().userId(studentID).build(),
+                        FieldsGenerator.generateFields(Student.class)
+                ).getFirst();
+
+        try {
+            verifyDeadline(type);
+
+            studentGrade
+                    .getGrades()
+                    .forEach(g -> studentGradeMapper.updateStudentGrade(
+                                    StudentGrade.builder().grade(g.getGrade()).build(),
+                                    StudentGrade.builder().id(g.getGradeID()).build()
+                            )
+                    );
+
+            Double totalGrade = studentGrade
+                    .getGrades()
+                    .stream()
+                    .mapToDouble(StudentGradeModifyDTO.GradeSingleDTO::getGrade)
+                    .sum();
+            if (role == 1)
+                student.setGradeFirst(totalGrade);
+            else
+                student.setGradeSecond(totalGrade);
+            studentMapper.updateStudent(student, Student.builder().userId(studentID).build());
+
+        } catch (DeadlineNotFoundException deadlineNotFoundException) {
+            throw new DeadlineNotFoundException(type.getValue());
+        } catch (DeadlineExceedException deadlineExceedException) {
+            throw new DeadlineExceedException(type, role == 1 ? 4031 : 4032);
+        } catch (Exception e) {
+//            e.printStackTrace();
+            throw new RuntimeException(e.getMessage());
+        }
+    }
+
 }
