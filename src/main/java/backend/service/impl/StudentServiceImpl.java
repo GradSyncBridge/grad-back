@@ -4,7 +4,7 @@ import backend.config.GlobalConfig;
 import backend.mapper.*;
 
 import backend.model.DTO.ApplicationSubmitDTO;
-import backend.model.DTO.StudentTableDTO;
+import backend.model.DTO.StudentSubmitDTO;
 import backend.model.VO.student.*;
 import backend.model.VO.user.UserProfileVO;
 import backend.model.converter.StudentConverter;
@@ -27,7 +27,6 @@ import org.springframework.stereotype.Service;
 import java.util.Comparator;
 import java.util.List;
 import java.time.LocalDateTime;
-import java.util.Map;
 import java.util.Objects;
 
 @Service
@@ -60,56 +59,17 @@ public class StudentServiceImpl implements StudentService {
     @Autowired
     private UserConverter userConverter;
 
-    @Override
-    public void submitTable(StudentTableDTO studentTableDTO) {
-        Integer targetUid;
-        DeadlineEnum type;
-        Integer userRole = User.getAuth().getRole();
+    private void verifyDeadline(DeadlineEnum type) {
+        List<Deadline> deadlines = deadlineMapper.selectDeadline(Deadline.builder().type(type.getValue()).build(),
+                FieldsGenerator.generateFields(Deadline.class));
+        Deadline targetDeadline = deadlines.isEmpty() ? null : deadlines.getFirst();
 
-        type = userRole == 1 ? DeadlineEnum.INITIAL_SUBMISSION : DeadlineEnum.SECOND_SUBMISSION;
+        if (targetDeadline == null)
+            throw new DeadlineNotFoundException();
 
-        studentTableDTO.setBirthday(LocalDateTime.parse(studentTableDTO.getBirth() + "T00:00:00"));
-        Student student = studentConverter.INSTANCE.StudentTableDTOToStudent(
-                studentTableDTO,
-                studentTableDTO.getMajorStudy().toString(),
-                studentTableDTO.getQuality().toString());
+        if (LocalDateTime.now().isAfter(targetDeadline.getTime()))
+            throw new DeadlineExceedException();
 
-        try {
-            List<Deadline> deadlines = deadlineMapper.selectDeadline(Deadline.builder().type(type.getValue()).build(),
-                    FieldsGenerator.generateFields(Deadline.class));
-            Deadline targetDeadline = deadlines.isEmpty() ? null : deadlines.getFirst();
-
-            if (targetDeadline == null)
-                throw new DeadlineNotFoundException();
-
-            if (LocalDateTime.now().isAfter(targetDeadline.getTime()))
-                throw new DeadlineExceedException();
-
-            float totalGrade = 0;
-            for (StudentGrade grade : studentTableDTO.getGrades()) {
-                totalGrade += grade.getGrade();
-                StudentGrade studentGrade = StudentGrade
-                        .builder()
-                        .userId(User.getAuth().getId()).sid(grade.getSid()).grade(grade.getGrade()).build();
-                studentGradeMapper.insertStudentGrade(studentGrade);
-            }
-
-            if (userRole == 1) {
-                student.setGradeFirst(totalGrade);
-                targetUid = User.getAuth().getId();
-            } else {
-                student.setGradeSecond(totalGrade);
-                targetUid = studentTableDTO.getTargetUid();
-            }
-
-            studentMapper.updateStudent(student, Student.builder().userId(targetUid).build());
-        } catch (DeadlineNotFoundException deadlineNotFoundException) {
-            throw new DeadlineNotFoundException(type.getValue());
-        } catch (DeadlineExceedException deadlineExceedException) {
-            throw new DeadlineExceedException(type, userRole == 1 ? 4031 : 4032);
-        } catch (Exception e) {
-            throw new RuntimeException(e.getMessage());
-        }
     }
 
     @Override
@@ -252,6 +212,8 @@ public class StudentServiceImpl implements StudentService {
         }
     }
 
+
+    // Newer interfaces
     @Override
     public List<UserProfileVO> searchStudent(String key, Integer valid) {
         try {
@@ -276,6 +238,33 @@ public class StudentServiceImpl implements StudentService {
         } catch (Exception e) {
              e.printStackTrace();
             throw new RuntimeException(e);
+        }
+    }
+
+    @Override
+    public void studentSubmit(StudentSubmitDTO submitDTO) {
+        DeadlineEnum type = DeadlineEnum.INITIAL_SUBMISSION;
+
+        try {
+            verifyDeadline(type);
+
+            // Accommodate for LocalDateTime
+            submitDTO.setBirth(String.format("%sT00:00:00", submitDTO.getBirth()));
+            studentMapper.updateStudent(
+                    studentConverter.INSTANCE.StudentSubmitDTOToStudent(
+                            submitDTO,
+                            submitDTO.getQuality().toString()
+                    ),
+                    Student.builder().userId(User.getAuth().getId()).build()
+            );
+
+        } catch (DeadlineNotFoundException deadlineNotFoundException) {
+            throw new DeadlineNotFoundException(type.getValue());
+        } catch (DeadlineExceedException deadlineExceedException) {
+            throw new DeadlineExceedException(type, 403);
+        } catch (Exception e) {
+//            e.printStackTrace();
+            throw new RuntimeException(e.getMessage());
         }
     }
 }
