@@ -9,6 +9,7 @@
         <trim suffixOverrides=",">
             <if test="scope.id == true"> id, </if>
             <if test="scope.userId == true"> user_id as "userId", </if>
+            <if test="scope.department == true"> department, </if>
             <if test="scope.birth == true"> birth, </if>
             <if test="scope.address == true"> address, </if>
             <if test="scope.majorGrad == true"> major_grad as "majorGrad", </if>
@@ -33,6 +34,7 @@
         <where>
             <if test="student.id != null"> and id = #{student.id} </if>
             <if test="student.userId != null"> and user_id = #{student.userId} </if>
+            <if test="student.department != null"> and department = #{student.department} </if>
             <if test="student.birth != null"> and birth = #{student.birth} </if>
             <if test="student.address != null"> and address = #{student.address} </if>
             <if test="student.majorGrad != null"> and major_grad = #{student.majorGrad} </if>
@@ -57,6 +59,7 @@
         insert into Student
         (
             user_id,
+            department,
             birth,
             address,
             major_grad,
@@ -78,6 +81,7 @@
         values
         (
             #{userId},
+            #{department},
             #{birth},
             #{address},
             #{majorGrad},
@@ -109,6 +113,7 @@
         update Student
         <set>
             <if test="studentUpdate.userId != null"> user_id = #{studentUpdate.userId}, </if>
+            <if test="studentUpdate.department != null"> department = #{studentUpdate.department}, </if>
             <if test="studentUpdate.birth != null"> birth = #{studentUpdate.birth}, </if>
             <if test="studentUpdate.address != null"> address = #{studentUpdate.address}, </if>
             <if test="studentUpdate.majorGrad != null"> major_grad = #{studentUpdate.majorGrad}, </if>
@@ -130,6 +135,7 @@
         <where>
             <if test="studentQuery.id != null"> and id = #{studentQuery.id} </if>
             <if test="studentQuery.userId != null"> and user_id = #{studentQuery.userId} </if>
+            <if test="studentQuery.department != null"> and department = #{studentQuery.department} </if>
             <if test="studentQuery.birth != null"> and birth = #{studentQuery.birth} </if>
             <if test="studentQuery.address != null"> and address = #{studentQuery.address} </if>
             <if test="studentQuery.majorGrad != null"> and major_grad = #{studentQuery.majorGrad} </if>

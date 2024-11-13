@@ -13,6 +13,7 @@ import java.util.List;
 @NoArgsConstructor
 @Builder
 public class StudentSubmitTableVO {
+    private Integer department;
     private String birth;
     private String examID;
     private String certifyID;
