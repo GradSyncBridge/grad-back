@@ -36,4 +36,6 @@ public interface UserMapper {
     void updateUser(User userUpdate, User userQuery);
 
     void deleteUser(User user);
+
+    List<User> searchStudent(User user, Integer valid);
 }

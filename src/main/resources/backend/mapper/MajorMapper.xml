@@ -20,7 +20,7 @@
             <if test="scope.interview == true"> interview, </if>
             <if test="scope.recommend == true"> recommend, </if>
             <if test="scope.disabled == true"> disabled, </if>
-            <if test="scope.departmentMapper == true"> department, </if>
+            <if test="scope.department == true"> department, </if>
             <if test="scope.allowReassign == true"> allow_reassign as "allowReassign", </if>
         </trim>
     </sql>

@@ -1,20 +1,25 @@
 package backend.service;
 
-import backend.model.DTO.ApplicationSubmitDTO;
-import backend.model.DTO.StudentTableDTO;
+import backend.model.DTO.StudentApplicationSubmitDTO;
+import backend.model.DTO.StudentGradeModifyDTO;
+import backend.model.DTO.StudentGradeSubmitDTO;
+import backend.model.DTO.StudentSubmitDTO;
 import backend.model.VO.student.StudentSubmitTableVO;
 import backend.model.VO.user.UserProfileVO;
 
 import java.util.List;
 
 public interface StudentService {
-    void submitTable(StudentTableDTO studentTableDTO);
 
     StudentSubmitTableVO getStudentSubmitTable(Integer targetUid);
 
-    void submitApplication(ApplicationSubmitDTO applicationSubmitDTO);
+    List<UserProfileVO> searchStudent(String key, Integer valid);
 
-    void modifyApplication(ApplicationSubmitDTO applicationSubmitDTO);
+    void studentSubmit(StudentSubmitDTO submitDTO);
 
-    List<UserProfileVO> searchStudent(String key);
+    void studentGradeSubmit(StudentGradeSubmitDTO submitDTO);
+
+    void studentGradeModify(StudentGradeModifyDTO modifyDTO);
+
+    void studentApplicationSubmit(StudentApplicationSubmitDTO submitDTO);
 }

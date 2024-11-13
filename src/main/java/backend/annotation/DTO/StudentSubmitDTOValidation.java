@@ -1,6 +1,6 @@
 package backend.annotation.DTO;
 
-import backend.annotation.DTO.impl.StudentTableDTOValidationImpl;
+import backend.annotation.DTO.impl.StudentSubmitDTOValidationImpl;
 import jakarta.validation.Constraint;
 
 import java.lang.annotation.ElementType;
@@ -10,9 +10,8 @@ import java.lang.annotation.Target;
 
 @Target({ElementType.TYPE})
 @Retention(RetentionPolicy.RUNTIME)
-@Constraint(validatedBy = StudentTableDTOValidationImpl.class)
-public @interface StudentTableDTOValidation {
-
+@Constraint(validatedBy = StudentSubmitDTOValidationImpl.class)
+public @interface StudentSubmitDTOValidation {
     String message() default "Invalid Student";
 
     Class<?>[] groups() default {};
