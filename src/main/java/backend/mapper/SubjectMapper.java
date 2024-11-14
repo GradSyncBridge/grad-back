@@ -1,7 +1,6 @@
 package backend.mapper;
 
-import backend.model.VO.major.SubMajorSubject;
-import backend.model.entity.Subject;
+import backend.model.VO.subject.SubjectVO;
 import org.apache.ibatis.annotations.Mapper;
 
 import java.util.List;
@@ -15,7 +14,7 @@ public interface SubjectMapper {
      *
      * @param subject 插入值
      */
-    void insertSubject(Subject subject);
+    void insertSubject(backend.model.entity.Subject subject);
 
     /**
      * 查询课程
@@ -24,7 +23,7 @@ public interface SubjectMapper {
      * @param scope   查询返回的字段
      * @return 课程列表
      */
-    List<Subject> selectSubject(Subject subject, Map<String, Boolean> scope);
+    List<backend.model.entity.Subject> selectSubject(backend.model.entity.Subject subject, Map<String, Boolean> scope);
 
     /**
      * 更新课程
@@ -32,9 +31,16 @@ public interface SubjectMapper {
      * @param subjectUpdate 更新值
      * @param subjectQuery  更新的条件
      */
-    void updateSubject(Subject subjectUpdate, Subject subjectQuery);
+    void updateSubject(backend.model.entity.Subject subjectUpdate, backend.model.entity.Subject subjectQuery);
 
-    List<SubMajorSubject> selectSubjectForeach(List<Integer> ids);
+    List<SubjectVO> selectSubjectForeach(List<Integer> ids);
 
-    SubMajorSubject selectSubMajorSubject(Integer majorId);
+
+    /**
+     * 选择 Subject
+     *
+     * @param department 学院ID
+     * @param type 0 -- 初试，1 -- 初试 + 复试
+     * */
+    List<SubjectVO> selectSubjectWithDept(Integer department, Integer type);
 }

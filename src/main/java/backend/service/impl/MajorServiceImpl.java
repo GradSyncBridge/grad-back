@@ -3,6 +3,7 @@ package backend.service.impl;
 import backend.mapper.MajorMapper;
 import backend.mapper.SubjectMapper;
 import backend.model.VO.major.*;
+import backend.model.VO.subject.SubjectVO;
 import backend.model.converter.MajorConverter;
 import backend.model.entity.Major;
 import backend.redis.RedisService;
@@ -43,7 +44,7 @@ public class MajorServiceImpl implements MajorService {
                     .toList();
 
         } catch (Exception e) {
-//            e.printStackTrace();
+            e.printStackTrace();
             throw new RuntimeException(e.getMessage());
         }
     }
@@ -59,9 +60,9 @@ public class MajorServiceImpl implements MajorService {
 
             return majors.stream()
                     .map(m -> {
-                        List<SubMajorSubject> initials = subjectMapper
+                        List<SubjectVO> initials = subjectMapper
                                 .selectSubjectForeach(StringToList.convert(m.getInitial()));
-                        List<SubMajorSubject> interviews = subjectMapper
+                        List<SubjectVO> interviews = subjectMapper
                                 .selectSubjectForeach(StringToList.convert(m.getInterview()));
                         return majorConverter.MajorSubjectToMajorSecondVO(m, initials, interviews);
                     })
@@ -118,8 +119,8 @@ public class MajorServiceImpl implements MajorService {
                 List<CompletableFuture<SubMajorVO>> futures = new ArrayList<>();
 
                 for (Major major : subMajorList) {
-                    CompletableFuture<List<SubMajorSubject>> future1 = asyncSubMajorInitials(major);
-                    CompletableFuture<List<SubMajorSubject>> future2 = asyncSubMajorInterviews(major);
+                    CompletableFuture<List<SubjectVO>> future1 = asyncSubMajorInitials(major);
+                    CompletableFuture<List<SubjectVO>> future2 = asyncSubMajorInterviews(major);
 
                     CompletableFuture<SubMajorVO> combinedFuture = future1.thenCombine(future2,
                             (initials, interviews) -> majorConverter.MajorToSubMajorVO(major, initials, interviews));
@@ -228,7 +229,7 @@ public class MajorServiceImpl implements MajorService {
 //    }
 
     @Async("taskExecutor")
-    public CompletableFuture<List<SubMajorSubject>> asyncSubMajorInitials(Major major) {
+    public CompletableFuture<List<SubjectVO>> asyncSubMajorInitials(Major major) {
         try {
             if (major.getInitial() == null || major.getInitial().isEmpty()) {
                 return CompletableFuture.completedFuture(Collections.emptyList());
@@ -236,7 +237,7 @@ public class MajorServiceImpl implements MajorService {
 
             List<Integer> initialList = Major.initialToList(major.getInitial());
 
-            List<SubMajorSubject> subjects = subjectMapper.selectSubjectForeach(initialList);
+            List<SubjectVO> subjects = subjectMapper.selectSubjectForeach(initialList);
 
             return CompletableFuture.completedFuture(subjects);
         } catch (Exception e) {
@@ -245,7 +246,7 @@ public class MajorServiceImpl implements MajorService {
     }
 
     @Async("taskExecutor")
-    public CompletableFuture<List<SubMajorSubject>> asyncSubMajorInterviews(Major major) {
+    public CompletableFuture<List<SubjectVO>> asyncSubMajorInterviews(Major major) {
         try {
             if (major.getInterview() == null || major.getInterview().isEmpty()) {
                 return CompletableFuture.completedFuture(Collections.emptyList());
@@ -253,7 +254,7 @@ public class MajorServiceImpl implements MajorService {
 
             List<Integer> interviewList = Major.interviewToList(major.getInterview());
 
-            List<SubMajorSubject> subjects = subjectMapper.selectSubjectForeach(interviewList);
+            List<SubjectVO> subjects = subjectMapper.selectSubjectForeach(interviewList);
 
             return CompletableFuture.completedFuture(subjects);
         } catch (Exception e) {
