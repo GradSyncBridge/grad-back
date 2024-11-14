@@ -1,7 +1,7 @@
 package backend.model.converter;
 
 import backend.model.VO.major.*;
-import backend.model.VO.subject.Subject;
+import backend.model.VO.subject.SubjectVO;
 import backend.model.entity.Major;
 import org.mapstruct.Mapper;
 import org.mapstruct.Mapping;
@@ -20,7 +20,7 @@ public interface MajorConverter {
 
     @Mapping(target = "majorID", source = "major.id")
     @Mapping(target = "majorNum", source = "major.mid")
-    SubMajorVO MajorToSubMajorVO(Major major, List<Subject> initials, List<Subject> interviews);
+    SubMajorVO MajorToSubMajorVO(Major major, List<SubjectVO> initials, List<SubjectVO> interviews);
 
     List<MajorVO> MajorListToMajorVOList(List<Major> majorList);
 
@@ -31,5 +31,5 @@ public interface MajorConverter {
 
     @Mapping(target = "majorID", source = "major.id")
     @Mapping(target = "majorNum", source = "major.mid")
-    MajorSecondVO MajorSubjectToMajorSecondVO(Major major, List<Subject> initials, List<Subject> interviews);
+    MajorSecondVO MajorSubjectToMajorSecondVO(Major major, List<SubjectVO> initials, List<SubjectVO> interviews);
 }
