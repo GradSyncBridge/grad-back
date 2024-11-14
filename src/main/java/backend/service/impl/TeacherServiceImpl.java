@@ -2,11 +2,20 @@ package backend.service.impl;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
+import java.util.Objects;
 import java.util.concurrent.CompletableFuture;
 
+import backend.model.converter.UserConverter;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Service;
+
+import backend.exception.model.user.UserRoleDeniedException;
+import backend.mapper.StudentApplyMapper;
+import backend.model.VO.user.UserProfileVO;
+import backend.model.entity.StudentApply;
+
 
 import backend.exception.model.user.DuplicateUserEmailException;
 import backend.exception.model.user.DuplicateUserException;
@@ -47,17 +56,26 @@ public class TeacherServiceImpl implements TeacherService {
     @Autowired
     private MajorToTeacherMapper majorToTeacherMapper;
 
+    @Autowired
+    private StudentApplyMapper studentApplyMapper;
+
+    @Autowired
+    private UserConverter userConverter;
+
     /**
      * 获取对应部门教师列表
+     *
      * @param department 部门
      * @return 教师列表
      */
     @Override
     public List<TeacherVO> getTeacher(Integer department) {
-        List<Teacher> teachers =
-                teacherMapper.selectTeacher(Teacher.builder().department(department).build(), FieldsGenerator.generateFields(Teacher.class));
+        List<Teacher> teachers = teacherMapper.selectTeacher(
+                Teacher.builder().department(department).build(),
+                FieldsGenerator.generateFields(Teacher.class)
+        );
 
-        if(teachers.isEmpty())
+        if (teachers.isEmpty())
             return new ArrayList<>();
 
         List<User> users = getTeacherAsync(teachers).join();
@@ -67,20 +85,22 @@ public class TeacherServiceImpl implements TeacherService {
 
     /**
      * 获取对应二级学科教师列表
+     *
      * @param majorID 二级学科
      * @return 教师列表
      */
     @Override
     public List<TeacherVO> getTeachersByCatalogue(Integer majorID) {
 
-        List<MajorToTeacher> majorToTeachers = majorToTeacherMapper
-                .selectMajorToTeacher(MajorToTeacher.builder().mid(majorID).build(),
-                        FieldsGenerator.generateFields(MajorToTeacher.class));
+        List<MajorToTeacher> majorToTeachers = majorToTeacherMapper.selectMajorToTeacher(
+                MajorToTeacher.builder().mid(majorID).build(),
+                FieldsGenerator.generateFields(MajorToTeacher.class)
+        );
 
-        if(majorToTeachers.isEmpty()) throw new TeacherNotFoundException(majorID);
+        if (majorToTeachers.isEmpty())
+            throw new TeacherNotFoundException(majorID);
 
         List<Teacher> teachers = teacherMapper.selectTeacherForeach(majorToTeachers);
-
         List<User> users = getTeacherAsync(teachers).join();
 
         return teacherConverter.INSTANCE.TeacherListToTeacherVOList(teachers, users);
@@ -88,22 +108,24 @@ public class TeacherServiceImpl implements TeacherService {
 
     /**
      * 获取教师个人信息
+     *
      * @param uid 教师uid
      * @return 教师个人信息
      */
     @Override
     public TeacherProfileVO getTeacherProfile(Integer uid) {
-        try{
-            if(User.getAuth().getRole() != 2) throw new TeacherProfileNoRightException();
+        try {
+            if (User.getAuth().getRole() != 2)
+                throw new UserRoleDeniedException();
 
             User user = userMapper.selectUser(User.builder().id(uid).build(), FieldsGenerator.generateFields(User.class)).getFirst();
 
             Teacher teacher = teacherMapper.selectTeacher(Teacher.builder().userId(uid).build(), FieldsGenerator.generateFields(Teacher.class)).getFirst();
 
             return teacherConverter.INSTANCE.TeacherAndUserToTeacherProfileVO(teacher, user);
-        }catch(TeacherProfileNoRightException teacherProfileNoRightException){
-            throw new TeacherProfileNoRightException();
-        }catch (Exception e){
+        } catch (UserRoleDeniedException userRoleDeniedException) {
+            throw new UserRoleDeniedException(1, 403);
+        } catch (Exception e) {
             throw new UserNotFoundException();
         }
     }
@@ -113,7 +135,7 @@ public class TeacherServiceImpl implements TeacherService {
 
         List<CompletableFuture<User>> futures = new ArrayList<>();
 
-        try{
+        try {
             for (Teacher teacher : teachers) {
                 CompletableFuture<User> future = CompletableFuture.supplyAsync(() -> {
                     try {
@@ -149,7 +171,10 @@ public class TeacherServiceImpl implements TeacherService {
 
             String username = teacherProfile.getUsername();
             if (!username.equals(targetUser.getUsername())) {
-                possibleUsers = userMapper.selectUser(User.builder().username(username).build(), FieldsGenerator.generateFields(User.class));
+                possibleUsers = userMapper.selectUser(
+                        User.builder().username(username).build(),
+                        FieldsGenerator.generateFields(User.class)
+                );
 
                 if (!possibleUsers.isEmpty())
                     throw new DuplicateUserException();
@@ -158,7 +183,10 @@ public class TeacherServiceImpl implements TeacherService {
 
             String email = teacherProfile.getEmail();
             if (!email.equals(targetUser.getEmail())) {
-                possibleUsers = userMapper.selectUser(User.builder().email(email).build(), FieldsGenerator.generateFields(User.class));
+                possibleUsers = userMapper.selectUser(
+                        User.builder().email(email).build(),
+                        FieldsGenerator.generateFields(User.class)
+                );
 
                 if (!possibleUsers.isEmpty())
                     throw new DuplicateUserEmailException();
@@ -183,6 +211,39 @@ public class TeacherServiceImpl implements TeacherService {
         } catch (DuplicateUserEmailException duplicateUserEmailException) {
             throw new DuplicateUserEmailException();
         } catch (Exception e) {
+            throw new RuntimeException(e.getMessage());
+        }
+    }
+
+    @Override
+    public List<UserProfileVO> getTeacherApplicationByLevel(Integer level) {
+        User user = User.getAuth();
+        Integer role = user.getRole();
+
+        try {
+            if (role == 1)
+                throw new UserRoleDeniedException();
+
+            return studentApplyMapper
+                    .selectStudentApply(
+                            StudentApply.builder().tid(user.getId()).level(level).build(),
+                            Map.of("userId", true)
+                    )
+                    .stream()
+                    .map(s -> {
+                        List<User> users = userMapper.selectUser(
+                                User.builder().id(s.getUserId()).build(),
+                                FieldsGenerator.generateFields(User.class)
+                        );
+                        return users.isEmpty() ? null : userConverter.UserToUserProfileVO(users.getFirst());
+                    })
+                    .filter(Objects::nonNull)
+                    .toList();
+
+        } catch (UserRoleDeniedException userRoleDeniedException) {
+            throw new UserRoleDeniedException(role, 403);
+        } catch (Exception e) {
+//            e.printStackTrace();
             throw new RuntimeException(e.getMessage());
         }
     }
