@@ -44,7 +44,7 @@ public class MajorServiceImpl implements MajorService {
                     .toList();
 
         } catch (Exception e) {
-            e.printStackTrace();
+//            e.printStackTrace();
             throw new RuntimeException(e.getMessage());
         }
     }
@@ -69,7 +69,7 @@ public class MajorServiceImpl implements MajorService {
                     .toList();
 
         } catch (Exception e) {
-            e.printStackTrace();
+//            e.printStackTrace();
             throw new RuntimeException(e.getMessage());
         }
     }
@@ -105,9 +105,7 @@ public class MajorServiceImpl implements MajorService {
         for (int i = 0; i < majorVOList.size(); i++)
             majorVOList.get(i).setSubMajors(futures.get(i).join());
 
-        CompletableFuture.runAsync(() -> {
-            redisService.saveDataWithExpiration(redisTemplateString, 5, majorVOList);
-        });
+        CompletableFuture.runAsync(() -> redisService.saveDataWithExpiration(redisTemplateString, 5, majorVOList));
         return majorVOList;
     }
 
