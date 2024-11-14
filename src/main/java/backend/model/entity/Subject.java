@@ -26,6 +26,8 @@ public class Subject {
 
     private String name;
 
-    // 0 -> 初试 1 -> 复试
+    // 0 -> 初试公共课 1 -> 初试专业课 2 -> 复试
     private Integer type;
+
+    private Integer department;
 }

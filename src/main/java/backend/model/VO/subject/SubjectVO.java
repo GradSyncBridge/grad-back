@@ -11,7 +11,7 @@ import java.io.Serializable;
 @NoArgsConstructor
 @AllArgsConstructor
 @Builder
-public class Subject implements Serializable {
+public class SubjectVO implements Serializable {
 
     private Integer subjectID;
 

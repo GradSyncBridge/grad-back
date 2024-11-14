@@ -1,6 +1,6 @@
 package backend.mapper;
 
-import backend.model.VO.subject.Subject;
+import backend.model.VO.subject.SubjectVO;
 import org.apache.ibatis.annotations.Mapper;
 
 import java.util.List;
@@ -33,7 +33,14 @@ public interface SubjectMapper {
      */
     void updateSubject(backend.model.entity.Subject subjectUpdate, backend.model.entity.Subject subjectQuery);
 
-    List<Subject> selectSubjectForeach(List<Integer> ids);
+    List<SubjectVO> selectSubjectForeach(List<Integer> ids);
 
-    Subject selectSubMajorSubject(Integer majorId);
+
+    /**
+     * 选择 Subject
+     *
+     * @param department 学院ID
+     * @param type 0 -- 初试，1 -- 初试 + 复试
+     * */
+    List<SubjectVO> selectSubjectWithDept(Integer department, Integer type);
 }
