@@ -3,6 +3,7 @@ package backend.service;
 import backend.model.DTO.TeacherProfileUpdateDTO;
 import backend.model.VO.teacher.TeacherProfileVO;
 import backend.model.VO.teacher.TeacherVO;
+import backend.model.VO.user.UserProfileVO;
 
 import java.util.List;
 
@@ -29,4 +30,6 @@ public interface TeacherService {
     TeacherProfileVO getTeacherProfile(Integer uid);
 
     void updateTeacherProfile(TeacherProfileUpdateDTO teacherProfile);
+
+    List<UserProfileVO> getTeacherApplicationByLevel(Integer level);
 }
