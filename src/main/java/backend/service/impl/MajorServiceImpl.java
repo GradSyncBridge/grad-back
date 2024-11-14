@@ -85,9 +85,9 @@ public class MajorServiceImpl implements MajorService {
     @Override
     public List<MajorVO> getCatalogue(Integer department) {
         String redisTemplateString = "majorCatalogue:" + department;
-        List<MajorVO> majorVOs = (List<MajorVO>) redisService.getData(redisTemplateString);
+         List<MajorVO> majorVOs = (List<MajorVO>) redisService.getData(redisTemplateString);
 
-        if(majorVOs != null) return majorVOs;
+         if(majorVOs != null) return majorVOs;
 
         List<Major> majorList = majorMapper.selectMajor(Major.builder().pid(0).department(department).build(),
                 FieldsGenerator.generateFields(Major.class));
@@ -105,7 +105,9 @@ public class MajorServiceImpl implements MajorService {
         for (int i = 0; i < majorVOList.size(); i++)
             majorVOList.get(i).setSubMajors(futures.get(i).join());
 
-        redisService.saveDataWithExpiration(redisTemplateString, 5, majorVOList);
+        CompletableFuture.runAsync(() -> {
+            redisService.saveDataWithExpiration(redisTemplateString, 5, majorVOList);
+        });
         return majorVOList;
     }
 
