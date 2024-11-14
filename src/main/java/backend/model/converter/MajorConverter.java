@@ -1,8 +1,6 @@
 package backend.model.converter;
 
-import backend.model.VO.major.MajorVO;
-import backend.model.VO.major.SubMajorSubject;
-import backend.model.VO.major.SubMajorVO;
+import backend.model.VO.major.*;
 import backend.model.entity.Major;
 import org.mapstruct.Mapper;
 import org.mapstruct.Mapping;
@@ -24,4 +22,13 @@ public interface MajorConverter {
     SubMajorVO MajorToSubMajorVO(Major major, List<SubMajorSubject> initials, List<SubMajorSubject> interviews);
 
     List<MajorVO> MajorListToMajorVOList(List<Major> majorList);
+
+    // Newer Interfaces
+    @Mapping(target = "majorID", source = "id")
+    @Mapping(target = "majorNum", source = "mid")
+    MajorFirstVO MajorToMajorFirstVO(Major major);
+
+    @Mapping(target = "majorID", source = "major.id")
+    @Mapping(target = "majorNum", source = "major.mid")
+    MajorSecondVO MajorSubjectToMajorSecondVO(Major major, List<SubMajorSubject> initials, List<SubMajorSubject> interviews);
 }

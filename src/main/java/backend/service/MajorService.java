@@ -1,5 +1,7 @@
 package backend.service;
 
+import backend.model.VO.major.MajorFirstVO;
+import backend.model.VO.major.MajorSecondVO;
 import backend.model.VO.major.MajorVO;
 
 import java.util.List;
@@ -11,4 +13,8 @@ public interface MajorService {
      * @return 专业列表
      */
     List<MajorVO> getCatalogue(Integer department);
+
+    List<MajorFirstVO> getFirstMajorByDept(Integer department);
+
+    List<MajorSecondVO> getSecondMajorByFirst(Integer major);
 }

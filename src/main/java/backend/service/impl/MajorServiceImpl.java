@@ -2,14 +2,13 @@ package backend.service.impl;
 
 import backend.mapper.MajorMapper;
 import backend.mapper.SubjectMapper;
-import backend.model.VO.major.MajorVO;
-import backend.model.VO.major.SubMajorSubject;
-import backend.model.VO.major.SubMajorVO;
+import backend.model.VO.major.*;
 import backend.model.converter.MajorConverter;
 import backend.model.entity.Major;
 import backend.redis.RedisService;
 import backend.service.MajorService;
 import backend.util.FieldsGenerator;
+import backend.util.StringToList;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Service;
@@ -27,12 +26,58 @@ public class MajorServiceImpl implements MajorService {
 
     @Autowired
     private SubjectMapper subjectMapper;
-
+  
     @Autowired
     private RedisService redisService;
 
+    @Override
+    public List<MajorFirstVO> getFirstMajorByDept(Integer department) {
+        try {
+            return majorMapper
+                    .selectMajor(
+                            Major.builder().pid(0).department(department).build(),
+                            FieldsGenerator.generateFields(Major.class)
+                    )
+                    .stream()
+                    .map(m -> majorConverter.INSTANCE.MajorToMajorFirstVO(m))
+                    .toList();
+
+        } catch (Exception e) {
+//            e.printStackTrace();
+            throw new RuntimeException(e.getMessage());
+        }
+    }
+
+    @Override
+    public List<MajorSecondVO> getSecondMajorByFirst(Integer major) {
+        try {
+
+            List<Major> majors = majorMapper.selectMajor(
+                    Major.builder().pid(major).build(),
+                    FieldsGenerator.generateFields(Major.class)
+            );
+
+            return majors.stream()
+                    .map(m -> {
+                        List<SubMajorSubject> initials = subjectMapper
+                                .selectSubjectForeach(StringToList.convert(m.getInitial()));
+                        List<SubMajorSubject> interviews = subjectMapper
+                                .selectSubjectForeach(StringToList.convert(m.getInterview()));
+                        return majorConverter.MajorSubjectToMajorSecondVO(m, initials, interviews);
+                    })
+                    .toList();
+
+        } catch (Exception e) {
+            e.printStackTrace();
+            throw new RuntimeException(e.getMessage());
+        }
+    }
+
+
+    // Old implementations
     /**
      * 获取专业目录
+     *
      * @param department 学院
      * @return 专业列表
      */

@@ -44,6 +44,8 @@ public class UnAuthController {
     @Autowired
     private EnrollService enrollService;
 
+
+    // User Endpoints
     /**
      * 处理登录请求
      *
@@ -68,8 +70,10 @@ public class UnAuthController {
         return ResultEntity.success(HttpStatus.OK.value(), "Register successfully.", data);
     }
 
+
+    // Catalogue Endpoints
     /**
-     * 获取所有专业
+     * 获取所有专业 To be deprecated
      *
      * @param department 学院
      * @return 专业列表
@@ -79,6 +83,41 @@ public class UnAuthController {
         return ResultEntity.success(200, "Get all majors successfully", majorService.getCatalogue(department));
     }
 
+    @GetMapping(value = "/catalogue/first")
+    public ResponseEntity<ResultEntity<Object>> getFirstMajorByDept(
+            @RequestParam(value = "department") Integer department
+    ) {
+        return ResultEntity.success(
+            HttpStatus.OK.value(),
+            "Get first majors successfully",
+            majorService.getFirstMajorByDept(department)
+        );
+    }
+
+    @GetMapping(value = "/catalogue/second")
+    public ResponseEntity<ResultEntity<Object>> getSecondMajorByFirst(
+            @RequestParam(value = "majorID") Integer majorID
+    ) {
+        return ResultEntity.success(
+                HttpStatus.OK.value(),
+                "Get second majors successfully",
+                majorService.getSecondMajorByFirst(majorID)
+        );
+    }
+
+    /**
+     * 获取对应二级学科教师列表
+     *
+     * @param majorID 二级学科
+     * @return 教师列表
+     */
+    @GetMapping(value = "/catalogue/teachers")
+    public ResponseEntity<ResultEntity<Object>> getTeachersByCatalogue(@RequestParam(value = "majorID") Integer majorID) {
+        return ResultEntity.success(200, "Get all departments successfully", teacherService.getTeachersByCatalogue(majorID));
+    }
+
+
+    // Department Endpoints
     /**
      * 获取学院下属所有老师
      *
@@ -105,18 +144,8 @@ public class UnAuthController {
         return ResultEntity.success(200, "Get all departments successfully", departmentService.getDepartment());
     }
 
-    /**
-     * 获取对应二级学科教师列表
-     *
-     * @param majorID 二级学科
-     * @return 教师列表
-     */
-    @GetMapping(value = "/catalogue/teachers")
-    public ResponseEntity<ResultEntity<Object>> getTeachersByCatalogue(@RequestParam(value = "majorID") Integer majorID) {
-        return ResultEntity.success(200, "Get all departments successfully", teacherService.getTeachersByCatalogue(majorID));
-    }
 
-
+    // Enroll Endpoints
     @GetMapping(value = "/enroll")
     public ResponseEntity<ResultEntity<Object>> getEnrollTable(@RequestParam(value = "departmentID") Integer departmentId, @RequestParam(value = "year") Integer year) {
         return ResultEntity.success(200, "Get enroll table successfully", enrollService.getEnrollTable(departmentId, year));
