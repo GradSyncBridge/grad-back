@@ -7,6 +7,7 @@ import backend.model.VO.major.SubMajorSubject;
 import backend.model.VO.major.SubMajorVO;
 import backend.model.converter.MajorConverter;
 import backend.model.entity.Major;
+import backend.redis.RedisService;
 import backend.service.MajorService;
 import backend.util.FieldsGenerator;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -27,6 +28,9 @@ public class MajorServiceImpl implements MajorService {
     @Autowired
     private SubjectMapper subjectMapper;
 
+    @Autowired
+    private RedisService redisService;
+
     /**
      * 获取专业目录
      * @param department 学院
@@ -34,6 +38,11 @@ public class MajorServiceImpl implements MajorService {
      */
     @Override
     public List<MajorVO> getCatalogue(Integer department) {
+        String redisTemplateString = "majorCatalogue:" + department;
+        List<MajorVO> majorVOs = (List<MajorVO>) redisService.getData(redisTemplateString);
+
+        if(majorVOs != null) return majorVOs;
+
         List<Major> majorList = majorMapper.selectMajor(Major.builder().pid(0).department(department).build(),
                 FieldsGenerator.generateFields(Major.class));
         List<MajorVO> majorVOList = majorConverter.MajorListToMajorVOList(majorList);
@@ -50,6 +59,7 @@ public class MajorServiceImpl implements MajorService {
         for (int i = 0; i < majorVOList.size(); i++)
             majorVOList.get(i).setSubMajors(futures.get(i).join());
 
+        redisService.saveDataWithExpiration(redisTemplateString, 5, majorVOList);
         return majorVOList;
     }
 

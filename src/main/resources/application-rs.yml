@@ -1,0 +1,7 @@
+spring:
+  data:
+    redis:
+      host: redis-13179.c302.asia-northeast1-1.gce.redns.redis-cloud.com
+      port: 13179
+      username: default
+      password: b1RhT0mncTu5V90M0yPsXqEv1Ko46cXu
