@@ -5,6 +5,7 @@ import backend.mapper.SubjectMapper;
 import backend.model.VO.major.*;
 import backend.model.converter.MajorConverter;
 import backend.model.entity.Major;
+import backend.redis.RedisService;
 import backend.service.MajorService;
 import backend.util.FieldsGenerator;
 import backend.util.StringToList;
@@ -25,6 +26,9 @@ public class MajorServiceImpl implements MajorService {
 
     @Autowired
     private SubjectMapper subjectMapper;
+  
+    @Autowired
+    private RedisService redisService;
 
     @Override
     public List<MajorFirstVO> getFirstMajorByDept(Integer department) {
@@ -71,7 +75,6 @@ public class MajorServiceImpl implements MajorService {
 
 
     // Old implementations
-
     /**
      * 获取专业目录
      *
@@ -80,6 +83,11 @@ public class MajorServiceImpl implements MajorService {
      */
     @Override
     public List<MajorVO> getCatalogue(Integer department) {
+        String redisTemplateString = "majorCatalogue:" + department;
+        List<MajorVO> majorVOs = (List<MajorVO>) redisService.getData(redisTemplateString);
+
+        if(majorVOs != null) return majorVOs;
+
         List<Major> majorList = majorMapper.selectMajor(Major.builder().pid(0).department(department).build(),
                 FieldsGenerator.generateFields(Major.class));
         List<MajorVO> majorVOList = majorConverter.MajorListToMajorVOList(majorList);
@@ -96,6 +104,7 @@ public class MajorServiceImpl implements MajorService {
         for (int i = 0; i < majorVOList.size(); i++)
             majorVOList.get(i).setSubMajors(futures.get(i).join());
 
+        redisService.saveDataWithExpiration(redisTemplateString, 5, majorVOList);
         return majorVOList;
     }
 
