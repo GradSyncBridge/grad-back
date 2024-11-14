@@ -1,4 +1,4 @@
-package backend.model.VO.major;
+package backend.model.VO.subject;
 
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -11,7 +11,7 @@ import java.io.Serializable;
 @NoArgsConstructor
 @AllArgsConstructor
 @Builder
-public class SubMajorSubject implements Serializable {
+public class Subject implements Serializable {
 
     private Integer subjectID;
 

@@ -1,5 +1,6 @@
 package backend.model.VO.major;
 
+import backend.model.VO.subject.Subject;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
@@ -30,7 +31,7 @@ public class MajorSecondVO {
 
     private Integer department;
 
-    private List<SubMajorSubject> initials;
+    private List<Subject> initials;
 
-    private List<SubMajorSubject> interviews;
+    private List<Subject> interviews;
 }

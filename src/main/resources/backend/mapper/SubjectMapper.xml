@@ -5,7 +5,7 @@
 
 <mapper namespace="backend.mapper.SubjectMapper">
 
-    <resultMap id="SubMajorSubject" type="backend.model.VO.major.SubMajorSubject">
+    <resultMap id="SubMajorSubject" type="backend.model.VO.subject.Subject">
         <id property="subjectID" column="id" />
         <result property="subjectNum" column="sid" />
         <result property="name" column="name" />

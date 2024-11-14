@@ -85,7 +85,7 @@ public class UnAuthController {
 
     @GetMapping(value = "/catalogue/first")
     public ResponseEntity<ResultEntity<Object>> getFirstMajorByDept(
-            @RequestParam(value = "department") Integer department
+            @RequestParam(value = "departmentID") Integer department
     ) {
         return ResultEntity.success(
             HttpStatus.OK.value(),
