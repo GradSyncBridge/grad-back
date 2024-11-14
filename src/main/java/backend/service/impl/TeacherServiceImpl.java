@@ -6,32 +6,30 @@ import java.util.Map;
 import java.util.Objects;
 import java.util.concurrent.CompletableFuture;
 
-import backend.model.converter.UserConverter;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Service;
 
 import backend.exception.model.user.UserRoleDeniedException;
-import backend.mapper.StudentApplyMapper;
-import backend.model.VO.user.UserProfileVO;
-import backend.model.entity.StudentApply;
-
-
 import backend.exception.model.user.DuplicateUserEmailException;
 import backend.exception.model.user.DuplicateUserException;
-
 import backend.exception.model.teacher.TeacherNotFoundException;
-import backend.exception.model.teacher.TeacherProfileNoRightException;
 import backend.exception.model.user.UserNotFoundException;
 
 import backend.mapper.MajorToTeacherMapper;
 import backend.mapper.TeacherMapper;
 import backend.mapper.UserMapper;
+import backend.mapper.StudentApplyMapper;
 
 import backend.model.DTO.TeacherProfileUpdateDTO;
+import backend.model.VO.user.UserProfileVO;
 import backend.model.VO.teacher.TeacherProfileVO;
 import backend.model.VO.teacher.TeacherVO;
+
+import backend.model.converter.UserConverter;
 import backend.model.converter.TeacherConverter;
+
+import backend.model.entity.StudentApply;
 import backend.model.entity.MajorToTeacher;
 import backend.model.entity.Teacher;
 import backend.model.entity.User;
