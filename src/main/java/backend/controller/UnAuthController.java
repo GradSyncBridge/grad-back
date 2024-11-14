@@ -81,6 +81,9 @@ public class UnAuthController {
 
     /**
      * 获取学院下属所有老师
+     *
+     * @param department 学院
+     * @return 老师列表
      */
     @GetMapping(value = "/department/teachers")
     public ResponseEntity<ResultEntity<Object>> getTeacher(@RequestParam(value = "departmentID") Integer department) {
