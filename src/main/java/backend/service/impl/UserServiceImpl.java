@@ -1,12 +1,17 @@
 package backend.service.impl;
 
+import java.sql.SQLOutput;
 import java.util.List;
 import java.util.Map;
+import java.util.concurrent.CompletableFuture;
+import java.util.concurrent.locks.Lock;
+import java.util.concurrent.locks.ReentrantLock;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 import backend.config.GlobalConfig;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.autoconfigure.liquibase.LiquibaseProperties;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
 
@@ -120,10 +125,15 @@ public class UserServiceImpl implements UserService {
             List<User> userList = userMapper.selectUser(User.builder().username(userRegisterDTO.getUsername()).build(), Map.of("username", true));
             if (!userList.isEmpty()) throw new DuplicateUserException();
 
-            userMapper.insertUser(user);
-            if (user.getRole() == 1)
-                studentMapper.insertStudent(Student.builder().userId(user.getId()).valid(-1).disabled(1).build());
-            else teacherMapper.insertTeacher(backend.model.entity.Teacher.builder().userId(user.getId()).build());
+            CompletableFuture.runAsync(()->{
+                userMapper.insertUser(user);
+            });
+
+            CompletableFuture.runAsync(()->{
+                if (user.getRole() == 1)
+                    studentMapper.insertStudent(Student.builder().userId(user.getId()).valid(-1).disabled(1).build());
+                else teacherMapper.insertTeacher(backend.model.entity.Teacher.builder().userId(user.getId()).build());
+            });
         } catch (DuplicateUserException ex) {
             throw new DuplicateUserException();
         } catch (Exception e) {
@@ -146,26 +156,43 @@ public class UserServiceImpl implements UserService {
         String username = userProfileUpdateDTO.getUsername();
         String email = userProfileUpdateDTO.getEmail();
         try {
-            if (!username.equals(User.getAuth().getUsername())) {
-                List<User> userList = userMapper.selectUser(User.builder().username(userProfileUpdateDTO.getUsername()).build(), Map.of("username", true));
+            User authUser = User.getAuth();
 
-                if (!userList.isEmpty()) throw new DuplicateUserException();
-            } else {
-                userProfileUpdateDTO.setUsername(null);
-            }
+            CompletableFuture<Void> usernameFuture = CompletableFuture.supplyAsync(() -> {
+                if (!username.equals(authUser.getUsername())) {
+                    List<User> userList = userMapper.selectUser(User.builder().username(userProfileUpdateDTO.getUsername()).build(), Map.of("username", true));
 
-            if (!email.equals(User.getAuth().getEmail())) {
-                List<User> userList = userMapper.selectUser(User.builder().email(email).build(), Map.of("email", true));
+                    if (!userList.isEmpty()) throw new DuplicateUserException();
+                } else {
+                    userProfileUpdateDTO.setUsername(null);
+                }
+                return userProfileUpdateDTO;
+            }).thenAccept(dto -> {
+                userProfileUpdateDTO.setUsername(dto.getUsername());
+            });
 
-                if (!userList.isEmpty()) throw new DuplicateUserEmailException();
-            } else {
-                userProfileUpdateDTO.setEmail(null);
-            }
-            if (userProfileUpdateDTO.getAvatar() != null)
-                userProfileUpdateDTO.setAvatar(FileManager.saveBase64Image(userProfileUpdateDTO.getAvatar()));
-            else
-                userProfileUpdateDTO.setAvatar(null);
+            CompletableFuture<Void> userEmailFuture = CompletableFuture.supplyAsync(() -> {
+                if (!email.equals(authUser.getEmail())) {
+                    List<User> userList = userMapper.selectUser(User.builder().email(email).build(), Map.of("email", true));
 
+                    if (!userList.isEmpty()) throw new DuplicateUserEmailException();
+                } else {
+                    userProfileUpdateDTO.setEmail(null);
+                }
+                return userProfileUpdateDTO;
+            }).thenAccept(dto -> {
+                userProfileUpdateDTO.setUsername(dto.getUsername());
+            });
+
+            CompletableFuture<Void> avatarFuture = CompletableFuture.supplyAsync(() -> {
+                if (userProfileUpdateDTO.getAvatar() != null)
+                    userProfileUpdateDTO.setAvatar(FileManager.saveBase64Image(userProfileUpdateDTO.getAvatar(), authUser));
+                else
+                    userProfileUpdateDTO.setAvatar(null);
+                return userProfileUpdateDTO;
+            }).thenAccept(dto -> userProfileUpdateDTO.setAvatar(dto.getAvatar()));
+
+            CompletableFuture.allOf(usernameFuture, userEmailFuture, avatarFuture).join();
             User user = UserConverter.INSTANCE.UserProfileUpdateDTOToUser(userProfileUpdateDTO);
 
             userMapper.updateUser(user, User.getAuth());

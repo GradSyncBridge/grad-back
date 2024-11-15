@@ -33,21 +33,41 @@ public class MajorServiceImpl implements MajorService {
 
     @Override
     public List<MajorFirstVO> getFirstMajorByDept(Integer department) {
+        String redisTemplateString = "majorFirst:" + department;
+        List<MajorFirstVO> majorVOs = (List<MajorFirstVO>) redisService.getData(redisTemplateString);
+
+        if(majorVOs != null) return majorVOs;
+
         try {
-            return majorMapper
-                    .selectMajor(
+            List<Major> majorList = majorMapper.selectMajor(
                             Major.builder().pid(0).department(department).build(),
                             FieldsGenerator.generateFields(Major.class)
-                    )
-                    .stream()
-                    .map(m -> majorConverter.INSTANCE.MajorToMajorFirstVO(m))
-                    .toList();
+                    );
 
+            List<CompletableFuture<MajorFirstVO>> majorFirstVOListFuture = new ArrayList<>();
+            for(Major major: majorList){
+                CompletableFuture<MajorFirstVO> majorFirstVOFuture = CompletableFuture.supplyAsync(() ->
+                        majorConverter.INSTANCE.MajorToMajorFirstVO(major)
+                );
+                majorFirstVOListFuture.add(majorFirstVOFuture);
+            }
+
+
+            CompletableFuture.allOf(majorFirstVOListFuture.toArray(new CompletableFuture[0])).join();
+
+            List<MajorFirstVO> majorFirstVOList = majorFirstVOListFuture.stream()
+                                                    .map(CompletableFuture::join)
+                                                    .toList();
+            CompletableFuture.runAsync(() -> {
+                redisService.saveDataWithExpiration(redisTemplateString, 30, majorFirstVOList);
+            });
+
+            return majorFirstVOList;
         } catch (Exception e) {
-//            e.printStackTrace();
             throw new RuntimeException(e.getMessage());
         }
     }
+
 
     @Override
     public List<MajorSecondVO> getSecondMajorByFirst(Integer major) {
@@ -58,18 +78,30 @@ public class MajorServiceImpl implements MajorService {
                     FieldsGenerator.generateFields(Major.class)
             );
 
-            return majors.stream()
-                    .map(m -> {
-                        List<SubjectVO> initials = subjectMapper
-                                .selectSubjectForeach(StringToList.convert(m.getInitial()));
-                        List<SubjectVO> interviews = subjectMapper
-                                .selectSubjectForeach(StringToList.convert(m.getInterview()));
-                        return majorConverter.INSTANCE.MajorSubjectToMajorSecondVO(m, initials, interviews);
-                    })
+            List<CompletableFuture<MajorSecondVO>> majorSecondVOListFuture = new ArrayList<>();
+
+            for(Major m: majors){
+                CompletableFuture<List<SubjectVO>> initialsFuture = CompletableFuture.supplyAsync(() ->
+                       subjectMapper.selectSubjectForeach(StringToList.convert(m.getInitial()))
+                );
+
+                CompletableFuture<List<SubjectVO>> interviewsFuture = CompletableFuture.supplyAsync(() ->
+                        subjectMapper.selectSubjectForeach(StringToList.convert(m.getInterview()))
+                );
+
+                CompletableFuture<MajorSecondVO> majorSecondVOFuture = initialsFuture.thenCombine(interviewsFuture,
+                        (initials, interviews) -> majorConverter.INSTANCE.MajorSubjectToMajorSecondVO(m, initials, interviews));
+
+                majorSecondVOListFuture.add(majorSecondVOFuture);
+            }
+
+            CompletableFuture.allOf(majorSecondVOListFuture.toArray(new CompletableFuture[0])).join();
+
+            return majorSecondVOListFuture.stream()
+                    .map(CompletableFuture::join)
                     .toList();
 
         } catch (Exception e) {
-//            e.printStackTrace();
             throw new RuntimeException(e.getMessage());
         }
     }
@@ -85,27 +117,30 @@ public class MajorServiceImpl implements MajorService {
     @Override
     public List<MajorVO> getCatalogue(Integer department) {
         String redisTemplateString = "majorCatalogue:" + department;
-         List<MajorVO> majorVOs = (List<MajorVO>) redisService.getData(redisTemplateString);
+        List<MajorVO> majorVOs = (List<MajorVO>) redisService.getData(redisTemplateString);
 
-         if(majorVOs != null) return majorVOs;
+        if(majorVOs != null) return majorVOs;
 
         List<Major> majorList = majorMapper.selectMajor(Major.builder().pid(0).department(department).build(),
                 FieldsGenerator.generateFields(Major.class));
-        List<MajorVO> majorVOList = majorConverter.INSTANCE.MajorListToMajorVOList(majorList);
+        List<MajorVO> majorVOList = majorConverter.MajorListToMajorVOList(majorList);
 
-        List<CompletableFuture<List<SubMajorVO>>> futures = new ArrayList<>();
+        List<CompletableFuture<CompletableFuture<List<SubMajorVO>>>> futures = new ArrayList<>();
 
         for (MajorVO majorVO : majorVOList) {
-            CompletableFuture<List<SubMajorVO>> future = asyncSubMajors(majorVO);
+            CompletableFuture<CompletableFuture<List<SubMajorVO>>> future =
+                    CompletableFuture.supplyAsync(() -> asyncSubMajors(majorVO)).thenApply(v -> v);
             futures.add(future);
         }
 
-        CompletableFuture.allOf(futures.toArray(new CompletableFuture[0])).join(); // 等待所有异步操作完成
+        CompletableFuture.allOf(futures.toArray(new CompletableFuture[0])).join();
 
         for (int i = 0; i < majorVOList.size(); i++)
-            majorVOList.get(i).setSubMajors(futures.get(i).join());
+            majorVOList.get(i).setSubMajors(futures.get(i).join().join());
 
-        CompletableFuture.runAsync(() -> redisService.saveDataWithExpiration(redisTemplateString, 5, majorVOList));
+        CompletableFuture.runAsync(() -> {
+            redisService.saveDataWithExpiration(redisTemplateString, 30, majorVOList);
+        });
         return majorVOList;
     }
 
@@ -119,25 +154,29 @@ public class MajorServiceImpl implements MajorService {
                 List<CompletableFuture<SubMajorVO>> futures = new ArrayList<>();
 
                 for (Major major : subMajorList) {
-                    CompletableFuture<List<SubjectVO>> future1 = asyncSubMajorInitials(major);
-                    CompletableFuture<List<SubjectVO>> future2 = asyncSubMajorInterviews(major);
 
-                    CompletableFuture<SubMajorVO> combinedFuture = future1.thenCombine(future2,
-                            (initials, interviews) -> majorConverter.INSTANCE.MajorToSubMajorVO(major, initials, interviews));
+                    CompletableFuture<CompletableFuture<List<SubjectVO>>> future1 =
+                            CompletableFuture.supplyAsync(() -> asyncSubMajorInitials(major)).thenApply(v -> v);
+
+                    CompletableFuture<CompletableFuture<List<SubjectVO>>> future2 =
+                            CompletableFuture.supplyAsync(() -> asyncSubMajorInterviews(major)).thenApply(v -> v);
+
+                    CompletableFuture<SubMajorVO> combinedFuture = future1.thenCompose(innerFuture1 ->
+                            future2.thenCompose(innerFuture2 ->
+                                    innerFuture1.thenCombine(innerFuture2,
+                                            (initials, interviews) -> majorConverter.MajorToSubMajorVO(major, initials, interviews))));
 
                     futures.add(combinedFuture);
                 }
 
-                List<SubMajorVO> subMajorVOList = CompletableFuture.allOf(futures.toArray(new CompletableFuture[0]))
+                return CompletableFuture.allOf(futures.toArray(new CompletableFuture[0]))
                         .thenApply(v -> {
                             List<SubMajorVO> resultList = new ArrayList<>();
                             for (CompletableFuture<SubMajorVO> future : futures) {
                                 resultList.add(future.join());
                             }
                             return resultList;
-                        }).join();
-
-                return CompletableFuture.completedFuture(subMajorVOList);
+                        });
             }
         } catch (Exception e) {
             throw new RuntimeException(e.getMessage());
@@ -145,88 +184,6 @@ public class MajorServiceImpl implements MajorService {
 
         return CompletableFuture.completedFuture(Collections.emptyList());
     }
-
-//    @Async("taskExecutor")
-//    public CompletableFuture<List<SubMajorSubject>> asyncSubMajorInitials(Major major) {
-//        try {
-//            if (major.getInitial() == null || major.getInitial().isEmpty()) {
-//                return CompletableFuture.completedFuture(Collections.emptyList());
-//            }
-//
-//            List<Integer> initialList = Major.initialToList(major.getInitial());
-//
-//            List<CompletableFuture<List<SubMajorSubject>>> futures = new ArrayList<>();
-//
-//            for (Integer initialId : initialList) {
-//                CompletableFuture<List<SubMajorSubject>> future = CompletableFuture.supplyAsync(() -> {
-//                    try {
-//                        return subjectMapper.selectSubjectForeach(Collections.singletonList(initialId));
-//                    } catch (Exception e) {
-//                        e.printStackTrace();
-//                        return Collections.emptyList(); // 如果查询失败，返回空列表
-//                    }
-//                });
-//                futures.add(future);
-//            }
-//
-//            CompletableFuture<Void> allOf = CompletableFuture.allOf(futures.toArray(new CompletableFuture[0]));
-//            allOf.join();
-//
-//            List<SubMajorSubject> allSubjects = new ArrayList<>();
-//            for (CompletableFuture<List<SubMajorSubject>> future : futures) {
-//                List<SubMajorSubject> subjects = future.get();
-//                if (subjects != null && !subjects.isEmpty()) {
-//                    allSubjects.addAll(subjects);
-//                }
-//            }
-//
-//            return CompletableFuture.completedFuture(allSubjects);
-//        } catch (Exception e) {
-//            throw new RuntimeException(e.getMessage());
-//        }
-//
-//    }
-//
-//    @Async("taskExecutor")
-//    public CompletableFuture<List<SubMajorSubject>> asyncSubMajorInterviews(Major major) {
-//        try {
-//            if (major.getInterview() == null || major.getInterview().isEmpty()) {
-//                return CompletableFuture.completedFuture(Collections.emptyList());
-//            }
-//
-//            List<Integer> interviewList = Major.interviewToList(major.getInterview());
-//
-//            List<CompletableFuture<SubMajorSubject>> futures = new ArrayList<>();
-//
-//            for (Integer interviewId : interviewList) {
-//                CompletableFuture<SubMajorSubject> future = CompletableFuture.supplyAsync(() -> {
-//                    try {
-//                        return subjectMapper.selectSubMajorSubject(interviewId);
-//                    } catch (Exception e) {
-//                        e.printStackTrace();
-//                        return null;
-//                    }
-//                });
-//                futures.add(future);
-//            }
-//
-//            CompletableFuture<Void> allOf = CompletableFuture.allOf(futures.toArray(new CompletableFuture[0]));
-//            allOf.join();
-//
-//            List<SubMajorSubject> allSubjects = new ArrayList<>();
-//            for (CompletableFuture<SubMajorSubject> future : futures) {
-//                SubMajorSubject subject = future.get();
-//                if (subject != null) {
-//                    allSubjects.add(subject);
-//                }
-//            }
-//
-//            return CompletableFuture.completedFuture(allSubjects);
-//        } catch (Exception e) {
-//            throw new RuntimeException(e.getMessage());
-//        }
-//        return CompletableFuture.completedFuture(Collections.emptyList());
-//    }
 
     @Async("taskExecutor")
     public CompletableFuture<List<SubjectVO>> asyncSubMajorInitials(Major major) {
@@ -239,7 +196,7 @@ public class MajorServiceImpl implements MajorService {
 
             List<SubjectVO> subjects = subjectMapper.selectSubjectForeach(initialList);
 
-            return CompletableFuture.completedFuture(subjects);
+            return CompletableFuture.completedFuture(subjects).thenApply(v -> subjects);
         } catch (Exception e) {
             throw new RuntimeException(e.getMessage());
         }
@@ -256,7 +213,7 @@ public class MajorServiceImpl implements MajorService {
 
             List<SubjectVO> subjects = subjectMapper.selectSubjectForeach(interviewList);
 
-            return CompletableFuture.completedFuture(subjects);
+            return CompletableFuture.completedFuture(subjects).thenApply(v -> subjects);
         } catch (Exception e) {
             throw new RuntimeException(e.getMessage());
         }
