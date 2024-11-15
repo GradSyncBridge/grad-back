@@ -1,5 +1,6 @@
 package backend.mapper;
 
+import backend.model.VO.teacher.TeacherProfileVO;
 import backend.model.entity.MajorToTeacher;
 import backend.model.entity.Teacher;
 import org.apache.ibatis.annotations.Mapper;
@@ -36,4 +37,6 @@ public interface TeacherMapper {
     void updateTeacher(Teacher teacherUpdate, Teacher teacherQuery);
 
     List<Teacher> selectTeacherForeach(List<MajorToTeacher> majorToTeachers);
+
+    List<TeacherProfileVO> selectTeacherWithMetric();
 }
