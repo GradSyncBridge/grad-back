@@ -88,4 +88,15 @@ public class AdminController {
         );
     }
 
+    @PostMapping(value = "/final-enroll")
+    public ResponseEntity<ResultEntity<Object>> adminFilterFinalEnrolls() {
+        adminService.adminFilterFinalEnrolls();
+
+        return ResultEntity.success(
+                HttpStatus.OK.value(),
+                "Filter all final enrolled students successfully",
+                null
+        );
+    }
+
 }

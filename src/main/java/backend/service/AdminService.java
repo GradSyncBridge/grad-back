@@ -13,6 +13,8 @@ public interface AdminService {
 
     void adminFilterPossibleEnrolls();
 
+    void adminFilterFinalEnrolls();
+
     List<TeacherProfileVO> getTeachersWithMetric();
 
     List<TeacherProfileVO> getAllTeachers();

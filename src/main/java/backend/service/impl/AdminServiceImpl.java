@@ -184,4 +184,20 @@ public class AdminServiceImpl implements AdminService {
             throw new RuntimeException(e.getMessage());
         }
     }
+
+    @Override
+    public void adminFilterFinalEnrolls() {
+        try {
+            List<Student> students = studentMapper.selectStudentWithoutEnroll(
+                    User.getAuth().getTeacher().getDepartment()
+            );
+
+            if (!students.isEmpty())
+                studentMapper.invalidateStudent(students);
+
+        } catch (Exception e) {
+//            e.printStackTrace();
+            throw new RuntimeException(e.getMessage());
+        }
+    }
 }

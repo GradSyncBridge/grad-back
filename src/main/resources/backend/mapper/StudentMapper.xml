@@ -5,6 +5,29 @@
 
 <mapper namespace="backend.mapper.StudentMapper">
 
+    <resultMap id="studentEntityMap" type="backend.model.entity.Student">
+        <id property="id" column="id" />
+        <result property="userId" column="user_id" />
+        <result property="department" column="department" />
+        <result property="birth" column="birth" />
+        <result property="address" column="address" />
+        <result property="majorGrad" column="major_grad" />
+        <result property="school" column="school" />
+        <result property="type" column="type" />
+        <result property="enrollment" column="enrollment" />
+        <result property="reassign" column="reassign" />
+        <result property="exam_id" column="user_id" />
+        <result property="valid" column="valid" />
+        <result property="emergency" column="emergency" />
+        <result property="grade_first" column="gradeFirst" />
+        <result property="grade_second" column="gradeSecond" />
+        <result property="major_apply" column="majorApply" />
+        <result property="major_study" column="majorStudy" />
+        <result property="disabled" column="disabled" />
+        <result property="quality" column="quality" />
+        <result property="certify_id" column="certifyId" />
+    </resultMap>
+
     <sql id="DynamicFields">
         <trim suffixOverrides=",">
             <if test="scope.id == true"> id, </if>
@@ -166,7 +189,21 @@
             <foreach collection="students" item="student" open="(" separator="," close=")">
                 #{student.userId}
             </foreach>
-
     </update>
+
+    <select id="selectStudentWithoutEnroll" resultMap="studentEntityMap">
+        select *
+        from
+            Student
+        where
+            reassign = 0
+            and valid = 0
+            and department = #{department}
+            and not exists (
+                select 1
+                from Enroll
+                where Enroll.sid = Student.user_id
+            );
+    </select>
 
 </mapper>

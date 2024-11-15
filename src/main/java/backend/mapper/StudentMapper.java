@@ -39,4 +39,12 @@ public interface StudentMapper {
      * @param students 学生列表
      * */
     void invalidateStudent(List<Student> students);
+
+
+    /**
+     * 根据学院选取不接受调剂 & 未被录取的学生
+     *
+     * @param department 学院ID
+     * */
+    List<Student> selectStudentWithoutEnroll(Integer department);
 }
