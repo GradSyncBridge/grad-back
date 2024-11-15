@@ -5,6 +5,29 @@
 
 <mapper namespace="backend.mapper.StudentMapper">
 
+    <resultMap id="studentEntityMap" type="backend.model.entity.Student">
+        <id property="id" column="id" />
+        <result property="userId" column="user_id" />
+        <result property="department" column="department" />
+        <result property="birth" column="birth" />
+        <result property="address" column="address" />
+        <result property="majorGrad" column="major_grad" />
+        <result property="school" column="school" />
+        <result property="type" column="type" />
+        <result property="enrollment" column="enrollment" />
+        <result property="reassign" column="reassign" />
+        <result property="examId" column="user_id" />
+        <result property="valid" column="valid" />
+        <result property="emergency" column="emergency" />
+        <result property="gradeFirst" column="grade_first" />
+        <result property="gradeSecond" column="grade_second" />
+        <result property="majorApply" column="major_apply" />
+        <result property="majorStudy" column="major_study" />
+        <result property="disabled" column="disabled" />
+        <result property="quality" column="quality" />
+        <result property="certifyId" column="certify_id" />
+    </resultMap>
+
     <sql id="DynamicFields">
         <trim suffixOverrides=",">
             <if test="scope.id == true"> id, </if>
@@ -155,5 +178,32 @@
             <if test="studentQuery.certifyId != null"> and certify_id = #{studentQuery.certifyId} </if>
         </where>
     </update>
+
+    <update id="invalidateStudent" >
+        update
+            Student
+        set
+            valid = 1
+        where
+            user_id in
+            <foreach collection="students" item="student" open="(" separator="," close=")">
+                #{student.userId}
+            </foreach>
+    </update>
+
+    <select id="selectStudentWithoutEnroll" resultMap="studentEntityMap">
+        select *
+        from
+            Student
+        where
+            reassign = 0
+            and valid = 0
+            and department = #{department}
+            and not exists (
+                select 1
+                from Enroll
+                where Enroll.sid = Student.user_id
+            );
+    </select>
 
 </mapper>
