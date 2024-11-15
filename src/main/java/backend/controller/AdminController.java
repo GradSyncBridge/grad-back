@@ -1,12 +1,14 @@
 package backend.controller;
 
 import backend.model.DTO.AdminDeadlineDTO;
+import backend.model.DTO.AdminTeacherDTO;
 import backend.service.AdminService;
 import backend.util.ResultEntity;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 
 
@@ -43,4 +45,29 @@ public class AdminController {
                 adminService.getTeachersWithMetric()
         );
     }
+
+    @GetMapping(value = "/teachers")
+    public ResponseEntity<ResultEntity<Object>> getAllTeachers() {
+        return ResultEntity.success(
+                HttpStatus.OK.value(),
+                "Get all teachers successfully",
+                adminService.getAllTeachers()
+        );
+    }
+
+    @PutMapping(value = "/teacher")
+    public ResponseEntity<ResultEntity<Object>> adminModifyTeacher(
+            @RequestBody @Validated AdminTeacherDTO adminTeacherDTO
+    ) {
+        adminService.adminModifyTeacher(adminTeacherDTO);
+
+        return ResultEntity.success(
+                HttpStatus.OK.value(),
+                "Modify teacher's profile successfully",
+                null
+        );
+    }
+
+
+
 }

@@ -122,9 +122,11 @@
             Teacher as t
             join User as u
             on u.id = t.user_id
-        where
+        <where>
             u.disabled = 1
-            and t.remnant > 0
+            and t.department = #{department}
+            <if test="remnant == 1"> and t.remnant > 0 </if>
+        </where>
     </select>
 
 </mapper>

@@ -38,5 +38,11 @@ public interface TeacherMapper {
 
     List<Teacher> selectTeacherForeach(List<MajorToTeacher> majorToTeachers);
 
-    List<TeacherProfileVO> selectTeacherWithMetric();
+    /**
+     * 查询所有指定学院的教师
+     *
+     * @param department 学院ID
+     * @param remnant 1 -- 筛选 remnant 大于 0 的教师，0 -- 不对 remnant 筛选
+     * */
+    List<TeacherProfileVO> selectTeacherWithMetric(Integer department, Integer remnant);
 }

@@ -1,17 +1,19 @@
 package backend.service.impl;
 
 import backend.exception.model.deadline.DeadlineNotFoundException;
-import backend.exception.model.user.UserRoleDeniedException;
 
+import backend.exception.model.user.UserNotFoundException;
 import backend.mapper.DeadlineMapper;
-
 import backend.mapper.TeacherMapper;
-import backend.model.DTO.AdminDeadlineDTO;
-import backend.model.VO.teacher.TeacherProfileVO;
-import backend.model.converter.TeacherConverter;
-import backend.model.entity.Deadline;
 
+import backend.model.DTO.AdminDeadlineDTO;
+import backend.model.DTO.AdminTeacherDTO;
+import backend.model.VO.teacher.TeacherProfileVO;
+
+import backend.model.entity.Deadline;
 import backend.model.entity.Teacher;
+import backend.model.entity.User;
+
 import backend.service.AdminService;
 import backend.util.FieldsGenerator;
 
@@ -29,9 +31,6 @@ public class AdminServiceImpl implements AdminService {
 
     @Autowired
     private TeacherMapper teacherMapper;
-
-    @Autowired
-    private TeacherConverter teacherConverter;
 
     @Override
     public void adminModifyDeadline(AdminDeadlineDTO deadlineDTO) {
@@ -63,9 +62,55 @@ public class AdminServiceImpl implements AdminService {
     @Override
     public List<TeacherProfileVO> getTeachersWithMetric() {
         try {
-            return teacherMapper.selectTeacherWithMetric();
+            return teacherMapper.selectTeacherWithMetric(
+                    User.getAuth().getTeacher().getDepartment(),
+                    1
+            );
         } catch (Exception e) {
-            e.printStackTrace();
+//            e.printStackTrace();
+            throw new RuntimeException(e.getMessage());
+        }
+    }
+
+    @Override
+    public List<TeacherProfileVO> getAllTeachers() {
+        try {
+            return teacherMapper.selectTeacherWithMetric(
+                    User.getAuth().getTeacher().getDepartment(),
+                    0
+            );
+        } catch (Exception e) {
+//            e.printStackTrace();
+            throw new RuntimeException(e.getMessage());
+        }
+    }
+
+    @Override
+    public void adminModifyTeacher(AdminTeacherDTO teacherDTO) {
+        try {
+            List<Teacher> teachers = teacherMapper.selectTeacher(
+                    Teacher.builder().userId(teacherDTO.getTeacherID()).build(),
+                    FieldsGenerator.generateFields(Teacher.class)
+            );
+
+            if (teachers.isEmpty())
+                throw new UserNotFoundException();
+
+            Teacher targetTeacher = teachers.getFirst();
+
+            targetTeacher.setTitle(teacherDTO.getTitle());
+            targetTeacher.setIdentity(teacherDTO.getIdentity());
+            targetTeacher.setTotal(teacherDTO.getTotal());
+
+            teacherMapper.updateTeacher(
+                    targetTeacher,
+                    Teacher.builder().userId(teacherDTO.getTeacherID()).build()
+            );
+
+        } catch (UserNotFoundException userNotFoundException) {
+            throw new UserNotFoundException(teacherDTO.getTeacherID(), 2);
+        } catch (Exception e) {
+//            e.printStackTrace();
             throw new RuntimeException(e.getMessage());
         }
     }
