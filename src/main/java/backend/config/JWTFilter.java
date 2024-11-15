@@ -77,10 +77,11 @@ public class JWTFilter extends OncePerRequestFilter {
 
         if (uid != null && SecurityContextHolder.getContext().getAuthentication() == null) {
             try {
-                // UserDetails userDetails =
-                // context.getBean(UserDetailsServiceImpl.class).loadUserByUsername(username);
                 User user = context.getBean(UserDetailsServiceImpl.class).loadUserById(uid);
-                // if (jwtService.validateToken(token, userDetails)) {
+
+                if (user.getDisabled() == 0)
+                    throw new UsernameNotFoundException(String.format("User with [uid=%d] is disabled", user.getId()));
+
                 if (jwtService.validateTokenById(token, user)) {
                     UsernamePasswordAuthenticationToken authToken = new UsernamePasswordAuthenticationToken(user, null,
                             ((UserDetails) user).getAuthorities());
