@@ -145,24 +145,18 @@ public class EnrollServiceImpl implements EnrollService {
 
                 CompletableFuture<EnrollVO> enrollVOFuture = studentFuture
                         .thenCombine(teacherFuture, (student, teacher) ->
-                            EnrollVO.builder().student(student).teacher(teacher).build()
+                                EnrollVO.builder().student(student).teacher(teacher)
                         )
-                        .thenCombine(departmentFuture, (enroll, dept) -> {
-                            enroll.setDepartment(dept);
-                            return enroll;
-                        })
-                        .thenCombine(majorFuture, (enroll, major) -> {
-                            enroll.setMajor(major);
-                            return enroll;
-                        })
+                        .thenCombine(departmentFuture, EnrollVO.EnrollVOBuilder::department)
+                        .thenCombine(majorFuture, EnrollVO.EnrollVOBuilder::major)
                         .thenApply(enroll ->
-                            EnrollVO.builder()
-                                    .enrollmentID(e.getId())
-                                    .student(enroll.getStudent())
-                                    .teacher(enroll.getTeacher())
-                                    .department(enroll.getDepartment())
-                                    .major(enroll.getMajor())
-                                    .build()
+                                EnrollVO.builder()
+                                        .enrollmentID(e.getId())
+                                        .student(enroll.build().getStudent())
+                                        .teacher(enroll.build().getTeacher())
+                                        .department(enroll.build().getDepartment())
+                                        .major(enroll.build().getMajor())
+                                        .build()
                         );
 
                 enrollVOListFuture.add(enrollVOFuture);
@@ -170,7 +164,7 @@ public class EnrollServiceImpl implements EnrollService {
 
             CompletableFuture.allOf(enrollVOListFuture.toArray(new CompletableFuture[0])).join();
             return enrollVOListFuture.stream()
-                    .map(future -> future.join())
+                    .map(CompletableFuture::join)
                     .filter(Objects::nonNull)
                     .toList();
 
@@ -400,7 +394,7 @@ public class EnrollServiceImpl implements EnrollService {
             }
 
             return futures.stream()
-                    .map(future->future.join())
+                    .map(CompletableFuture::join)
                     .filter(Objects::nonNull)
                     .toList();
 
