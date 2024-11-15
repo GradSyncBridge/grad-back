@@ -39,6 +39,9 @@ public class SecurityConfig implements WebMvcConfigurer {
     private JWTFilter jwtFilter;
 
     @Autowired
+    private AdminFilter adminFilter;
+
+    @Autowired
     @Lazy
     private AuthenticationEntryPoint authEntryPoint;
 
@@ -47,9 +50,10 @@ public class SecurityConfig implements WebMvcConfigurer {
     private CorsConfigurationSourceImpl corsConfigurationSource;
 
     @Bean
-    public RateLimitingFilter rateLimitingFilter(){
+    public RateLimitingFilter rateLimitingFilter() {
         return new RateLimitingFilter(maxRequestsPerMinute);
     }
+
     /**
      * 密码加密
      *
@@ -72,12 +76,16 @@ public class SecurityConfig implements WebMvcConfigurer {
 
         return http.csrf(customizer -> customizer.disable()).
                 authorizeHttpRequests(request -> request
-                        .requestMatchers("/resources/**", "/unauthorized/**").permitAll()
-                        .anyRequest().authenticated()).
-                httpBasic(httpBasic -> httpBasic.disable()) // dev mode, easy for debug by view
+                        .requestMatchers("/resources/**", "/unauthorized/**")
+                        .permitAll()
+                        .anyRequest()
+                        .authenticated()
+                )
+                .httpBasic(httpBasic -> httpBasic.disable()) // dev mode, easy for debug by view
                 // httpBasic(Customizer.withDefaults()) // prod mode, disable view for security
                 .sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
                 .addFilterBefore(jwtFilter, UsernamePasswordAuthenticationFilter.class)
+                .addFilterBefore(adminFilter, UsernamePasswordAuthenticationFilter.class)
                 .addFilterBefore(rateLimitingFilter(), UsernamePasswordAuthenticationFilter.class)
                 .exceptionHandling(exceptionHandling ->
                         exceptionHandling.authenticationEntryPoint(authEntryPoint)
