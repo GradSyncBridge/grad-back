@@ -18,6 +18,59 @@ public class FileManager {
 
     private static final long MAX_IMAGE_SIZE = 1024 * 1024 * 3; // 3MB
 
+
+    public static String saveBase64Image(String base64String, User authUser) {
+        // 从Base64字符串中提取文件类型
+        String[] parts = base64String.split(",");
+        String metadata = parts[0];
+
+        // 根据格式提取文件类型
+        String[] metadataParts = metadata.split(";");
+        String fileType = metadataParts[0].split(":")[1].split("/")[1];
+
+        if (!fileType.equals("png") && !fileType.equals("jpg") && !fileType.equals("jpeg")) {
+            throw new FileStorageException(HttpStatus.BAD_REQUEST.value(), "Invalid file type");
+        }
+
+        // 从Base64字符串中提取文件内容
+        byte[] data = DatatypeConverter.parseBase64Binary(parts[1]);
+
+        if (data.length > MAX_IMAGE_SIZE) {
+            throw new FileStorageException(HttpStatus.BAD_REQUEST.value(), "file size exceeds the limit");
+        }
+
+        String uuid = UUID.randomUUID().toString();
+        String userId = authUser.getId().toString();
+
+        // 创建目标目录
+        File storeDir = new File(basePath + "/" + userId);
+        if (!storeDir.exists()) {
+            storeDir.mkdirs();
+        }
+
+        File storeFile = new File(storeDir, uuid + "." + fileType);
+        try (OutputStream outputStream = new BufferedOutputStream(new FileOutputStream(storeFile))) {
+            outputStream.write(data);
+        } catch (Exception e) {
+            throw new FileStorageException(HttpStatus.INTERNAL_SERVER_ERROR.value(), "Failed to store file: " + e.getMessage());
+        }
+
+        // 获取文件的绝对路径
+        Path fullPath = storeFile.toPath();
+
+        // 获取相对路径，截断为以 media 开头
+        String relativePath = fullPath.toString().replace(File.separator, "/"); // 替换为统一的分隔符
+        int mediaIndex = relativePath.indexOf("media");
+
+        if (mediaIndex != -1) {
+            relativePath = relativePath.substring(mediaIndex);
+        } else {
+            throw new FileStorageException(HttpStatus.INTERNAL_SERVER_ERROR.value(), "Media directory not found in path.");
+        }
+
+        return relativePath;
+    }
+
     public static String saveBase64Image(String base64String) {
         // 从Base64字符串中提取文件类型
         String[] parts = base64String.split(",");

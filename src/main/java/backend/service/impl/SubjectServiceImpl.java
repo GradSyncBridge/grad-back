@@ -24,7 +24,6 @@ public class SubjectServiceImpl implements SubjectService {
             return subjectMapper
                     .selectSubjectWithDept(department, User.getAuth().getRole() == 1 ? 0 : 1);
         } catch (Exception e) {
-//            e.printStackTrace();
             throw new RuntimeException(e.getMessage());
         }
 
