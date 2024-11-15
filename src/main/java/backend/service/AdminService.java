@@ -14,4 +14,6 @@ public interface AdminService {
     List<TeacherProfileVO> getAllTeachers();
 
     void adminModifyTeacher(AdminTeacherDTO teacherDTO);
+
+    List<TeacherProfileVO> getTeachersWithoutEnrolls();
 }

@@ -68,6 +68,13 @@ public class AdminController {
         );
     }
 
-
+    @GetMapping(value = "/teachers/empty")
+    public ResponseEntity<ResultEntity<Object>> getTeachersWithoutEnrolls() {
+        return ResultEntity.success(
+                HttpStatus.OK.value(),
+                "Get all teachers without enroll relations successfully",
+                adminService.getTeachersWithoutEnrolls()
+        );
+    }
 
 }

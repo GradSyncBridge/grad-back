@@ -1,8 +1,8 @@
 package backend.service.impl;
 
 import backend.exception.model.deadline.DeadlineNotFoundException;
-
 import backend.exception.model.user.UserNotFoundException;
+
 import backend.mapper.DeadlineMapper;
 import backend.mapper.TeacherMapper;
 
@@ -109,6 +109,18 @@ public class AdminServiceImpl implements AdminService {
 
         } catch (UserNotFoundException userNotFoundException) {
             throw new UserNotFoundException(teacherDTO.getTeacherID(), 2);
+        } catch (Exception e) {
+//            e.printStackTrace();
+            throw new RuntimeException(e.getMessage());
+        }
+    }
+
+    @Override
+    public List<TeacherProfileVO> getTeachersWithoutEnrolls() {
+        try {
+            return teacherMapper.selectTeacherWithoutEnroll(
+                    User.getAuth().getTeacher().getDepartment()
+            );
         } catch (Exception e) {
 //            e.printStackTrace();
             throw new RuntimeException(e.getMessage());

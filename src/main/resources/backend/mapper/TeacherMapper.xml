@@ -129,4 +129,33 @@
         </where>
     </select>
 
+    <select id="selectTeacherWithoutEnroll">
+        select
+            u.id as "uid",
+            u.username as "username",
+            u.avatar as "avatar",
+            u.name as "name",
+            u.email as "email",
+            u.gender as "gender",
+            u.phone as "phone",
+            t.department as "department",
+            t.title as "title",
+            t.description as "description",
+            t.total as "total",
+            t.remnant as "remnant",
+            t.identity as "identity"
+        from
+            Teacher as t
+            join User as u
+            on u.id = t.user_id
+        where
+            u.disabled = 1
+            and t.department = #{department}
+            and not exists (
+                select 1
+                from Enroll as e
+                where e.tid = t.user_id
+            );
+    </select>
+
 </mapper>
