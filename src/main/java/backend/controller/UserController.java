@@ -20,7 +20,7 @@ public class UserController {
 
     /**
      * 获取用户信息
-     *
+     * GET /user/profile
      * @return 用户信息
      */
     @GetMapping(value = "/profile")
@@ -31,7 +31,7 @@ public class UserController {
 
     /**
      * 刷新token
-     *
+     * GET /user/refresh
      * @return token
      */
     @GetMapping(value = "/refresh")
@@ -43,7 +43,7 @@ public class UserController {
 
     /**
      * 更新用户信息
-     *
+     * PUT /user/profile
      * @param userProfileUpdateDTO 用户信息
      * @return 用户信息
      */

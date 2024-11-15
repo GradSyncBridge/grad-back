@@ -61,10 +61,10 @@ public class TeacherServiceImpl implements TeacherService {
     private UserConverter userConverter;
 
     /**
-     * 获取对应部门教师列表
-     *
-     * @param department 部门
-     * @return 教师列表
+     * 获取学院下属所有老师
+     * GET /unauthorized/department/teachers
+     * @param department 学院
+     * @return 老师列表
      */
     @Override
     public List<TeacherVO> getTeacher(Integer department) {
@@ -83,7 +83,7 @@ public class TeacherServiceImpl implements TeacherService {
 
     /**
      * 获取对应二级学科教师列表
-     *
+     * GET /unauthorized/catalogue/teachers
      * @param majorID 二级学科
      * @return 教师列表
      */
@@ -106,7 +106,7 @@ public class TeacherServiceImpl implements TeacherService {
 
     /**
      * 获取教师个人信息
-     *
+     * GET /teacher/profile
      * @param uid 教师uid
      * @return 教师个人信息
      */
@@ -116,15 +116,151 @@ public class TeacherServiceImpl implements TeacherService {
             if (User.getAuth().getRole() != 2)
                 throw new UserRoleDeniedException();
 
-            User user = userMapper.selectUser(User.builder().id(uid).build(), FieldsGenerator.generateFields(User.class)).getFirst();
+            User user = userMapper.selectUser(
+                    User.builder().id(uid).build(),
+                    FieldsGenerator.generateFields(User.class)
+            ).getFirst();
 
-            Teacher teacher = teacherMapper.selectTeacher(Teacher.builder().userId(uid).build(), FieldsGenerator.generateFields(Teacher.class)).getFirst();
+            Teacher teacher = teacherMapper.selectTeacher(
+                    Teacher.builder().userId(uid).build(),
+                    FieldsGenerator.generateFields(Teacher.class)
+            ).getFirst();
 
             return teacherConverter.INSTANCE.TeacherAndUserToTeacherProfileVO(teacher, user);
+
         } catch (UserRoleDeniedException userRoleDeniedException) {
             throw new UserRoleDeniedException(1, 403);
         } catch (Exception e) {
             throw new UserNotFoundException();
+        }
+    }
+
+    /**
+     * 修改教师个人信息
+     * PUT /teacher/profile
+     * @param teacherProfile 教师个人信息
+     */
+    @Override
+    public void updateTeacherProfile(TeacherProfileUpdateDTO teacherProfile) {
+        try {
+            User targetUser = User.getAuth();
+            targetUser.setGender(teacherProfile.getGender());
+            targetUser.setName(teacherProfile.getName());
+            targetUser.setPhone(teacherProfile.getPhone());
+            Teacher targetTeacher = targetUser.getTeacher();
+
+            CompletableFuture<Void> usernameFuture = CompletableFuture.runAsync(()-> {
+                String username = teacherProfile.getUsername();
+                List<User> possibleUsers;
+                if (!username.equals(targetUser.getUsername())) {
+                    possibleUsers = userMapper.selectUser(
+                            User.builder().username(username).build(),
+                            FieldsGenerator.generateFields(User.class)
+                    );
+
+                    if (!possibleUsers.isEmpty())
+                        throw new DuplicateUserException();
+                    targetUser.setUsername(username);
+                }
+            });
+
+            CompletableFuture<Void> emailFuture = CompletableFuture.runAsync(()-> {
+                List<User> possibleUsers;
+                String email = teacherProfile.getEmail();
+                if (!email.equals(targetUser.getEmail())) {
+                    possibleUsers = userMapper.selectUser(
+                            User.builder().email(email).build(),
+                            FieldsGenerator.generateFields(User.class)
+                    );
+
+                    if (!possibleUsers.isEmpty())
+                        throw new DuplicateUserEmailException();
+                    targetUser.setEmail(email);
+                }
+            });
+
+            CompletableFuture<Void> avatarFuture = CompletableFuture.runAsync(()->{
+                if (teacherProfile.getAvatar() != null) {
+                    String avatar = targetUser.getAvatar();
+                    if (avatar != null && !avatar.isEmpty())
+                        CompletableFuture.runAsync(()->
+                            FileManager.remove(avatar)
+                        );
+                    targetUser.setAvatar(FileManager.saveBase64Image(teacherProfile.getAvatar(), targetUser));
+                } else
+                    targetUser.setAvatar(targetUser.getAvatar());
+            });
+
+            CompletableFuture.allOf(usernameFuture, emailFuture, avatarFuture).join();
+
+            targetTeacher.setDescription(teacherProfile.getDescription());
+
+            System.out.println(targetUser);
+
+            CompletableFuture.runAsync(()->
+                userMapper.updateUser(targetUser,
+                        User.builder().id(targetUser.getId()).build()
+            ));
+
+            CompletableFuture.runAsync(()->
+                teacherMapper.updateTeacher(targetTeacher,
+                        Teacher.builder().userId(targetTeacher.getUserId()).build())
+            );
+
+        } catch (DuplicateUserException duplicateUserException) {
+            throw new DuplicateUserException();
+        } catch (DuplicateUserEmailException duplicateUserEmailException) {
+            throw new DuplicateUserEmailException();
+        } catch (Exception e) {
+            throw new RuntimeException(e.getMessage());
+        }
+    }
+
+    /**
+     * 获取第一/第二/第三志愿选择教师的学生信息
+     * GET /teacher/apply
+     * @param level 志愿等级
+     * @return 学生信息
+     */
+    @Override
+    public List<UserProfileVO> getTeacherApplicationByLevel(Integer level) {
+        User user = User.getAuth();
+        Integer role = user.getRole();
+
+        try {
+            if (role == 1)
+                throw new UserRoleDeniedException();
+
+            List<CompletableFuture<UserProfileVO>> futures = new ArrayList<>();
+
+            for(StudentApply s: studentApplyMapper
+                    .selectStudentApply(
+                            StudentApply.builder().tid(user.getId()).level(level).build(),
+                            Map.of("userId", true)
+                    )){
+
+                CompletableFuture<UserProfileVO> future = CompletableFuture.supplyAsync(() -> {
+                    List<User> users = userMapper.selectUser(
+                            User.builder().id(s.getUserId()).build(),
+                            FieldsGenerator.generateFields(User.class)
+                    );
+                    return users.isEmpty() ? null : userConverter.INSTANCE.UserToUserProfileVO(users.getFirst());
+                });
+
+                futures.add(future);
+            }
+
+            CompletableFuture.allOf(futures.toArray(new CompletableFuture[0])).join();
+
+            return futures.stream()
+                    .map(CompletableFuture::join)
+                    .filter(Objects::nonNull)
+                    .toList();
+
+        } catch (UserRoleDeniedException userRoleDeniedException) {
+            throw new UserRoleDeniedException(role, 403);
+        } catch (Exception e) {
+            throw new RuntimeException(e.getMessage());
         }
     }
 
@@ -156,92 +292,6 @@ public class TeacherServiceImpl implements TeacherService {
 
             return CompletableFuture.completedFuture(allSubjects);
         } catch (Exception e) {
-            throw new RuntimeException(e.getMessage());
-        }
-    }
-
-    @Override
-    public void updateTeacherProfile(TeacherProfileUpdateDTO teacherProfile) {
-        try {
-            User targetUser = User.getAuth();
-            Teacher targetTeacher = targetUser.getTeacher();
-            List<User> possibleUsers;
-
-            String username = teacherProfile.getUsername();
-            if (!username.equals(targetUser.getUsername())) {
-                possibleUsers = userMapper.selectUser(
-                        User.builder().username(username).build(),
-                        FieldsGenerator.generateFields(User.class)
-                );
-
-                if (!possibleUsers.isEmpty())
-                    throw new DuplicateUserException();
-                targetUser.setUsername(username);
-            }
-
-            String email = teacherProfile.getEmail();
-            if (!email.equals(targetUser.getEmail())) {
-                possibleUsers = userMapper.selectUser(
-                        User.builder().email(email).build(),
-                        FieldsGenerator.generateFields(User.class)
-                );
-
-                if (!possibleUsers.isEmpty())
-                    throw new DuplicateUserEmailException();
-                targetUser.setEmail(email);
-            }
-
-            if (teacherProfile.getAvatar() != null) {
-                String avatar = targetUser.getAvatar();
-                if (avatar != null && !avatar.isEmpty())
-                    FileManager.remove(avatar);
-                targetUser.setAvatar(FileManager.saveBase64Image(teacherProfile.getAvatar()));
-            } else
-                targetUser.setAvatar(targetUser.getAvatar());
-
-            targetTeacher.setDescription(teacherProfile.getDescription());
-
-            userMapper.updateUser(targetUser, User.builder().id(targetTeacher.getId()).build());
-            teacherMapper.updateTeacher(targetTeacher, Teacher.builder().userId(targetTeacher.getUserId()).build());
-
-        } catch (DuplicateUserException duplicateUserException) {
-            throw new DuplicateUserException();
-        } catch (DuplicateUserEmailException duplicateUserEmailException) {
-            throw new DuplicateUserEmailException();
-        } catch (Exception e) {
-            throw new RuntimeException(e.getMessage());
-        }
-    }
-
-    @Override
-    public List<UserProfileVO> getTeacherApplicationByLevel(Integer level) {
-        User user = User.getAuth();
-        Integer role = user.getRole();
-
-        try {
-            if (role == 1)
-                throw new UserRoleDeniedException();
-
-            return studentApplyMapper
-                    .selectStudentApply(
-                            StudentApply.builder().tid(user.getId()).level(level).build(),
-                            Map.of("userId", true)
-                    )
-                    .stream()
-                    .map(s -> {
-                        List<User> users = userMapper.selectUser(
-                                User.builder().id(s.getUserId()).build(),
-                                FieldsGenerator.generateFields(User.class)
-                        );
-                        return users.isEmpty() ? null : userConverter.INSTANCE.UserToUserProfileVO(users.getFirst());
-                    })
-                    .filter(Objects::nonNull)
-                    .toList();
-
-        } catch (UserRoleDeniedException userRoleDeniedException) {
-            throw new UserRoleDeniedException(role, 403);
-        } catch (Exception e) {
-//            e.printStackTrace();
             throw new RuntimeException(e.getMessage());
         }
     }

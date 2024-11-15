@@ -18,6 +18,12 @@ public class SubjectServiceImpl implements SubjectService {
     @Autowired
     private SubjectMapper subjectMapper;
 
+    /**
+     * 获取学科信息
+     * GET /subject
+     * @param department 学院
+     * @return 学科信息
+     */
     @Override
     public List<SubjectVO> getSubjects(Integer department) {
         try {

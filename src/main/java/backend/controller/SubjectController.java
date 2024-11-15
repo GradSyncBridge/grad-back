@@ -11,6 +11,11 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
+/**
+ * SubjectController
+ *
+ * @function getSubject 获取学科信息
+ */
 @RestController
 @RequestMapping(value = "/subject")
 public class SubjectController {
@@ -18,6 +23,12 @@ public class SubjectController {
     @Autowired
     private SubjectService subjectService;
 
+    /**
+     * 获取学科信息
+     * GET /subject
+     * @param department 学院
+     * @return 学科信息
+     */
     @GetMapping
     public ResponseEntity<ResultEntity<Object>> getSubject(@RequestParam(value = "departmentID", defaultValue = "0") Integer department) {
         return ResultEntity.success(

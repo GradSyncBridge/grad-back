@@ -11,14 +11,30 @@ import org.springframework.web.bind.annotation.*;
 
 import java.util.Map;
 
+
+/**
+ * EnrollController
+ *
+ * @function enrollConfirm 导师确认录取学生
+ * @function enrollCancel 导师取消录取关系
+ * @function enrollList 导师查看已选学生信息
+ */
 @RestController
 @RequestMapping(value = "/enroll")
 public class EnrollController {
     @Autowired
     private EnrollService enrollService;
 
+    /**
+     * 导师确认录取学生
+     * POST /enroll
+     * @param confirmDTO 确认信息
+     * @return null
+     */
     @PostMapping
-    public ResponseEntity<ResultEntity<Object>> enrollConfirm(@RequestBody EnrollConfirmDTO confirmDTO) {
+    public ResponseEntity<ResultEntity<Object>> enrollConfirm(
+            @RequestBody EnrollConfirmDTO confirmDTO
+    ) {
         enrollService.enrollConfirm(confirmDTO);
 
         return ResultEntity.success(
@@ -28,6 +44,12 @@ public class EnrollController {
         );
     }
 
+    /**
+     * 导师取消录取关系
+     * DELETE /enroll
+     * @param cancelDTO 取消信息
+     * @return null
+     */
     @DeleteMapping
     public ResponseEntity<ResultEntity<Object>> enrollCancel(@RequestBody Map<String, Integer> cancelDTO) {
         enrollService.enrollCancel(cancelDTO.get("enrollmentID"));
@@ -39,6 +61,11 @@ public class EnrollController {
         );
     }
 
+    /**
+     * 导师查看已选学生信息
+     * GET /enroll/list
+     * @return 已选学生列表
+     */
     @GetMapping(value = "/list")
     public ResponseEntity<ResultEntity<Object>> enrollList() {
         return ResultEntity.success(

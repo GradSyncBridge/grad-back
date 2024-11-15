@@ -30,13 +30,13 @@ import backend.model.entity.*;
 import backend.service.EnrollService;
 import backend.util.FieldsGenerator;
 
+import jakarta.validation.constraints.NotNull;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDateTime;
-import java.util.List;
-import java.util.Map;
-import java.util.Objects;
+import java.util.*;
+import java.util.concurrent.CompletableFuture;
 
 @Service
 public class EnrollServiceImpl implements EnrollService {
@@ -90,8 +90,12 @@ public class EnrollServiceImpl implements EnrollService {
 
 
     /**
+     * 获取学院录取学生
      * GET /unauthorized/enroll
-     * */
+     * @param department 学院
+     * @param year 年份
+     * @return 录取学生列表
+     */
     @Override
     public List<EnrollVO> getEnrollTable(Integer department, Integer year) {
 
@@ -101,59 +105,78 @@ public class EnrollServiceImpl implements EnrollService {
             verifyDeadline(ddl);
             List<Enroll> enrolls = enrollMapper.selectEnrollWithDept(department, year);
 
-            return enrolls
-                    .stream()
-                    .map(e -> {
-                        List<User> students = userMapper.selectUser(
-                                User.builder().id(e.getSid()).build(),
-                                FieldsGenerator.generateFields(User.class)
+            List<CompletableFuture<EnrollVO>> enrollVOListFuture = new ArrayList<>();
+            for(Enroll e: enrolls){
+                CompletableFuture<UserProfileVO> studentFuture =
+                        CompletableFuture.supplyAsync(()-> {
+                            List<User> students = userMapper.selectUser(
+                                    User.builder().id(e.getSid()).build(),
+                                    FieldsGenerator.generateFields(User.class)
+                            );
+                            return students.isEmpty() ? null : userConverter.UserToUserProfileVO(students.getFirst());
+                        });
+
+                CompletableFuture<UserProfileVO> teacherFuture =
+                        CompletableFuture.supplyAsync(()-> {
+                            List<User> teachers = userMapper.selectUser(
+                                    User.builder().id(e.getTid()).build(),
+                                    FieldsGenerator.generateFields(User.class)
+                            );
+                            return teachers.isEmpty() ? null : userConverter.UserToUserProfileVO(teachers.getFirst());
+                        });
+
+                CompletableFuture<DepartmentVO> departmentFuture =
+                        CompletableFuture.supplyAsync(()-> {
+                            List<Department> departments = departmentMapper.selectDepartment(
+                                    Department.builder().id(department).build(),
+                                    FieldsGenerator.generateFields(Department.class)
+                            );
+                            return departments.isEmpty() ? null : departmentConverter.DepartmentToDepartmentVO(departments.getFirst());
+                        });
+
+                CompletableFuture<MajorFirstVO> majorFuture =
+                        CompletableFuture.supplyAsync(()-> {
+                            List<Major> majors = majorMapper.selectMajor(
+                                    Major.builder().id(e.getMid()).build(),
+                                    FieldsGenerator.generateFields(Major.class)
+                            );
+                            return majors.isEmpty() ? null : majorConverter.MajorToMajorFirstVO(majors.getFirst());
+                        });
+
+                CompletableFuture<EnrollVO> enrollVOFuture = studentFuture
+                        .thenCombine(teacherFuture, (student, teacher) ->
+                            EnrollVO.builder().student(student).teacher(teacher).build()
+                        )
+                        .thenCombine(departmentFuture, (enroll, dept) -> {
+                            enroll.setDepartment(dept);
+                            return enroll;
+                        })
+                        .thenCombine(majorFuture, (enroll, major) -> {
+                            enroll.setMajor(major);
+                            return enroll;
+                        })
+                        .thenApply(enroll ->
+                            EnrollVO.builder()
+                                    .enrollmentID(e.getId())
+                                    .student(enroll.getStudent())
+                                    .teacher(enroll.getTeacher())
+                                    .department(enroll.getDepartment())
+                                    .major(enroll.getMajor())
+                                    .build()
                         );
-                        UserProfileVO student = students.isEmpty() ?
-                                null :
-                                userConverter.UserToUserProfileVO(students.getFirst());
 
-                        List<User> teachers = userMapper.selectUser(
-                                User.builder().id(e.getTid()).build(),
-                                FieldsGenerator.generateFields(User.class)
-                        );
-                        UserProfileVO teacher = teachers.isEmpty() ?
-                                null :
-                                userConverter.UserToUserProfileVO(teachers.getFirst());
+                enrollVOListFuture.add(enrollVOFuture);
+            }
 
-
-                        List<Department> departments = departmentMapper.selectDepartment(
-                                Department.builder().id(department).build(),
-                                FieldsGenerator.generateFields(Department.class)
-                        );
-                        DepartmentVO dept = departments.isEmpty() ?
-                                null :
-                                departmentConverter.DepartmentToDepartmentVO(departments.getFirst());
-
-                        List<Major> majors = majorMapper.selectMajor(
-                                Major.builder().id(e.getMid()).build(),
-                                FieldsGenerator.generateFields(Major.class)
-                        );
-                        MajorFirstVO major = majors.isEmpty() ?
-                                null :
-                                majorConverter.MajorToMajorFirstVO(majors.getFirst());
-
-                        return EnrollVO
-                                .builder()
-                                .enrollmentID(e.getId())
-                                .student(student)
-                                .teacher(teacher)
-                                .department(dept)
-                                .major(major)
-                                .build();
-
-                    })
+            CompletableFuture.allOf(enrollVOListFuture.toArray(new CompletableFuture[0])).join();
+            return enrollVOListFuture.stream()
+                    .map(future -> future.join())
                     .filter(Objects::nonNull)
                     .toList();
 
         } catch (DeadlineExceedException deadlineExceedException) {
             throw new DeadlineExceedException(ddl, 403);
         } catch (Exception e) {
-//            e.printStackTrace();
             throw new RuntimeException(e);
         }
 
@@ -161,15 +184,17 @@ public class EnrollServiceImpl implements EnrollService {
 
 
     /**
+     * 导师确认录取学生
      * POST /enroll
+     * @param confirm 录取信息
      * --------------
-     * 1. Verify deadline
-     * 2. Verify identity / role
-     * 3. Verify field integrity
-     * 4. Verify whether this teacher is valid / has remaining metric in this major
-     * 5. Insert enroll record
-     * 6. Update MajorToTeacher record
-     * 7. Update Teacher remaining count (Do NOT perform in-place subtraction)
+     * 1. 验证截止日期
+     * 2. 验证身份证和用户类型
+     * 3. 验证信息完整性
+     * 4. 验证当前老师是否有资格并且当前专业还有录取名额
+     * 5. 插入录取记录
+     * 6. 更新MajorToTeacher记录
+     * 7. 更新教师录取名额 (Do NOT perform in-place subtraction)
      * */
     @Override
     public void enrollConfirm(EnrollConfirmDTO confirm) {
@@ -247,21 +272,22 @@ public class EnrollServiceImpl implements EnrollService {
         } catch (MajorNotFoundException majorNotFoundException) {
             throw new MajorNotFoundException(confirm.getMajorID(), 4042);
         } catch (Exception e) {
-//            e.printStackTrace();
             throw new RuntimeException(e.getMessage());
         }
     }
 
 
     /**
+     * 导师取消录取关系
      * DELETE /enroll
+     * @param enroll 录取记录
      * --------------
-     * 1. Verify deadline
-     * 2. Verify identity / role
-     * 3. Verify field integrity
-     * 4. Update enroll record
-     * 5. Update MajorToTeacher record
-     * 6. Update Teacher's remaining count (Do NOT perform in-place addition)
+     * 1. 验证截至日期
+     * 2. 验证身份证和用户类别
+     * 3. 验证信息完整性
+     * 4. 更新录取记录
+     * 5. 更新MajorToTeacher记录
+     * 6. 更新教师录取名额 (Do NOT perform in-place addition)
      * */
     @Override
     public void enrollCancel(Integer enroll) {
@@ -310,7 +336,6 @@ public class EnrollServiceImpl implements EnrollService {
             );
             teacherMapper.updateTeacher(teacher, Teacher.builder().userId(teacher.getUserId()).build());
 
-
         } catch (DeadlineExceedException deadlineExceedException) {
             throw new DeadlineExceedException(ddl, 403);
         } catch (UserRoleDeniedException userRoleDeniedException) {
@@ -318,17 +343,18 @@ public class EnrollServiceImpl implements EnrollService {
         } catch (EnrollNotFoundException enrollNotFoundException) {
             throw new EnrollNotFoundException(enroll);
         } catch (Exception e) {
-//            e.printStackTrace();
             throw new RuntimeException(e.getMessage());
         }
     }
 
 
     /**
+     * 导师查看已选学生信息
      * GET /enroll/list
+     * @return 录取列表
      * --------------
-     * 1. Verify identity / role
-     * 2. Select target enroll records
+     * 1. 验证身份证和用户类别
+     * 2. 获取目标老师录取列表
      * */
     @Override
     public List<EnrollSelectVO> getEnrollList() {
@@ -344,40 +370,43 @@ public class EnrollServiceImpl implements EnrollService {
                     LocalDateTime.now().getYear() + 1
             );
 
-            return enrolls
-                    .stream()
-                    .map(e -> {
-                        List<User> students = userMapper.selectUser(
-                                User.builder().id(e.getSid()).build(),
-                                FieldsGenerator.generateFields(User.class)
+            List<CompletableFuture<EnrollSelectVO>> futures = new ArrayList<>();
+
+            for(Enroll e: enrolls){
+                CompletableFuture<UserProfileVO> studentFuture =
+                        CompletableFuture.supplyAsync(()-> {
+                            List<User> students = userMapper.selectUser(
+                                    User.builder().id(e.getSid()).build(),
+                                    FieldsGenerator.generateFields(User.class)
+                            );
+                            return students.isEmpty() ? null : userConverter.UserToUserProfileVO(students.getFirst());
+                        });
+
+                CompletableFuture<MajorFirstVO> majorFuture =
+                        CompletableFuture.supplyAsync(()-> {
+                            List<Major> majors = majorMapper.selectMajor(
+                                    Major.builder().id(e.getMid()).build(),
+                                    FieldsGenerator.generateFields(Major.class)
+                            );
+                            return majors.isEmpty() ? null : majorConverter.MajorToMajorFirstVO(majors.getFirst());
+                        });
+
+                CompletableFuture<EnrollSelectVO> enrollSelectVOFuture = studentFuture
+                        .thenCombine(majorFuture, (student, major) ->
+                                EnrollSelectVO.builder().student(student).major(major).build()
                         );
-                        UserProfileVO student = students.isEmpty() ?
-                                null :
-                                userConverter.UserToUserProfileVO(students.getFirst());
 
-                        List<Major> majors = majorMapper.selectMajor(
-                                Major.builder().id(e.getMid()).build(),
-                                FieldsGenerator.generateFields(Major.class)
-                        );
-                        MajorFirstVO major = majors.isEmpty() ?
-                                null :
-                                majorConverter.MajorToMajorFirstVO(majors.getFirst());
+                futures.add(enrollSelectVOFuture);
+            }
 
-                        return EnrollSelectVO
-                                .builder()
-                                .enrollmentID(e.getId())
-                                .student(student)
-                                .major(major)
-                                .build();
-
-                    })
+            return futures.stream()
+                    .map(future->future.join())
                     .filter(Objects::nonNull)
                     .toList();
 
         } catch (UserRoleDeniedException userRoleDeniedException) {
             throw new UserRoleDeniedException(user.getRole(), 4031, teacher == null ? null : teacher.getIdentity());
         } catch (Exception e) {
-//            e.printStackTrace();
             throw new RuntimeException(e.getMessage());
         }
     }

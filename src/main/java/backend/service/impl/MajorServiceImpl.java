@@ -31,6 +31,12 @@ public class MajorServiceImpl implements MajorService {
     @Autowired
     private RedisService redisService;
 
+    /**
+     * 获取对应学院下的一级学科
+     * /unauthorized/catalogue/second
+     * @param department 学院
+     * @return 一级学科列表
+     */
     @Override
     public List<MajorFirstVO> getFirstMajorByDept(Integer department) {
         String redisTemplateString = "majorFirst:" + department;
@@ -58,9 +64,7 @@ public class MajorServiceImpl implements MajorService {
             List<MajorFirstVO> majorFirstVOList = majorFirstVOListFuture.stream()
                                                     .map(CompletableFuture::join)
                                                     .toList();
-            CompletableFuture.runAsync(() -> {
-                redisService.saveDataWithExpiration(redisTemplateString, 30, majorFirstVOList);
-            });
+            CompletableFuture.runAsync(() -> redisService.saveDataWithExpiration(redisTemplateString, 30, majorFirstVOList));
 
             return majorFirstVOList;
         } catch (Exception e) {
@@ -68,7 +72,12 @@ public class MajorServiceImpl implements MajorService {
         }
     }
 
-
+    /**
+     * 获取对应一级学科下的二级学科
+     * GET /unauthorized/catalogue/second
+     * @param major 一级学科
+     * @return 二级学科列表
+     */
     @Override
     public List<MajorSecondVO> getSecondMajorByFirst(Integer major) {
         try {
@@ -107,10 +116,9 @@ public class MajorServiceImpl implements MajorService {
     }
 
 
-    // Old implementations
     /**
-     * 获取专业目录
-     *
+     * 获取招生目录
+     * GET /unauthorized/catalogue
      * @param department 学院
      * @return 专业列表
      */
@@ -138,9 +146,7 @@ public class MajorServiceImpl implements MajorService {
         for (int i = 0; i < majorVOList.size(); i++)
             majorVOList.get(i).setSubMajors(futures.get(i).join().join());
 
-        CompletableFuture.runAsync(() -> {
-            redisService.saveDataWithExpiration(redisTemplateString, 30, majorVOList);
-        });
+        CompletableFuture.runAsync(() -> redisService.saveDataWithExpiration(redisTemplateString, 30, majorVOList));
         return majorVOList;
     }
 

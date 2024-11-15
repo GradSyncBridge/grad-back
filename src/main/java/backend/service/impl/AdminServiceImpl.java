@@ -64,7 +64,6 @@ public class AdminServiceImpl implements AdminService {
         } catch (DeadlineNotFoundException deadlineNotFoundException) {
             throw new DeadlineNotFoundException(deadlineDTO.getDeadlineID(), 1);
         } catch (Exception e) {
-//            e.printStackTrace();
             throw new RuntimeException(e.getMessage());
         }
     }
@@ -77,7 +76,6 @@ public class AdminServiceImpl implements AdminService {
                     1
             );
         } catch (Exception e) {
-//            e.printStackTrace();
             throw new RuntimeException(e.getMessage());
         }
     }
@@ -90,7 +88,6 @@ public class AdminServiceImpl implements AdminService {
                     0
             );
         } catch (Exception e) {
-//            e.printStackTrace();
             throw new RuntimeException(e.getMessage());
         }
     }
@@ -120,7 +117,6 @@ public class AdminServiceImpl implements AdminService {
         } catch (UserNotFoundException userNotFoundException) {
             throw new UserNotFoundException(teacherDTO.getTeacherID(), 2);
         } catch (Exception e) {
-//            e.printStackTrace();
             throw new RuntimeException(e.getMessage());
         }
     }
@@ -132,7 +128,6 @@ public class AdminServiceImpl implements AdminService {
                     User.getAuth().getTeacher().getDepartment()
             );
         } catch (Exception e) {
-//            e.printStackTrace();
             throw new RuntimeException(e.getMessage());
         }
     }
@@ -180,7 +175,6 @@ public class AdminServiceImpl implements AdminService {
         } catch (DeadlineUnreachedException deadlineUnreachedException) {
             throw new DeadlineUnreachedException(type, 4031);
         } catch (Exception e) {
-//            e.printStackTrace();
             throw new RuntimeException(e.getMessage());
         }
     }
@@ -196,7 +190,6 @@ public class AdminServiceImpl implements AdminService {
                 studentMapper.invalidateStudent(students);
 
         } catch (Exception e) {
-//            e.printStackTrace();
             throw new RuntimeException(e.getMessage());
         }
     }

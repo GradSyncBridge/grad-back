@@ -1,6 +1,7 @@
 package backend.service.impl;
 
 import java.util.List;
+import java.util.concurrent.CompletableFuture;
 
 import backend.util.FieldsGenerator;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -42,17 +43,29 @@ public class DepartmentServiceImpl implements DepartmentService {
         }
     }
 
+    /**
+     * 获取学院详情
+     * GET /unauthorized/department/detail
+     * @param departmentID 学院ID
+     * @return 学院详情
+     */
     @Override
     public DepartmentDetailVO getDepartmentDetail(Integer departmentID) {
         try {
+            CompletableFuture<Department> departmentFuture =
+                    CompletableFuture.supplyAsync(()->
+                            departmentMapper.selectDepartmentDetail(departmentID)
+                    );
 
-            Department department = departmentMapper.selectDepartmentDetail(departmentID);
-            Integer totalMajor = majorMapper
-                    .selectMajor(Major.builder().department(departmentID).build(),
-                            FieldsGenerator.generateFields(Department.class))
-                    .size();
+            CompletableFuture<Integer> totalMajorFuture =
+                    CompletableFuture.supplyAsync(()->
+                            majorMapper
+                                    .selectMajor(Major.builder().department(departmentID).build(),
+                                            FieldsGenerator.generateFields(Department.class))
+                                    .size()
+                    );
 
-            return departmentConverter.INSTANCE.DepartmentTODepartmentDetailVO(department, totalMajor);
+            return departmentConverter.INSTANCE.DepartmentTODepartmentDetailVO(departmentFuture.join(), totalMajorFuture.join());
 
         } catch (Exception e) {
             throw new RuntimeException(e.getMessage());
