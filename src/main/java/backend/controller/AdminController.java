@@ -1,0 +1,46 @@
+package backend.controller;
+
+import backend.model.DTO.AdminDeadlineDTO;
+import backend.service.AdminService;
+import backend.util.ResultEntity;
+
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.*;
+
+
+/**
+ * Admin identity verified in AdminFilter.
+ * A Http.Forbidden value will be returned for
+ * student users / teachers with low clearance.
+ * */
+@RestController
+@RequestMapping(value = "/admin")
+public class AdminController {
+
+    @Autowired
+    private AdminService adminService;
+
+    @PutMapping(value = "/deadline")
+    public ResponseEntity<ResultEntity<Object>> adminModifyDeadline(
+            @RequestBody AdminDeadlineDTO deadlineDTO
+    ) {
+        adminService.adminModifyDeadline(deadlineDTO);
+
+        return ResultEntity.success(
+                HttpStatus.OK.value(),
+                "Modify deadline successfully",
+                null
+        );
+    }
+
+    @GetMapping(value = "/teachers/remnant")
+    public ResponseEntity<ResultEntity<Object>> getTeachersWithMetric() {
+        return ResultEntity.success(
+                HttpStatus.OK.value(),
+                "Get all teachers with remaining metric",
+                adminService.getTeachersWithMetric()
+        );
+    }
+}
