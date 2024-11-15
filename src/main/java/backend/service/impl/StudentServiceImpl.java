@@ -162,7 +162,7 @@ public class StudentServiceImpl implements StudentService {
             return userMapper
                     .searchStudent(query, valid)
                     .stream()
-                    .map(u -> userConverter.UserToUserProfileVO(u))
+                    .map(u -> userConverter.INSTANCE.UserToUserProfileVO(u))
                     .filter(Objects::nonNull)
                     .toList();
         } catch (Exception e) {

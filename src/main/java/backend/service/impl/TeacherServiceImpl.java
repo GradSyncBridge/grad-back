@@ -233,7 +233,7 @@ public class TeacherServiceImpl implements TeacherService {
                                 User.builder().id(s.getUserId()).build(),
                                 FieldsGenerator.generateFields(User.class)
                         );
-                        return users.isEmpty() ? null : userConverter.UserToUserProfileVO(users.getFirst());
+                        return users.isEmpty() ? null : userConverter.INSTANCE.UserToUserProfileVO(users.getFirst());
                     })
                     .filter(Objects::nonNull)
                     .toList();

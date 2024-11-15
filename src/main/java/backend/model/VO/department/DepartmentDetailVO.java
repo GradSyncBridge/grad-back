@@ -11,6 +11,12 @@ import lombok.NoArgsConstructor;
 @Builder
 public class DepartmentDetailVO {
 
+    private Integer departmentID;
+
+    private String  departmentNum;
+
+    private String name;
+
     private String description;
 
     private String logo;
