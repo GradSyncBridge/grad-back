@@ -23,6 +23,11 @@ public class SecretaryServiceImpl implements SecretaryService {
     @Autowired
     private StudentMapper studentMapper;
 
+    /**
+     * 研究生管理秘书审核学生报名表单
+     * POST /secretary/examine
+     * @param examineDTO 学生报名表单审核信息
+     */
     @Override
     public void examineStudentSubmission(SecretaryExamineDTO examineDTO) {
         User user = User.getAuth();
@@ -53,12 +58,16 @@ public class SecretaryServiceImpl implements SecretaryService {
         } catch (UserNotFoundException userNotFoundException) {
             throw new UserNotFoundException(examineDTO.getStudentID(), 1);
         } catch (Exception e) {
-//            e.printStackTrace();
             throw new RuntimeException(e.getMessage());
         }
 
     }
 
+    /**
+     * 研究生管理秘书修改初试成绩
+     * PUT /secretary/grade
+     * @param gradeDTO 学生成绩信息
+     */
     @Override
     public void modifyStudentGrade(SecretaryGradeDTO gradeDTO) {
         User user = User.getAuth();
@@ -78,6 +87,7 @@ public class SecretaryServiceImpl implements SecretaryService {
 
             Student student = students.getFirst();
             student.setGradeFirst(student.getGradeFirst() + gradeDTO.getAddition());
+
             studentMapper.updateStudent(
                     student,
                     Student.builder().userId(gradeDTO.getStudentID()).build()
@@ -88,7 +98,6 @@ public class SecretaryServiceImpl implements SecretaryService {
         } catch (UserNotFoundException userNotFoundException) {
             throw new UserNotFoundException(gradeDTO.getStudentID(), 1);
         } catch (Exception e) {
-//            e.printStackTrace();
             throw new RuntimeException(e.getMessage());
         }
     }
