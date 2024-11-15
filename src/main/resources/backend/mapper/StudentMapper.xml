@@ -16,16 +16,16 @@
         <result property="type" column="type" />
         <result property="enrollment" column="enrollment" />
         <result property="reassign" column="reassign" />
-        <result property="exam_id" column="user_id" />
+        <result property="examId" column="user_id" />
         <result property="valid" column="valid" />
         <result property="emergency" column="emergency" />
-        <result property="grade_first" column="gradeFirst" />
-        <result property="grade_second" column="gradeSecond" />
-        <result property="major_apply" column="majorApply" />
-        <result property="major_study" column="majorStudy" />
+        <result property="gradeFirst" column="grade_first" />
+        <result property="gradeSecond" column="grade_second" />
+        <result property="majorApply" column="major_apply" />
+        <result property="majorStudy" column="major_study" />
         <result property="disabled" column="disabled" />
         <result property="quality" column="quality" />
-        <result property="certify_id" column="certifyId" />
+        <result property="certifyId" column="certify_id" />
     </resultMap>
 
     <sql id="DynamicFields">
@@ -185,7 +185,7 @@
         set
             valid = 1
         where
-            id in
+            user_id in
             <foreach collection="students" item="student" open="(" separator="," close=")">
                 #{student.userId}
             </foreach>
