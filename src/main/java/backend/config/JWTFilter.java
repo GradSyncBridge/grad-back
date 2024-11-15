@@ -3,12 +3,11 @@ package backend.config;
 import backend.model.entity.User;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
-import jakarta.annotation.Nonnull;
 import jakarta.servlet.FilterChain;
-import jakarta.validation.*;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.ApplicationContext;
@@ -65,7 +64,7 @@ public class JWTFilter extends OncePerRequestFilter {
                 Map<String, Object> responseMap = new HashMap<>();
                 responseMap.put("code", 401);
                 responseMap.put("message", e.getMessage());
-                responseMap.put("time", System.currentTimeMillis());
+                responseMap.put("time", System.currentTimeMillis() / 1000);
                 responseMap.put("data", null);
 
                 String jsonResponse = new ObjectMapper().writeValueAsString(responseMap);
@@ -95,7 +94,7 @@ public class JWTFilter extends OncePerRequestFilter {
                 Map<String, Object> responseMap = new HashMap<>();
                 responseMap.put("code", 401);
                 responseMap.put("message", e.getMessage());
-                responseMap.put("time", System.currentTimeMillis());
+                responseMap.put("time", System.currentTimeMillis() / 1000);
                 responseMap.put("data", null);
 
                 String jsonResponse = new ObjectMapper().writeValueAsString(responseMap);

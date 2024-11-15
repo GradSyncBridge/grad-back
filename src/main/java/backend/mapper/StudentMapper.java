@@ -32,4 +32,19 @@ public interface StudentMapper {
      * @param studentQuery  更新的条件
      */
     void updateStudent(Student studentUpdate, Student studentQuery);
+
+    /**
+     * 批量设置学生 valid 字段无效
+     *
+     * @param students 学生列表
+     * */
+    void invalidateStudent(List<Student> students);
+
+
+    /**
+     * 根据学院选取不接受调剂 & 未被录取的学生
+     *
+     * @param department 学院ID
+     * */
+    List<Student> selectStudentWithoutEnroll(Integer department);
 }

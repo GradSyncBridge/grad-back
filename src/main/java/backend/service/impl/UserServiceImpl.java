@@ -9,7 +9,7 @@ import java.util.concurrent.locks.ReentrantLock;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
-import backend.config.GlobalConfig;
+import backend.util.GlobalConfig;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.autoconfigure.liquibase.LiquibaseProperties;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;

@@ -1,5 +1,6 @@
 package backend.mapper;
 
+import backend.model.VO.teacher.TeacherProfileVO;
 import backend.model.entity.MajorToTeacher;
 import backend.model.entity.Teacher;
 import org.apache.ibatis.annotations.Mapper;
@@ -22,7 +23,7 @@ public interface TeacherMapper {
      *
      * @param teacher 查询条件
      * @param scope   查询返回的字段
-     * @return
+     * @return Teacher
      */
     List<Teacher> selectTeacher(Teacher teacher, Map<String, Boolean> scope);
 
@@ -36,4 +37,21 @@ public interface TeacherMapper {
     void updateTeacher(Teacher teacherUpdate, Teacher teacherQuery);
 
     List<Teacher> selectTeacherForeach(List<MajorToTeacher> majorToTeachers);
+
+    /**
+     * 查询所有指定学院的教师
+     *
+     * @param department 学院ID
+     * @param remnant 1：筛选 remnant 大于 0 的教师，0：不对 remnant 筛选
+     * @return TeacherProfileVO
+     * */
+    List<TeacherProfileVO> selectTeacherWithMetric(Integer department, Integer remnant);
+
+    /**
+     * 查询所有指定学院下没有被学生选择的老师
+     *
+     * @param department 学院ID
+     * @return TeacherProfileVO
+     * */
+    List<TeacherProfileVO> selectTeacherWithoutEnroll(Integer department);
 }

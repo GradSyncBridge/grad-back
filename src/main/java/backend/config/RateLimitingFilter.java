@@ -46,7 +46,7 @@ public class RateLimitingFilter extends OncePerRequestFilter {
             Map<String, Object> responseMap = new HashMap<>();
             responseMap.put("code", HttpStatus.TOO_MANY_REQUESTS.value());
             responseMap.put("message", "Too many requests - please try again later.");
-            responseMap.put("time", System.currentTimeMillis());
+            responseMap.put("time", System.currentTimeMillis() / 1000);
             responseMap.put("data", null);
 
             String jsonResponse = new ObjectMapper().writeValueAsString(responseMap);

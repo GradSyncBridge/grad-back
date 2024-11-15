@@ -27,7 +27,7 @@ public class TeacherProfileVO {
 
     private Integer department;
 
-    private String title;
+    private Integer title;
 
     private String description;
 

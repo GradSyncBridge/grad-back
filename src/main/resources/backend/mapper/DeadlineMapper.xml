@@ -48,7 +48,7 @@
             <if test="deadlineQuery.id != null"> and id = #{deadlineQuery.id} </if>
             <if test="deadlineQuery.time != null"> and time = #{deadlineQuery.time} </if>
             <if test="deadlineQuery.type != null"> and type = #{deadlineQuery.type} </if>
-            <if test="deadlineUpdate.name != null"> and name = #{deadlineQuery.name} </if>
+            <if test="deadlineQuery.name != null"> and name = #{deadlineQuery.name} </if>
         </where>
     </update>
 </mapper>
