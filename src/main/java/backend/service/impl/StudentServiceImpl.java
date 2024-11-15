@@ -1,6 +1,6 @@
 package backend.service.impl;
 
-import backend.config.GlobalConfig;
+import backend.util.GlobalConfig;
 import backend.mapper.*;
 
 import backend.model.DTO.StudentApplicationSubmitDTO;
