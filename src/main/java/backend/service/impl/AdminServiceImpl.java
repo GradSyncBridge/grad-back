@@ -1,18 +1,21 @@
 package backend.service.impl;
 
+import backend.enums.DeadlineEnum;
+
 import backend.exception.model.deadline.DeadlineNotFoundException;
+import backend.exception.model.deadline.DeadlineUnreachedException;
 import backend.exception.model.user.UserNotFoundException;
 
 import backend.mapper.DeadlineMapper;
+import backend.mapper.MajorMapper;
+import backend.mapper.StudentMapper;
 import backend.mapper.TeacherMapper;
 
 import backend.model.DTO.AdminDeadlineDTO;
 import backend.model.DTO.AdminTeacherDTO;
 import backend.model.VO.teacher.TeacherProfileVO;
 
-import backend.model.entity.Deadline;
-import backend.model.entity.Teacher;
-import backend.model.entity.User;
+import backend.model.entity.*;
 
 import backend.service.AdminService;
 import backend.util.FieldsGenerator;
@@ -21,6 +24,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDateTime;
+import java.util.Comparator;
 import java.util.List;
 
 @Service
@@ -31,6 +35,12 @@ public class AdminServiceImpl implements AdminService {
 
     @Autowired
     private TeacherMapper teacherMapper;
+
+    @Autowired
+    private MajorMapper majorMapper;
+
+    @Autowired
+    private StudentMapper studentMapper;
 
     @Override
     public void adminModifyDeadline(AdminDeadlineDTO deadlineDTO) {
@@ -121,6 +131,54 @@ public class AdminServiceImpl implements AdminService {
             return teacherMapper.selectTeacherWithoutEnroll(
                     User.getAuth().getTeacher().getDepartment()
             );
+        } catch (Exception e) {
+//            e.printStackTrace();
+            throw new RuntimeException(e.getMessage());
+        }
+    }
+
+    @Override
+    public void adminFilterPossibleEnrolls() {
+        DeadlineEnum type = DeadlineEnum.SECOND_SUBMISSION;
+
+        try {
+            Deadline ddl = deadlineMapper.selectDeadline(
+                    Deadline.builder().type(type.getValue()).build(),
+                    FieldsGenerator.generateFields(Deadline.class)
+            ).getFirst();
+
+            if (LocalDateTime.now().isBefore(ddl.getTime()))
+                throw new DeadlineUnreachedException();
+
+            List<Major> majors = majorMapper.selectMajor(
+                    Major.builder().pid(0).department(User.getAuth().getTeacher().getDepartment()).disabled(1).build(),
+                    FieldsGenerator.generateFields(Major.class)
+            );
+
+            for (Major major : majors) {
+                List<Student> students = studentMapper
+                        .selectStudent(
+                                Student.builder().majorApply(major.getId()).valid(0).build(),
+                                FieldsGenerator.generateFields(Student.class)
+                        )
+                        .stream()
+                        .sorted(Comparator.comparingDouble(s -> s.getGradeFirst() + s.getGradeSecond()))
+                        .toList();
+
+                int startIndex = Math.min(
+                        major.getTotal() + major.getAddition() - major.getRecommend(),
+                        students.size()
+                );
+                int endIndex = students.size();
+
+                if (startIndex == endIndex)
+                    continue;
+
+                studentMapper.invalidateStudent(students.subList(startIndex, endIndex));
+            }
+
+        } catch (DeadlineUnreachedException deadlineUnreachedException) {
+            throw new DeadlineUnreachedException(type, 4031);
         } catch (Exception e) {
 //            e.printStackTrace();
             throw new RuntimeException(e.getMessage());

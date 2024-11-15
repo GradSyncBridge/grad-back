@@ -184,7 +184,7 @@ public class EnrollServiceImpl implements EnrollService {
             verifyDeadline(ddl);
 
             if (studentMapper.selectStudent(
-                    Student.builder().userId(confirm.getStudentID()).valid(1).build(),
+                    Student.builder().userId(confirm.getStudentID()).valid(0).build(),
                     Map.of("id", true)
             ).isEmpty())
                 throw new UserNotFoundException();

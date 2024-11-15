@@ -156,4 +156,17 @@
         </where>
     </update>
 
+    <update id="invalidateStudent" >
+        update
+            Student
+        set
+            valid = 1
+        where
+            id in
+            <foreach collection="students" item="student" open="(" separator="," close=")">
+                #{student.userId}
+            </foreach>
+
+    </update>
+
 </mapper>

@@ -9,11 +9,13 @@ import java.util.List;
 public interface AdminService {
     void adminModifyDeadline(AdminDeadlineDTO deadlineDTO);
 
+    void adminModifyTeacher(AdminTeacherDTO teacherDTO);
+
+    void adminFilterPossibleEnrolls();
+
     List<TeacherProfileVO> getTeachersWithMetric();
 
     List<TeacherProfileVO> getAllTeachers();
-
-    void adminModifyTeacher(AdminTeacherDTO teacherDTO);
 
     List<TeacherProfileVO> getTeachersWithoutEnrolls();
 }

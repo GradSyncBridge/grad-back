@@ -77,4 +77,15 @@ public class AdminController {
         );
     }
 
+    @PostMapping(value = "/possible-enroll")
+    public ResponseEntity<ResultEntity<Object>> adminFilterPossibleEnrolls() {
+        adminService.adminFilterPossibleEnrolls();
+
+        return ResultEntity.success(
+                HttpStatus.OK.value(),
+                "Filter all possible enrolled students successfully",
+                null
+        );
+    }
+
 }
