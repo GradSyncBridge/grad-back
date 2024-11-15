@@ -1,8 +1,8 @@
 package backend.service.impl;
 
 import java.util.List;
-import java.util.Map;
 
+import backend.util.FieldsGenerator;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -35,7 +35,8 @@ public class DepartmentServiceImpl implements DepartmentService {
     @Override
     public List<DepartmentVO> getDepartment() {
         try {
-            return departmentConverter.INSTANCE.DepartmentListTODepartmentVOList(departmentMapper.selectAllDepartments());
+            return departmentConverter.INSTANCE
+                    .DepartmentListTODepartmentVOList(departmentMapper.selectAllDepartments());
         } catch (Exception e) {
             throw new RuntimeException(e.getMessage());
         }
@@ -47,7 +48,9 @@ public class DepartmentServiceImpl implements DepartmentService {
 
             Department department = departmentMapper.selectDepartmentDetail(departmentID);
             Integer totalMajor = majorMapper
-                    .selectMajor(Major.builder().department(departmentID).build(), Map.of("id", true)).size();
+                    .selectMajor(Major.builder().department(departmentID).build(),
+                            FieldsGenerator.generateFields(Department.class))
+                    .size();
 
             return departmentConverter.INSTANCE.DepartmentTODepartmentDetailVO(department, totalMajor);
 

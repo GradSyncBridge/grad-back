@@ -64,7 +64,7 @@ public class MajorServiceImpl implements MajorService {
                                 .selectSubjectForeach(StringToList.convert(m.getInitial()));
                         List<SubjectVO> interviews = subjectMapper
                                 .selectSubjectForeach(StringToList.convert(m.getInterview()));
-                        return majorConverter.MajorSubjectToMajorSecondVO(m, initials, interviews);
+                        return majorConverter.INSTANCE.MajorSubjectToMajorSecondVO(m, initials, interviews);
                     })
                     .toList();
 
@@ -91,7 +91,7 @@ public class MajorServiceImpl implements MajorService {
 
         List<Major> majorList = majorMapper.selectMajor(Major.builder().pid(0).department(department).build(),
                 FieldsGenerator.generateFields(Major.class));
-        List<MajorVO> majorVOList = majorConverter.MajorListToMajorVOList(majorList);
+        List<MajorVO> majorVOList = majorConverter.INSTANCE.MajorListToMajorVOList(majorList);
 
         List<CompletableFuture<List<SubMajorVO>>> futures = new ArrayList<>();
 
@@ -123,7 +123,7 @@ public class MajorServiceImpl implements MajorService {
                     CompletableFuture<List<SubjectVO>> future2 = asyncSubMajorInterviews(major);
 
                     CompletableFuture<SubMajorVO> combinedFuture = future1.thenCombine(future2,
-                            (initials, interviews) -> majorConverter.MajorToSubMajorVO(major, initials, interviews));
+                            (initials, interviews) -> majorConverter.INSTANCE.MajorToSubMajorVO(major, initials, interviews));
 
                     futures.add(combinedFuture);
                 }
