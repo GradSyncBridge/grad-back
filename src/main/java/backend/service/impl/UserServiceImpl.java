@@ -1,19 +1,13 @@
 package backend.service.impl;
 
-import java.sql.SQLOutput;
 import java.util.List;
 import java.util.Map;
 import java.util.concurrent.CompletableFuture;
-
-import java.util.concurrent.locks.Lock;
-import java.util.concurrent.locks.ReentrantLock;
-
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 import backend.util.GlobalConfig;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.autoconfigure.liquibase.LiquibaseProperties;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
 
@@ -133,17 +127,6 @@ public class UserServiceImpl implements UserService {
                 studentMapper.insertStudent(Student.builder().userId(user.getId()).valid(-1).disabled(1).build());
             else
                 teacherMapper.insertTeacher(backend.model.entity.Teacher.builder().userId(user.getId()).build());
-          
-            CompletableFuture.runAsync(()->{
-                userMapper.insertUser(user);
-            });
-
-            CompletableFuture.runAsync(()->{
-                if (user.getRole() == 1)
-                    studentMapper.insertStudent(Student.builder().userId(user.getId()).valid(-1).disabled(1).build());
-                else teacherMapper.insertTeacher(backend.model.entity.Teacher.builder().userId(user.getId()).build());
-            });
-          
         } catch (DuplicateUserException ex) {
             throw new DuplicateUserException();
         } catch (Exception e) {
@@ -170,7 +153,6 @@ public class UserServiceImpl implements UserService {
 
             CompletableFuture<Void> usernameFuture = CompletableFuture.supplyAsync(() -> {
                 if (!username.equals(authUser.getUsername())) {
-
                     List<User> userList = userMapper.selectUser(
                             User.builder().username(userProfileUpdateDTO.getUsername()).build(),
                             Map.of("username", true));
@@ -178,15 +160,10 @@ public class UserServiceImpl implements UserService {
                     if (!userList.isEmpty())
                         throw new DuplicateUserException();
 
-                    List<User> userList = userMapper.selectUser(User.builder().username(userProfileUpdateDTO.getUsername()).build(), Map.of("username", true));
-
-                    if (!userList.isEmpty()) throw new DuplicateUserException();
-
                 } else {
                     userProfileUpdateDTO.setUsername(null);
                 }
                 return userProfileUpdateDTO;
-
             }).thenAccept(dto -> userProfileUpdateDTO.setUsername(dto.getUsername()));
 
             CompletableFuture<Void> userEmailFuture = CompletableFuture.supplyAsync(() -> {
@@ -198,21 +175,10 @@ public class UserServiceImpl implements UserService {
                     if (!userList.isEmpty())
                         throw new DuplicateUserEmailException();
 
-            }).thenAccept(dto -> {
-                userProfileUpdateDTO.setUsername(dto.getUsername());
-            });
-
-            CompletableFuture<Void> userEmailFuture = CompletableFuture.supplyAsync(() -> {
-                if (!email.equals(authUser.getEmail())) {
-                    List<User> userList = userMapper.selectUser(User.builder().email(email).build(), Map.of("email", true));
-
-                    if (!userList.isEmpty()) throw new DuplicateUserEmailException();
-
                 } else {
                     userProfileUpdateDTO.setEmail(null);
                 }
                 return userProfileUpdateDTO;
-
             }).thenAccept(dto -> userProfileUpdateDTO.setUsername(dto.getUsername()));
 
             CompletableFuture<Void> avatarFuture = CompletableFuture.supplyAsync(() -> {
@@ -223,16 +189,6 @@ public class UserServiceImpl implements UserService {
                 else
                     userProfileUpdateDTO.setAvatar(null);
 
-            }).thenAccept(dto -> {
-                userProfileUpdateDTO.setUsername(dto.getUsername());
-            });
-
-            CompletableFuture<Void> avatarFuture = CompletableFuture.supplyAsync(() -> {
-                if (userProfileUpdateDTO.getAvatar() != null)
-                    userProfileUpdateDTO.setAvatar(FileManager.saveBase64Image(userProfileUpdateDTO.getAvatar(), authUser));
-                else
-                    userProfileUpdateDTO.setAvatar(null);
-              
                 return userProfileUpdateDTO;
             }).thenAccept(dto -> userProfileUpdateDTO.setAvatar(dto.getAvatar()));
 
