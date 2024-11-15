@@ -1,7 +1,7 @@
 package backend.annotation.DTO.impl;
 
 import backend.annotation.DTO.TeacherProfileUpdateDTOValidation;
-import backend.config.GlobalConfig;
+import backend.util.GlobalConfig;
 import backend.model.DTO.TeacherProfileUpdateDTO;
 import jakarta.validation.ConstraintValidator;
 import jakarta.validation.ConstraintValidatorContext;
