@@ -58,13 +58,21 @@ public class MajorServiceImpl implements MajorService {
                 majorFirstVOListFuture.add(majorFirstVOFuture);
             }
 
-
             CompletableFuture.allOf(majorFirstVOListFuture.toArray(new CompletableFuture[0])).join();
 
             List<MajorFirstVO> majorFirstVOList = majorFirstVOListFuture.stream()
                                                     .map(CompletableFuture::join)
                                                     .toList();
             CompletableFuture.runAsync(() -> redisService.saveDataWithExpiration(redisTemplateString, 30, majorFirstVOList));
+
+            CompletableFuture.allOf(majorFirstVOListFuture.toArray(new CompletableFuture[0])).join();
+
+            List<MajorFirstVO> majorFirstVOList = majorFirstVOListFuture.stream()
+                                                    .map(CompletableFuture::join)
+                                                    .toList();
+            CompletableFuture.runAsync(() -> {
+                redisService.saveDataWithExpiration(redisTemplateString, 30, majorFirstVOList);
+            });
 
             return majorFirstVOList;
         } catch (Exception e) {
@@ -147,6 +155,11 @@ public class MajorServiceImpl implements MajorService {
             majorVOList.get(i).setSubMajors(futures.get(i).join().join());
 
         CompletableFuture.runAsync(() -> redisService.saveDataWithExpiration(redisTemplateString, 30, majorVOList));
+
+        CompletableFuture.runAsync(() -> {
+            redisService.saveDataWithExpiration(redisTemplateString, 30, majorVOList);
+        });
+
         return majorVOList;
     }
 
