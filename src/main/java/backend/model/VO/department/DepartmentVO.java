@@ -14,4 +14,8 @@ public class DepartmentVO {
     private String  departmentNum;
 
     private String name;
+
+    private String description;
+
+    private String logo;
 }

@@ -20,5 +20,7 @@ public interface DepartmentConverter {
 
     List<DepartmentVO> DepartmentListTODepartmentVOList(List<Department> departmentList);
 
+    @Mapping(target = "departmentID", source = "department.id")
+    @Mapping(target = "departmentNum", source = "department.did")
     DepartmentDetailVO DepartmentTODepartmentDetailVO(Department department, Integer totalMajor);
 }

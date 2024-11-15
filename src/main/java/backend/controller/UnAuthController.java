@@ -141,14 +141,25 @@ public class UnAuthController {
      */
     @GetMapping(value = "/department")
     public ResponseEntity<ResultEntity<Object>> getDepartment() {
-        return ResultEntity.success(200, "Get all departments successfully", departmentService.getDepartment());
+        return ResultEntity.success(
+                200,
+                "Get all departments successfully",
+                departmentService.getDepartment()
+        );
     }
 
 
     // Enroll Endpoints
     @GetMapping(value = "/enroll")
-    public ResponseEntity<ResultEntity<Object>> getEnrollTable(@RequestParam(value = "departmentID") Integer departmentId, @RequestParam(value = "year") Integer year) {
-        return ResultEntity.success(200, "Get enroll table successfully", enrollService.getEnrollTable(departmentId, year));
+    public ResponseEntity<ResultEntity<Object>> getEnrollTable(
+            @RequestParam(value = "departmentID") Integer department,
+            @RequestParam(value = "year") Integer year
+    ) {
+        return ResultEntity.success(
+                HttpStatus.OK.value(),
+                "Get enroll table successfully",
+                enrollService.getEnrollTable(department, year)
+        );
     }
 
 }
