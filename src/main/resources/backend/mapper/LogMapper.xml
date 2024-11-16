@@ -44,13 +44,13 @@
         <set>
             <if test="logUpdate.userId != null"> user_id = #{logUpdate.userId}, </if>
             <if test="logUpdate.endpoint != null"> endpoint = #{logUpdate.endpoint}, </if>
-            <if test="logUpdate.operation != null"> operation = #{operation}, </if>
+            <if test="logUpdate.operation != null"> operation = #{logUpdate.operation}, </if>
             <if test="logUpdate.created != null"> created = #{logUpdate.created}, </if>
         </set>
         <where>
             <if test="logQuery.id != null"> and id = #{logQuery.id} </if>
             <if test="logQuery.userId != null"> and user_id = #{logQuery.userId} </if>
-            <if test="logQuery.endpoint != null"> and content = #{logQuery.endpoint} </if>
+            <if test="logQuery.endpoint != null"> and endpoint = #{logQuery.endpoint} </if>
             <if test="logQuery.operation != null"> and operation = #{logQuery.operation} </if>
             <if test="logQuery.created != null"> and created = #{logQuery.created} </if>
         </where>
