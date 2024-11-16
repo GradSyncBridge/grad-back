@@ -40,6 +40,7 @@ public class MajorServiceImpl implements MajorService {
     @Override
     public List<MajorFirstVO> getFirstMajorByDept(Integer department) {
         String redisTemplateString = "majorFirst:" + department;
+
         List<MajorFirstVO> majorVOs = (List<MajorFirstVO>) redisService.getData(redisTemplateString);
 
         if(majorVOs != null) return majorVOs;
