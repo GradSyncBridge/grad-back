@@ -41,10 +41,9 @@ public class MajorServiceImpl implements MajorService {
     public List<MajorFirstVO> getFirstMajorByDept(Integer department) {
         String redisTemplateString = "majorFirst:" + department;
 
-        System.out.println(redisService.getData(redisTemplateString));
-//         List<MajorFirstVO> majorVOs = (List<MajorFirstVO>) redisService.getData(redisTemplateString);
-//
-//          if(majorVOs != null) return majorVOs;
+        List<MajorFirstVO> majorVOs = (List<MajorFirstVO>) redisService.getData(redisTemplateString);
+
+        if(majorVOs != null) return majorVOs;
 
         try {
             List<Major> majorList = majorMapper.selectMajor(
