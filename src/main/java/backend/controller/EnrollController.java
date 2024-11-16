@@ -31,7 +31,6 @@ public class EnrollController {
     @DeleteMapping
     public ResponseEntity<ResultEntity<Object>> enrollCancel(@RequestBody Map<String, Integer> cancelDTO) {
         enrollService.enrollCancel(cancelDTO.get("enrollmentID"));
-
         return ResultEntity.success(
                 HttpStatus.OK.value(),
                 "Enroll relationship canceled successfully",
