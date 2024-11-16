@@ -4,6 +4,7 @@ import backend.enums.DeadlineEnum;
 
 import backend.exception.model.deadline.DeadlineExceedException;
 import backend.exception.model.deadline.DeadlineNotFoundException;
+import backend.exception.model.deadline.DeadlineUnreachedException;
 import backend.exception.model.enroll.EnrollExceedException;
 import backend.exception.model.enroll.EnrollInvalidException;
 import backend.exception.model.enroll.EnrollNotFoundException;
@@ -74,7 +75,7 @@ public class EnrollServiceImpl implements EnrollService {
     private MajorConverter majorConverter;
 
 
-    private void verifyDeadline(DeadlineEnum type) {
+    private void verifyDeadline(DeadlineEnum type, Boolean after) {
         List<Deadline> deadlines = deadlineMapper.selectDeadline(
                 Deadline.builder().type(type.getValue()).build(),
                 FieldsGenerator.generateFields(Deadline.class)
@@ -84,8 +85,14 @@ public class EnrollServiceImpl implements EnrollService {
         if (targetDeadline == null)
             throw new DeadlineNotFoundException();
 
-        if (LocalDateTime.now().isAfter(targetDeadline.getTime()))
-            throw new DeadlineExceedException();
+        if (after) {
+            if (LocalDateTime.now().isAfter(targetDeadline.getTime()))
+                throw new DeadlineExceedException();
+        } else {
+            if (LocalDateTime.now().isBefore(targetDeadline.getTime()))
+                throw new DeadlineUnreachedException();
+        }
+
     }
 
 
@@ -102,7 +109,7 @@ public class EnrollServiceImpl implements EnrollService {
         DeadlineEnum ddl = DeadlineEnum.ENROLL;
 
         try {
-            verifyDeadline(ddl);
+            verifyDeadline(ddl, false);
             List<Enroll> enrolls = enrollMapper.selectEnrollWithDept(department, year);
 
             List<CompletableFuture<EnrollVO>> enrollVOListFuture = new ArrayList<>();
@@ -168,8 +175,8 @@ public class EnrollServiceImpl implements EnrollService {
                     .filter(Objects::nonNull)
                     .toList();
 
-        } catch (DeadlineExceedException deadlineExceedException) {
-            throw new DeadlineExceedException(ddl, 403);
+        } catch (DeadlineUnreachedException deadlineUnreachedException) {
+            throw new DeadlineUnreachedException(ddl, 403);
         } catch (Exception e) {
             throw new RuntimeException(e);
         }
@@ -200,7 +207,7 @@ public class EnrollServiceImpl implements EnrollService {
             if (teacher == null || teacher.getIdentity() < 1 || teacher.getIdentity() > 2)
                 throw new UserRoleDeniedException();
 
-            verifyDeadline(ddl);
+            verifyDeadline(ddl, true);
 
             if (studentMapper.selectStudent(
                     Student.builder().userId(confirm.getStudentID()).valid(0).build(),
@@ -293,7 +300,7 @@ public class EnrollServiceImpl implements EnrollService {
             if (teacher == null || teacher.getIdentity() < 1 || teacher.getIdentity() > 2)
                 throw new UserRoleDeniedException();
 
-            verifyDeadline(ddl);
+            verifyDeadline(ddl, true);
 
             List<Enroll> enrolls = enrollMapper.selectEnroll(
                     Enroll.builder().id(enroll).build(),
