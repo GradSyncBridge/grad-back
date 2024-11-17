@@ -45,7 +45,7 @@ public class ResultEntity<T> {
 
     public static <T> ResponseEntity<ResultEntity<T>> error(Integer code, String message) {
         ResultEntity<T> resultEntity = new ResultEntity<>(code, message, getCurrentTime());
-        return ResponseEntity.status(HttpStatus.OK).body(resultEntity);
+        return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(resultEntity);
     }
 
     public static <T> ResponseEntity<ResultEntity<T>> error(String message) {
