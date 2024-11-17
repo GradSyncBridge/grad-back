@@ -22,11 +22,4 @@ public class LogController {
                 "Get Logs information successfully", logService.getLog());
     }
 
-    @PostMapping()
-    public ResponseEntity<ResultEntity<Object>> logging(@RequestBody LogDTO logDTO){
-        logService.logging(logDTO);
-        return ResultEntity.success(HttpStatus.OK.value(),
-                "Record Logs Information successfully", null);
-    }
-
 }
