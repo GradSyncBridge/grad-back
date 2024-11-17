@@ -63,6 +63,7 @@ public class QualityFileServiceImpl implements QualityFileService {
             CompletableFuture.runAsync(() ->
                     FileManager.remove(files.getFirst().getFile())
             );
+            qualityFileMapper.deleteQualityFile(file.getFileID());
 
         } catch(FileNotFoundException fileNotFoundException) {
             throw new FileNotFoundException(file.getFileID());
