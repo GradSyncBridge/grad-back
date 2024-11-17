@@ -11,6 +11,8 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.Map;
+
 
 /**
  * Admin identity verified in AdminFilter.
@@ -95,6 +97,17 @@ public class AdminController {
         return ResultEntity.success(
                 HttpStatus.OK.value(),
                 "Filter all final enrolled students successfully",
+                null
+        );
+    }
+
+    @PostMapping(value = "/filter-enroll")
+    public ResponseEntity<ResultEntity<Object>> adminFilterEnrolls(@RequestBody Map<String, Double> adminFilter) {
+        adminService.adminFilterEnrolls(adminFilter.get("ratio"));
+
+        return ResultEntity.success(
+                HttpStatus.OK.value(),
+                "Filter all students by first grade successfully",
                 null
         );
     }
