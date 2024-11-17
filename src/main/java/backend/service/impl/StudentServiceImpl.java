@@ -103,7 +103,7 @@ public class StudentServiceImpl implements StudentService {
             student = students.isEmpty() ? null : students.getFirst();
         }
 
-        if (student == null)
+        if (student == null || student.getMajorStudy() == null)
             return null;
 
         try {

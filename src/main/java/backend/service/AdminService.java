@@ -11,6 +11,8 @@ public interface AdminService {
 
     void adminModifyTeacher(AdminTeacherDTO teacherDTO);
 
+    void adminFilterEnrolls(Double ratio);
+
     void adminFilterPossibleEnrolls();
 
     void adminFilterFinalEnrolls();

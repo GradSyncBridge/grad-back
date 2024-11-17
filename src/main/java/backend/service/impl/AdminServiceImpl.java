@@ -133,6 +133,51 @@ public class AdminServiceImpl implements AdminService {
     }
 
     @Override
+    public void adminFilterEnrolls(Double ratio) {
+        DeadlineEnum type = DeadlineEnum.INITIAL_SUBMISSION;
+
+        try {
+            Deadline targetDeadline = deadlineMapper.selectDeadline(
+                    Deadline.builder().type(type.getValue()).build(),
+                    FieldsGenerator.generateFields(Deadline.class)
+            ).getFirst();
+
+            if (LocalDateTime.now().isBefore(targetDeadline.getTime()))
+                throw new DeadlineUnreachedException();
+
+            Integer total = majorMapper.selectMajor(
+                            Major.builder().pid(0).department(User.getAuth().getTeacher().getDepartment()).build(),
+                            FieldsGenerator.generateFields(Major.class)
+                    )
+                    .stream()
+                    .mapToInt(m -> m.getTotal() + m.getAddition() - m.getRecommend())
+                    .sum();
+
+            total = (int) Math.ceil(ratio * total);
+
+            List<Student> students = studentMapper
+                    .selectStudent(
+                            Student.builder().department(User.getAuth().getTeacher().getDepartment()).valid(0).build(),
+                            FieldsGenerator.generateFields(Student.class)
+                    )
+                    .stream()
+                    .sorted(Comparator.comparingDouble(Student::getGradeFirst).reversed())
+                    .toList();
+
+            int startIndex = Math.min(students.size(), total);
+            int endIndex = students.size();
+
+            if (startIndex == endIndex)
+                return;
+
+            studentMapper.invalidateStudent(students.subList(startIndex, endIndex));
+
+        } catch (DeadlineUnreachedException deadlineUnreachedException) {
+            throw new DeadlineUnreachedException(type, 4031);
+        }
+    }
+
+    @Override
     public void adminFilterPossibleEnrolls() {
         DeadlineEnum type = DeadlineEnum.SECOND_SUBMISSION;
 
@@ -157,7 +202,7 @@ public class AdminServiceImpl implements AdminService {
                                 FieldsGenerator.generateFields(Student.class)
                         )
                         .stream()
-                        .sorted(Comparator.comparingDouble(s -> s.getGradeFirst() + s.getGradeSecond()))
+                        .sorted(Comparator.comparingDouble(s -> -(s.getGradeFirst() + s.getGradeSecond())))
                         .toList();
 
                 int startIndex = Math.min(
