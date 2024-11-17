@@ -32,4 +32,11 @@ public interface QualityFileMapper {
      * @param qualityFileQuery 更新的条件
     */
     void updateQualityFile(QualityFile qualityFileUpdate, QualityFile qualityFileQuery);
+
+    /**
+     * 删除资格审查文件
+     *
+     * @param id fileID
+     * */
+    void deleteQualityFile(Integer id);
 }
