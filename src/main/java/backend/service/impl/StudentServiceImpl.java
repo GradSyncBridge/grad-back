@@ -276,6 +276,8 @@ public class StudentServiceImpl implements StudentService {
         try {
             verifyDeadline(type);
 
+            studentGradeMapper.deleteStudentGradeByRole(student.getUserId(), role == 1 ? 0 : 1);
+
             studentGrade
                     .getGrades()
                     .forEach(g ->
