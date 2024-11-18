@@ -27,6 +27,7 @@ public class StudentSubmitTableVO {
     private List<Quality> quality;
     private Integer enrollment;
     private Integer reassign;
+    private Integer valid;
     private Score gradeFirst;
     private Score gradeSecond;
     private List<TeacherVO> application;

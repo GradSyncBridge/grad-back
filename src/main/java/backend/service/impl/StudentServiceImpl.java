@@ -98,16 +98,21 @@ public class StudentServiceImpl implements StudentService {
         if (user.getRole() == 1)
             student = User.getAuth().getStudent();
         else {
-            List<Student> students = studentMapper.selectStudent(Student.builder().userId(targetUid).build(),
-                    FieldsGenerator.generateFields(Student.class));
+            List<Student> students = studentMapper.selectStudent(
+                    Student.builder().userId(targetUid).build(),
+                    FieldsGenerator.generateFields(Student.class)
+            );
             student = students.isEmpty() ? null : students.getFirst();
         }
 
-        if (student == null || student.getMajorStudy() == null)
+        if (student == null || student.getQuality() == null)
             return null;
 
         try {
-            List<Integer> majorStudy = StringToList.convert(student.getMajorStudy());
+            List<Integer> majorStudy;
+            if (student.getMajorStudy() == null)
+                majorStudy = new ArrayList<>();
+            else majorStudy = StringToList.convert(student.getMajorStudy());
 
             List<Quality> fileList = StringToList.convert(student.getQuality())
                     .stream()
