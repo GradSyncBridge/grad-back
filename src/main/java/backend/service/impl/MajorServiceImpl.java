@@ -39,11 +39,11 @@ public class MajorServiceImpl implements MajorService {
      */
     @Override
     public List<MajorFirstVO> getFirstMajorByDept(Integer department) {
-        String redisTemplateString = "majorFirst:" + department;
-
-        List<MajorFirstVO> majorVOs = (List<MajorFirstVO>) redisService.getData(redisTemplateString);
-
-        if(majorVOs != null) return majorVOs;
+//        String redisTemplateString = "majorFirst:" + department;
+//
+//        List<MajorFirstVO> majorVOs = (List<MajorFirstVO>) redisService.getData(redisTemplateString);
+//
+//        if(majorVOs != null) return majorVOs;
 
         try {
             List<Major> majorList = majorMapper.selectMajor(
@@ -65,7 +65,7 @@ public class MajorServiceImpl implements MajorService {
             List<MajorFirstVO> majorFirstVOList = majorFirstVOListFuture.stream()
                     .map(CompletableFuture::join)
                     .toList();
-            CompletableFuture.runAsync(() -> redisService.saveDataWithExpiration(redisTemplateString, 30, majorFirstVOList));
+//            CompletableFuture.runAsync(() -> redisService.saveDataWithExpiration(redisTemplateString, 30, majorFirstVOList));
 
             return majorFirstVOList;
         } catch (Exception e) {
