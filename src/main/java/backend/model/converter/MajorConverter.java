@@ -27,6 +27,7 @@ public interface MajorConverter {
     // Newer Interfaces
     @Mapping(target = "majorID", source = "id")
     @Mapping(target = "majorNum", source = "mid")
+    @Mapping(target = "reassign", source = "allowReassign")
     MajorFirstVO MajorToMajorFirstVO(Major major);
 
     @Mapping(target = "majorID", source = "major.id")

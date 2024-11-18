@@ -33,7 +33,7 @@ public class MajorServiceImpl implements MajorService {
 
     /**
      * 获取对应学院下的一级学科
-     * /unauthorized/catalogue/second
+     * /unauthorized/catalogue/first
      * @param department 学院
      * @return 一级学科列表
      */

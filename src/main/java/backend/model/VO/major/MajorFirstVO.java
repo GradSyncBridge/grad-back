@@ -30,4 +30,6 @@ public class MajorFirstVO implements Serializable {
     private Integer year;
 
     private Integer department;
+
+    private Integer reassign;
 }
