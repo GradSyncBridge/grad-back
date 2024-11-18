@@ -27,6 +27,8 @@ public interface StudentConverter {
     @Mapping(target = "department", source = "student.department")
     @Mapping(target = "examID", source = "student.examId")
     @Mapping(target = "certifyID", source = "student.certifyId")
+    @Mapping(target = "reassign", source = "student.reassign")
+    @Mapping(target = "valid", source = "student.valid")
     @Mapping(target = "majorApply", source = "majorApply")
     @Mapping(target = "majorStudy", source = "majorStudyList")
     @Mapping(target = "quality", source = "qualityList")
