@@ -395,7 +395,7 @@ public class StudentServiceImpl implements StudentService {
                 CompletableFuture.runAsync(()-> studentApplyMapper.insertStudentApply(studentApply));
             }
 
-            student.setMajorStudy(studentApplication.getApplication().toString());
+            student.setMajorStudy(studentApplication.getMajorStudy().toString());
             student.setReassign(studentApplication.getReassign());
 
             studentMapper.updateStudent(student, Student.builder().userId(uid).build());
