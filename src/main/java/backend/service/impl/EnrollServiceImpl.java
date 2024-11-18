@@ -5,6 +5,7 @@ import backend.enums.DeadlineEnum;
 import backend.exception.model.deadline.DeadlineExceedException;
 import backend.exception.model.deadline.DeadlineNotFoundException;
 import backend.exception.model.deadline.DeadlineUnreachedException;
+import backend.exception.model.enroll.EnrollDuplicateException;
 import backend.exception.model.enroll.EnrollExceedException;
 import backend.exception.model.enroll.EnrollInvalidException;
 import backend.exception.model.enroll.EnrollNotFoundException;
@@ -99,8 +100,9 @@ public class EnrollServiceImpl implements EnrollService {
     /**
      * 获取学院录取学生
      * GET /unauthorized/enroll
+     *
      * @param department 学院
-     * @param year 年份
+     * @param year       年份
      * @return 录取学生列表
      */
     @Override
@@ -113,9 +115,9 @@ public class EnrollServiceImpl implements EnrollService {
             List<Enroll> enrolls = enrollMapper.selectEnrollWithDept(department, year);
 
             List<CompletableFuture<EnrollVO>> enrollVOListFuture = new ArrayList<>();
-            for(Enroll e: enrolls){
+            for (Enroll e : enrolls) {
                 CompletableFuture<UserProfileVO> studentFuture =
-                        CompletableFuture.supplyAsync(()-> {
+                        CompletableFuture.supplyAsync(() -> {
                             List<User> students = userMapper.selectUser(
                                     User.builder().id(e.getSid()).build(),
                                     FieldsGenerator.generateFields(User.class)
@@ -124,7 +126,7 @@ public class EnrollServiceImpl implements EnrollService {
                         });
 
                 CompletableFuture<UserProfileVO> teacherFuture =
-                        CompletableFuture.supplyAsync(()-> {
+                        CompletableFuture.supplyAsync(() -> {
                             List<User> teachers = userMapper.selectUser(
                                     User.builder().id(e.getTid()).build(),
                                     FieldsGenerator.generateFields(User.class)
@@ -133,7 +135,7 @@ public class EnrollServiceImpl implements EnrollService {
                         });
 
                 CompletableFuture<DepartmentVO> departmentFuture =
-                        CompletableFuture.supplyAsync(()-> {
+                        CompletableFuture.supplyAsync(() -> {
                             List<Department> departments = departmentMapper.selectDepartment(
                                     Department.builder().id(department).build(),
                                     FieldsGenerator.generateFields(Department.class)
@@ -142,7 +144,7 @@ public class EnrollServiceImpl implements EnrollService {
                         });
 
                 CompletableFuture<MajorFirstVO> majorFuture =
-                        CompletableFuture.supplyAsync(()-> {
+                        CompletableFuture.supplyAsync(() -> {
                             List<Major> majors = majorMapper.selectMajor(
                                     Major.builder().id(e.getMid()).build(),
                                     FieldsGenerator.generateFields(Major.class)
@@ -187,16 +189,17 @@ public class EnrollServiceImpl implements EnrollService {
     /**
      * 导师确认录取学生
      * POST /enroll
+     *
      * @param confirm 录取信息
-     * --------------
-     * 1. 验证截止日期
-     * 2. 验证身份证和用户类型
-     * 3. 验证信息完整性
-     * 4. 验证当前老师是否有资格并且当前专业还有录取名额
-     * 5. 插入录取记录
-     * 6. 更新MajorToTeacher记录
-     * 7. 更新教师录取名额 (Do NOT perform in-place subtraction)
-     * */
+     *                --------------
+     *                1. 验证截止日期
+     *                2. 验证身份证和用户类型
+     *                3. 验证信息完整性
+     *                4. 验证当前老师是否有资格并且当前专业还有录取名额
+     *                5. 插入录取记录
+     *                6. 更新MajorToTeacher记录
+     *                7. 更新教师录取名额 (Do NOT perform in-place subtraction)
+     */
     @Override
     public void enrollConfirm(EnrollConfirmDTO confirm) {
         DeadlineEnum ddl = DeadlineEnum.ENROLL;
@@ -235,6 +238,17 @@ public class EnrollServiceImpl implements EnrollService {
             if (target.getRemnant() == 0)
                 throw new EnrollExceedException();
 
+            Enroll targetEnroll = Enroll.builder().mid(confirm.getMajorID())
+                    .tid(teacher.getUserId()).sid(confirm.getStudentID())
+                    .disabled(1).year(LocalDateTime.now().getYear() + 1).build();
+            List<Enroll> enrollList = enrollMapper.selectEnroll(
+                    targetEnroll,
+                    FieldsGenerator.generateFields(Enroll.class)
+            );
+
+            if (!enrollList.isEmpty())
+                throw new EnrollDuplicateException();
+
             enrollMapper.insertEnroll(
                     Enroll.builder().mid(confirm.getMajorID()).tid(teacher.getUserId()).sid(confirm.getStudentID())
                             .disabled(1).year(LocalDateTime.now().getYear() + 1).build()
@@ -260,6 +274,16 @@ public class EnrollServiceImpl implements EnrollService {
             teacherMapper.updateTeacher(teacher, Teacher.builder().userId(teacher.getUserId()).build());
 
 
+        } catch (EnrollDuplicateException enrollDuplicateException) {
+            throw new EnrollDuplicateException(
+                    String.format(
+                            "tid=%d, sid=%d, mid=%d",
+                            teacher == null ? null : teacher.getUserId(),
+                            confirm.getStudentID(),
+                            confirm.getMajorID()
+                    ),
+                    409
+            );
         } catch (DeadlineExceedException deadlineExceedException) {
             throw new DeadlineExceedException(ddl, 403);
         } catch (UserRoleDeniedException userRoleDeniedException) {
@@ -281,15 +305,16 @@ public class EnrollServiceImpl implements EnrollService {
     /**
      * 导师取消录取关系
      * DELETE /enroll
+     *
      * @param enroll 录取记录
-     * --------------
-     * 1. 验证截至日期
-     * 2. 验证身份证和用户类别
-     * 3. 验证信息完整性
-     * 4. 更新录取记录
-     * 5. 更新MajorToTeacher记录
-     * 6. 更新教师录取名额 (Do NOT perform in-place addition)
-     * */
+     *               --------------
+     *               1. 验证截至日期
+     *               2. 验证身份证和用户类别
+     *               3. 验证信息完整性
+     *               4. 更新录取记录
+     *               5. 更新MajorToTeacher记录
+     *               6. 更新教师录取名额 (Do NOT perform in-place addition)
+     */
     @Override
     public void enrollCancel(Integer enroll) {
         DeadlineEnum ddl = DeadlineEnum.ENROLL;
@@ -352,11 +377,12 @@ public class EnrollServiceImpl implements EnrollService {
     /**
      * 导师查看已选学生信息
      * GET /enroll/list
+     *
      * @return 录取列表
      * --------------
      * 1. 验证身份证和用户类别
      * 2. 获取目标老师录取列表
-     * */
+     */
     @Override
     public List<EnrollSelectVO> getEnrollList() {
         User user = User.getAuth();
@@ -373,9 +399,9 @@ public class EnrollServiceImpl implements EnrollService {
 
             List<CompletableFuture<EnrollSelectVO>> futures = new ArrayList<>();
 
-            for(Enroll e: enrolls){
+            for (Enroll e : enrolls) {
                 CompletableFuture<UserProfileVO> studentFuture =
-                        CompletableFuture.supplyAsync(()-> {
+                        CompletableFuture.supplyAsync(() -> {
                             List<User> students = userMapper.selectUser(
                                     User.builder().id(e.getSid()).build(),
                                     FieldsGenerator.generateFields(User.class)
@@ -384,7 +410,7 @@ public class EnrollServiceImpl implements EnrollService {
                         });
 
                 CompletableFuture<MajorFirstVO> majorFuture =
-                        CompletableFuture.supplyAsync(()-> {
+                        CompletableFuture.supplyAsync(() -> {
                             List<Major> majors = majorMapper.selectMajor(
                                     Major.builder().id(e.getMid()).build(),
                                     FieldsGenerator.generateFields(Major.class)
