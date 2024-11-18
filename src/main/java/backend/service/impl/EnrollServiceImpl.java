@@ -32,7 +32,6 @@ import backend.model.entity.*;
 import backend.service.EnrollService;
 import backend.util.FieldsGenerator;
 
-import jakarta.validation.constraints.NotNull;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -393,9 +392,11 @@ public class EnrollServiceImpl implements EnrollService {
                 throw new UserRoleDeniedException();
 
             List<Enroll> enrolls = enrollMapper.selectEnrollWithDept(
-                    teacher.getDepartment(),
-                    LocalDateTime.now().getYear() + 1
-            );
+                            teacher.getDepartment(),
+                            LocalDateTime.now().getYear() + 1
+                    ).stream()
+                    .filter(e -> Objects.equals(e.getTid(), teacher.getUserId()))
+                    .toList();
 
             List<CompletableFuture<EnrollSelectVO>> futures = new ArrayList<>();
 
@@ -420,7 +421,7 @@ public class EnrollServiceImpl implements EnrollService {
 
                 CompletableFuture<EnrollSelectVO> enrollSelectVOFuture = studentFuture
                         .thenCombine(majorFuture, (student, major) ->
-                                EnrollSelectVO.builder().student(student).major(major).build()
+                                EnrollSelectVO.builder().enrollmentID(e.getId()).student(student).major(major).build()
                         );
 
                 futures.add(enrollSelectVOFuture);
