@@ -48,12 +48,11 @@ public class LogServiceImpl implements LogService {
 //        }
 //    }
 
-    @Around("execution(* backend.model.DTO.LogDTO.getThis())")
-    public Object logging(ProceedingJoinPoint joinPoint) {
-        Object result = null;
+    @Around("execution(* backend.model.DTO.LogDTO.getThis(..))")
+    public void logging(ProceedingJoinPoint joinPoint) {
+        System.out.println("hello");
         try {
-            result = joinPoint.proceed();
-            LogDTO logDTO = (LogDTO) result;
+            LogDTO logDTO = (LogDTO) joinPoint.proceed();
             logMapper.insertLog(
                     Log.builder().userId(logDTO.getUserId())
                             .endpoint(logDTO.getEndpoint())
@@ -65,7 +64,6 @@ public class LogServiceImpl implements LogService {
         } catch (Throwable e) {
             logger.severe(e.getMessage());
         }
-        return result;
     }
 
 }

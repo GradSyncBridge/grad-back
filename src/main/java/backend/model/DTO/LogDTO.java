@@ -29,13 +29,7 @@ public class LogDTO implements ApplicationContextAware {
 
     private static ApplicationContext context;
     public LogDTO getThis() {
-        LogDTO logDTOAux = context.getBean(LogDTO.class);
-        logDTOAux.setId(this.getId());
-        logDTOAux.setUserId(this.getUserId());
-        logDTOAux.setEndpoint(this.getEndpoint());
-        logDTOAux.setOperation(this.getOperation());
-        logDTOAux.setCreated(this.getCreated());
-        return logDTOAux;
+        return this;
     }
 
     public static Builder builder() {
@@ -80,7 +74,7 @@ public class LogDTO implements ApplicationContextAware {
         }
 
         public LogDTO build() {
-            LogDTO logDTO = new LogDTO();
+            LogDTO logDTO = context.getBean(LogDTO.class);
             logDTO.setId(id);
             logDTO.setUserId(userId);
             logDTO.setEndpoint(endpoint);

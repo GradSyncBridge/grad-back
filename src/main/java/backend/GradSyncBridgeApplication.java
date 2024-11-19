@@ -7,7 +7,7 @@ import org.springframework.context.annotation.EnableAspectJAutoProxy;
 
 
 @EnableAspectJAutoProxy
-@SpringBootApplication
+@SpringBootApplication(scanBasePackages = "backend")
 @MapperScan("backend.mapper")
 public class GradSyncBridgeApplication {
     public static void main(String[] args) {
