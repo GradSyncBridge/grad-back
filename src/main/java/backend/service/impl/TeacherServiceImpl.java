@@ -195,7 +195,6 @@ public class TeacherServiceImpl implements TeacherService {
 
             targetTeacher.setDescription(teacherProfile.getDescription());
 
-            System.out.println(targetUser);
 
             CompletableFuture.runAsync(()->
                 userMapper.updateUser(targetUser,

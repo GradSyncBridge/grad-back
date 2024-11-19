@@ -52,6 +52,7 @@ public class UserServiceImpl implements UserService {
     /**
      * 处理登录请求
      * POST /unauthorized/user/login
+     *
      * @param userLoginDTO 登录信息
      * @return 登录结果
      */
@@ -89,6 +90,7 @@ public class UserServiceImpl implements UserService {
     /**
      * 获取用户信息
      * GET /user/profile
+     *
      * @return 用户信息
      */
     @Override
@@ -99,16 +101,19 @@ public class UserServiceImpl implements UserService {
     /**
      * 刷新token
      * GET /user/refresh
+     *
      * @return token
      */
     @Override
     public UserRefreshVO refreshToken() {
-        return UserRefreshVO.builder().setToken(User.getAuth().getId(), User.getAuth().getRole(), jwtService).build();
+        User user = User.getAuth();
+        return UserRefreshVO.builder().setToken(user.getId(), user.getRole(), jwtService).build();
     }
 
     /**
      * 处理注册请求
      * POST /unauthorized/user/register
+     *
      * @param userRegisterDTO 注册信息
      * @return token
      */
@@ -140,6 +145,7 @@ public class UserServiceImpl implements UserService {
     /**
      * 更新用户信息
      * PUT /user/profile
+     *
      * @param userProfileUpdateDTO 用户信息
      * @return 用户信息
      */
@@ -195,7 +201,7 @@ public class UserServiceImpl implements UserService {
             CompletableFuture.allOf(usernameFuture, userEmailFuture, avatarFuture).join();
             User user = UserConverter.INSTANCE.UserProfileUpdateDTOToUser(userProfileUpdateDTO);
 
-            userMapper.updateUser(user, User.getAuth());
+            userMapper.updateUser(user, User.builder().id(authUser.getId()).build());
 
         } catch (DuplicateUserException duplicateUserException) {
             throw new DuplicateUserException();
