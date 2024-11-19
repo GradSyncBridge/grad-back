@@ -43,7 +43,7 @@ import java.util.concurrent.CompletableFuture;
 @Component
 @UserValidation(groups = EmailGroup.class)
 @UserValidation(groups = UsernameGroup.class)
-public class User implements UserDetails, ApplicationContextAware {
+public class User implements UserDetails {
 
     private Integer id;
 
@@ -75,34 +75,7 @@ public class User implements UserDetails, ApplicationContextAware {
 
     public static User getAuth() {
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
-        UserMapper userMapper = context.getBean(UserMapper.class);
-        User user = (User) authentication.getPrincipal();
-
-        Integer id = user.getId();
-        Integer role = user.getRole();
-
-        User newUser = userMapper.selectUser(
-                User.builder().id(id).build(),
-                FieldsGenerator.generateFields(User.class)
-        ).getFirst();
-
-        if (role == 1) {
-            StudentMapper studentMapper = context.getBean(StudentMapper.class);
-            List<Student> students = studentMapper.selectStudent(
-                    Student.builder().userId(id).build(),
-                    FieldsGenerator.generateFields(Student.class)
-            );
-            newUser.setStudent(students.isEmpty() ? null : students.getFirst());
-        } else if (role == 2) {
-            TeacherMapper teacherMapper = context.getBean(TeacherMapper.class);
-            List<Teacher> teachers = teacherMapper.selectTeacher(
-                    Teacher.builder().userId(id).build(),
-                    FieldsGenerator.generateFields(Teacher.class)
-            );
-            newUser.setTeacher(teachers.isEmpty() ? null : teachers.getFirst());
-        }
-
-        return newUser;
+        return (User) authentication.getPrincipal();
     }
 
     @Override
@@ -139,10 +112,4 @@ public class User implements UserDetails, ApplicationContextAware {
     public boolean isEnabled() {
         return true;
     }
-
-    @Override
-    public void setApplicationContext(ApplicationContext applicationContext) throws BeansException {
-        context = applicationContext;
-    }
-
 }
