@@ -1,6 +1,6 @@
 package backend;
 
-import backend.model.DTO.LogDTO;
+import backend.util.GlobalLogging;
 import org.junit.jupiter.api.Test;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.context.annotation.EnableAspectJAutoProxy;
@@ -11,7 +11,7 @@ class GradSyncBridgeApplicationTests {
 
     @Test
     void contextLoads() {
-        LogDTO.builder()
+        GlobalLogging.builder()
                 .id(1)
                 .userId(1)
                 .endpoint("test")

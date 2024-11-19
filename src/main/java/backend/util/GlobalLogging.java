@@ -1,13 +1,11 @@
-package backend.model.DTO;
+package backend.util;
 
-import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
 import java.time.LocalDateTime;
 
 import org.springframework.beans.BeansException;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.ApplicationContextAware;
 import org.springframework.stereotype.Component;
@@ -15,7 +13,7 @@ import org.springframework.stereotype.Component;
 @Data
 @NoArgsConstructor
 @Component
-public class LogDTO implements ApplicationContextAware {
+public class GlobalLogging implements ApplicationContextAware {
 
     private Integer id;
 
@@ -28,7 +26,7 @@ public class LogDTO implements ApplicationContextAware {
     private LocalDateTime created;
 
     private static ApplicationContext context;
-    public LogDTO getThis() {
+    public GlobalLogging getThis() {
         return this;
     }
 
@@ -73,14 +71,14 @@ public class LogDTO implements ApplicationContextAware {
             return this;
         }
 
-        public LogDTO build() {
-            LogDTO logDTO = context.getBean(LogDTO.class);
-            logDTO.setId(id);
-            logDTO.setUserId(userId);
-            logDTO.setEndpoint(endpoint);
-            logDTO.setOperation(operation);
-            logDTO.setCreated(created);
-            return logDTO;
+        public GlobalLogging build() {
+            GlobalLogging globalLogging = context.getBean(GlobalLogging.class);
+            globalLogging.setId(id);
+            globalLogging.setUserId(userId);
+            globalLogging.setEndpoint(endpoint);
+            globalLogging.setOperation(operation);
+            globalLogging.setCreated(created);
+            return globalLogging;
         }
     }
 

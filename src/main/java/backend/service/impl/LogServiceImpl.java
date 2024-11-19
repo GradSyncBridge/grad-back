@@ -9,6 +9,7 @@ import backend.model.VO.log.LogVO;
 import backend.model.entity.Teacher;
 import backend.model.entity.User;
 import backend.util.FieldsGenerator;
+import backend.util.GlobalLogging;
 import org.aspectj.lang.ProceedingJoinPoint;
 import org.aspectj.lang.annotation.Around;
 import org.aspectj.lang.annotation.Aspect;
@@ -16,7 +17,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import backend.mapper.LogMapper;
-import backend.model.DTO.LogDTO;
 import backend.model.converter.LogConverter;
 import backend.model.entity.Log;
 import backend.service.LogService;
@@ -57,18 +57,18 @@ public class LogServiceImpl implements LogService {
 
     /**
      * 拦截getthis方法，插入日志信息
-     * @param joinPoint 拦截方法 backend.model.LogDTO.getthis()方法
+     * @param joinPoint 拦截方法 backend.model.GlobalLogging.getthis()方法
      * @return getthis方法返回内容
      * */
-    @Around("execution(* backend.model.DTO.LogDTO.getThis(..))")
+    @Around("execution(* backend.util.GlobalLogging.getThis(..))")
     public void logging(ProceedingJoinPoint joinPoint) {
         try {
-            LogDTO logDTO = (LogDTO) joinPoint.proceed();
+            GlobalLogging globalLogging = (GlobalLogging) joinPoint.proceed();
             logMapper.insertLog(
-                    Log.builder().userId(logDTO.getUserId())
-                            .endpoint(logDTO.getEndpoint())
-                            .operation(logDTO.getOperation())
-                            .created(logDTO.getCreated())
+                    Log.builder().userId(globalLogging.getUserId())
+                            .endpoint(globalLogging.getEndpoint())
+                            .operation(globalLogging.getOperation())
+                            .created(globalLogging.getCreated())
                             .build()
             );
 
