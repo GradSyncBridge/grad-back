@@ -1,12 +1,10 @@
 package backend.service.impl;
 
-import java.time.LocalDateTime;
-import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
+import java.util.logging.Logger;
 
 import org.aspectj.lang.ProceedingJoinPoint;
-import org.aspectj.lang.annotation.After;
 import org.aspectj.lang.annotation.Around;
 import org.aspectj.lang.annotation.Aspect;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -14,6 +12,7 @@ import org.springframework.stereotype.Service;
 
 import backend.exception.model.user.UserRoleDeniedException;
 import backend.mapper.LogMapper;
+import backend.model.DTO.LogDTO;
 import backend.model.VO.log.LogVO;
 import backend.model.converter.LogConverter;
 import backend.model.entity.Log;
@@ -27,10 +26,12 @@ import backend.util.FieldsGenerator;
 public class LogServiceImpl implements LogService {
 
     @Autowired
-    LogMapper logMapper;
+    private LogMapper logMapper;
+
+    private final Logger logger = Logger.getLogger(LogServiceImpl.class.getName());
 
     @Autowired
-    LogConverter logConverter;
+    private LogConverter logConverter;
 
     @Override
     public List<LogVO> getLog() {
@@ -55,20 +56,21 @@ public class LogServiceImpl implements LogService {
     }
 
     @Override
-    @Around("execution(* backend.model.DTO.LogDTO.getthis(..))")
+    @Around("execution(* backend.model.DTO.LogDTO.getthis())")
     public Object logging(ProceedingJoinPoint joinPoint) {
         Object result = null;
-
         try {
             result = joinPoint.proceed();
-            try {
-                Log log = (Log) result;
-                logMapper.insertLog(log);
-            }catch (Exception exception){
-                exception.printStackTrace();
-            }
+            LogDTO logDTO = (LogDTO) result;
+            logMapper.insertLog(
+                    Log.builder().userId(logDTO.getUserId())
+                            .endpoint(logDTO.getEndpoint())
+                            .operation(logDTO.getOperation())
+                            .created(logDTO.getCreated()).build()
+            );
+
         } catch (Throwable e) {
-            throw new RuntimeException(e);
+            logger.severe(e.getMessage());
         }
         return result;
     }
