@@ -1,6 +1,5 @@
 package backend.model.converter;
 
-import backend.model.VO.log.LogVO;
 import backend.model.entity.Log;
 import org.mapstruct.Mapper;
 import org.mapstruct.Mapping;
@@ -10,14 +9,14 @@ import java.time.format.DateTimeFormatter;
 import java.util.List;
 @Mapper(componentModel = "spring")
 public interface LogConverter {
-    @Mapping(source = "id", target = "id")
-    @Mapping(source = "userId", target = "userId")
-    @Mapping(source = "endpoint", target = "endpoint")
-    @Mapping(source = "operation", target = "operation")
-    @Mapping(source = "created", target = "created")
-    LogVO logToLogVO(Log log);
-
-    List<LogVO> LogListToLogVOList(List<Log> logs);
+//    @Mapping(source = "id", target = "id")
+//    @Mapping(source = "userId", target = "userId")
+//    @Mapping(source = "endpoint", target = "endpoint")
+//    @Mapping(source = "operation", target = "operation")
+//    @Mapping(source = "created", target = "created")
+//    LogVO logToLogVO(Log log);
+//
+//    List<LogVO> LogListToLogVOList(List<Log> logs);
     default String formatCreated(LocalDateTime created) {
         return created != null ? created.format(DateTimeFormatter.ofPattern("yyyy-MM-dd")) : null;
     }
