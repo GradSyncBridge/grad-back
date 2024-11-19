@@ -3,14 +3,7 @@ package backend.model.entity;
 import backend.annotation.entity.UserValidation;
 import backend.annotation.entity.group.userGroup.EmailGroup;
 import backend.annotation.entity.group.userGroup.UsernameGroup;
-import backend.mapper.StudentMapper;
-import backend.mapper.TeacherMapper;
-import backend.mapper.UserMapper;
-import backend.util.FieldsGenerator;
 import lombok.*;
-import org.springframework.beans.BeansException;
-import org.springframework.context.ApplicationContext;
-import org.springframework.context.ApplicationContextAware;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.context.SecurityContextHolder;
@@ -18,8 +11,6 @@ import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.stereotype.Component;
 
 import java.util.Collection;
-import java.util.List;
-import java.util.concurrent.CompletableFuture;
 
 /**
  * 用户表
@@ -70,8 +61,6 @@ public class User implements UserDetails {
     private Student student;
 
     private Teacher teacher;
-
-    private static ApplicationContext context;
 
     public static User getAuth() {
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
