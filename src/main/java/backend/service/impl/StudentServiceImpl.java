@@ -1,6 +1,6 @@
 package backend.service.impl;
 
-import backend.config.GlobalConfig;
+import backend.util.GlobalConfig;
 import backend.mapper.*;
 
 import backend.model.DTO.StudentApplicationSubmitDTO;
@@ -27,12 +27,16 @@ import backend.util.FieldsGenerator;
 import backend.util.StringToList;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Service;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.time.LocalDateTime;
 import java.util.Map;
 import java.util.Objects;
+import java.util.concurrent.CompletableFuture;
+import java.util.stream.Collectors;
 
 @Service
 public class StudentServiceImpl implements StudentService {
@@ -64,6 +68,9 @@ public class StudentServiceImpl implements StudentService {
     @Autowired
     private UserConverter userConverter;
 
+    @Autowired
+    private SubjectMapper subjectMapper;
+
     private void verifyDeadline(DeadlineEnum type) {
         List<Deadline> deadlines = deadlineMapper.selectDeadline(Deadline.builder().type(type.getValue()).build(),
                 FieldsGenerator.generateFields(Deadline.class));
@@ -77,6 +84,12 @@ public class StudentServiceImpl implements StudentService {
 
     }
 
+    /**
+     * 获取学生提交信息
+     * GET /student
+     * @param targetUid 目标用户ID
+     * @return 学生提交表
+     */
     @Override
     public StudentSubmitTableVO getStudentSubmitTable(Integer targetUid) {
         User user = User.getAuth();
@@ -85,15 +98,22 @@ public class StudentServiceImpl implements StudentService {
         if (user.getRole() == 1)
             student = User.getAuth().getStudent();
         else {
-            List<Student> students = studentMapper.selectStudent(Student.builder().userId(targetUid).build(),
-                    FieldsGenerator.generateFields(Student.class));
+            List<Student> students = studentMapper.selectStudent(
+                    Student.builder().userId(targetUid).build(),
+                    FieldsGenerator.generateFields(Student.class)
+            );
             student = students.isEmpty() ? null : students.getFirst();
         }
 
-        if (student == null)
+        if (student == null || student.getQuality() == null)
             return null;
 
         try {
+            List<Integer> majorStudy;
+            if (student.getMajorStudy() == null)
+                majorStudy = new ArrayList<>();
+            else majorStudy = StringToList.convert(student.getMajorStudy());
+
             List<Quality> fileList = StringToList.convert(student.getQuality())
                     .stream()
                     .map(f -> {
@@ -106,44 +126,65 @@ public class StudentServiceImpl implements StudentService {
                     .toList();
 
             // Major apply
-            List<Major> majorList = majorMapper.selectMajor(Major.builder().id(student.getMajorApply()).build(),
-                    FieldsGenerator.generateFields(Major.class));
-            MajorSubject majorApply = majorList.isEmpty() ? null
-                    : studentConverter.INSTANCE.majorToMajorSubject(majorList.getFirst());
+            CompletableFuture<MajorSubject> majorListFuture = CompletableFuture.supplyAsync(() -> {
+                List<Major> majorList = majorMapper.selectMajor(Major.builder().id(student.getMajorApply()).build(),
+                        FieldsGenerator.generateFields(Major.class));
+                return majorList.isEmpty() ? null
+                        : studentConverter.INSTANCE.majorToMajorSubject(majorList.getFirst());
+            });
 
             // Major study
-            List<Integer> majorStudy = StringToList.convert(student.getMajorStudy());
-            List<MajorSubject> majorStudyList = majorStudy
-                    .stream()
-                    .map(i -> {
-                        List<Major> majors = majorMapper.selectMajor(Major.builder().id(i).build(),
-                                FieldsGenerator.generateFields(Major.class));
-                        return (majors.isEmpty() ? null
-                                : studentConverter.INSTANCE.majorToMajorSubject(majors.getFirst()));
-                    })
-                    .filter(Objects::nonNull)
-                    .toList();
+            ArrayList<CompletableFuture<CompletableFuture<MajorSubject>>> majorStudyListFuture = new ArrayList<>();
+            for(Integer id: majorStudy){
+                CompletableFuture<CompletableFuture<MajorSubject>> majorStudyFuture =
+                        CompletableFuture.supplyAsync(()-> asyncGetMajorSubject(id)).thenApply(v->v);
+                majorStudyListFuture.add(majorStudyFuture);
+            }
 
             // application
-            List<TeacherVO> applications = studentApplyMapper
-                    .selectApplicationWithTeacher(StudentApply.builder().userId(student.getUserId()).build());
+            CompletableFuture<List<TeacherVO>> applicationsFuture = CompletableFuture.supplyAsync(() -> studentApplyMapper
+                    .selectApplicationWithTeacher(StudentApply.builder().userId(student.getUserId()).build()));
 
-            // Grades
-            List<GradeList> gradeListFirst = studentGradeMapper
-                    .selectGradeWithSubject(StudentGrade.builder().userId(student.getUserId()).disabled(1).build(), 0);
-            List<GradeList> gradeListSecond = studentGradeMapper
-                    .selectGradeWithSubject(StudentGrade.builder().userId(student.getUserId()).disabled(1).build(), 1);
-            Score gradeFirst = Score.builder().gradeTotal(student.getGradeFirst()).gradeList(gradeListFirst).build();
-            Score gradeSecond = Score.builder().gradeTotal(student.getGradeSecond()).gradeList(gradeListSecond).build();
+            // grade
+            CompletableFuture<Score> gradeFirstFuture = CompletableFuture.supplyAsync(() -> {
+                List<GradeList> gradeListFirst = studentGradeMapper
+                        .selectGradeWithSubject(StudentGrade.builder().userId(student.getUserId()).disabled(1).build(), 0);
+                return Score.builder().gradeTotal(student.getGradeFirst()).gradeList(gradeListFirst).build();
+            });
 
-            return studentConverter.INSTANCE.StudentToSubmitTable(student, gradeFirst, gradeSecond, applications, fileList, majorApply, majorStudyList);
+            // grade
+            CompletableFuture<Score> gradeSecondFuture = CompletableFuture.supplyAsync(() -> {
+                List<GradeList> gradeListSecond = studentGradeMapper
+                        .selectGradeWithSubject(StudentGrade.builder().userId(student.getUserId()).disabled(1).build(), 1);
+                return Score.builder().gradeTotal(student.getGradeSecond()).gradeList(gradeListSecond).build();
+            });
+
+            // majorStudy groupBy
+            CompletableFuture.allOf(majorStudyListFuture.toArray(new CompletableFuture[0])).join();
+            List<MajorSubject> majorSubjectList = majorStudyListFuture.stream()
+                    .map(CompletableFuture::join)
+                    .map(CompletableFuture::join)
+                    .filter(Objects::nonNull)
+                    .collect(Collectors.toList());
+
+            return studentConverter.INSTANCE.StudentToSubmitTable(student,
+                    gradeFirstFuture.join(), gradeSecondFuture.join(),
+                    applicationsFuture.join(), fileList,
+                    majorListFuture.join(),
+                    majorSubjectList);
 
         } catch (Exception e) {
-            // e.printStackTrace();
             throw new RuntimeException(e.getMessage());
         }
     }
 
+    /**
+     * 搜索学生
+     * GET /student/search
+     * @param key 关键词
+     * @param valid 用户是否有效
+     * @return 学生列表
+     */
     @Override
     public List<UserProfileVO> searchStudent(String key, Integer valid) {
         try {
@@ -159,18 +200,34 @@ public class StudentServiceImpl implements StudentService {
                     query.setName(key);
             }
 
-            return userMapper
-                    .searchStudent(query, valid)
-                    .stream()
-                    .map(u -> userConverter.INSTANCE.UserToUserProfileVO(u))
-                    .filter(Objects::nonNull)
+            ArrayList<CompletableFuture<UserProfileVO>> userListFuture = new ArrayList<>();
+            List<User> userList = userMapper.searchStudent(query, valid);
+
+            for(User u: userList){
+                CompletableFuture<UserProfileVO> userCompletableFuture = CompletableFuture.supplyAsync(()->
+                        userConverter.INSTANCE.UserToUserProfileVO(u)
+                ).thenApply(user->user);
+
+                userListFuture.add(userCompletableFuture);
+            }
+
+            CompletableFuture.allOf(userListFuture.toArray(new CompletableFuture[0])).join();
+
+            return userListFuture.stream()
+                    .map(CompletableFuture::join)
                     .toList();
+
         } catch (Exception e) {
-//             e.printStackTrace();
             throw new RuntimeException(e);
         }
     }
 
+    /**
+     * 学生提交/修改报名表单
+     * POST /student
+     * PUT /student
+     * @param submitDTO 提交信息
+     */
     @Override
     public void studentSubmit(StudentSubmitDTO submitDTO) {
         DeadlineEnum type = DeadlineEnum.INITIAL_SUBMISSION;
@@ -193,11 +250,15 @@ public class StudentServiceImpl implements StudentService {
         } catch (DeadlineExceedException deadlineExceedException) {
             throw new DeadlineExceedException(type, 403);
         } catch (Exception e) {
-//            e.printStackTrace();
             throw new RuntimeException(e.getMessage());
         }
     }
 
+    /**
+     * 学生/教师提交成绩信息
+     * /student/grade
+     * @param studentGrade 学生成绩
+     */
     @Override
     public void studentGradeSubmit(StudentGradeSubmitDTO studentGrade) {
         Integer role = User.getAuth().getRole();
@@ -215,13 +276,21 @@ public class StudentServiceImpl implements StudentService {
         try {
             verifyDeadline(type);
 
+            studentGradeMapper.deleteStudentGradeByRole(student.getUserId(), role == 1 ? 0 : 1);
+
             studentGrade
                     .getGrades()
                     .forEach(g ->
-                            studentGradeMapper.insertStudentGrade(
-                                    StudentGrade
-                                            .builder().grade(g.getGrade()).sid(g.getSubjectID())
-                                            .disabled(1).userId(studentID).build()
+                            CompletableFuture.runAsync(()-> {
+                                        if(!subjectMapper.selectSubject(Subject.builder().id(g.getSubjectID()).build(),
+                                                FieldsGenerator.generateFields(Subject.class)).isEmpty()) {
+                                            studentGradeMapper.insertStudentGrade(
+                                                    StudentGrade
+                                                            .builder().grade(g.getGrade()).sid(g.getSubjectID())
+                                                            .disabled(1).userId(studentID).build()
+                                            );
+                                        }
+                                    }
                             )
                     );
 
@@ -234,6 +303,7 @@ public class StudentServiceImpl implements StudentService {
                 student.setGradeFirst(totalGrade);
             else
                 student.setGradeSecond(totalGrade);
+
             studentMapper.updateStudent(student, Student.builder().userId(studentID).build());
 
         } catch (DeadlineNotFoundException deadlineNotFoundException) {
@@ -241,11 +311,15 @@ public class StudentServiceImpl implements StudentService {
         } catch (DeadlineExceedException deadlineExceedException) {
             throw new DeadlineExceedException(type, role == 1 ? 4031 : 4032);
         } catch (Exception e) {
-//            e.printStackTrace();
             throw new RuntimeException(e.getMessage());
         }
     }
 
+    /**
+     * 学生/教师修改成绩信息
+     * PUT /student/grade
+     * @param studentGrade 学生成绩
+     */
     @Override
     public void studentGradeModify(StudentGradeModifyDTO studentGrade) {
         Integer role = User.getAuth().getRole();
@@ -265,9 +339,12 @@ public class StudentServiceImpl implements StudentService {
 
             studentGrade
                     .getGrades()
-                    .forEach(g -> studentGradeMapper.updateStudentGrade(
-                                    StudentGrade.builder().grade(g.getGrade()).build(),
-                                    StudentGrade.builder().id(g.getGradeID()).build()
+                    .forEach(g ->
+                            CompletableFuture.runAsync(()->
+                                studentGradeMapper.updateStudentGrade(
+                                        StudentGrade.builder().grade(g.getGrade()).build(),
+                                        StudentGrade.builder().id(g.getGradeID()).build()
+                                )
                             )
                     );
 
@@ -287,11 +364,15 @@ public class StudentServiceImpl implements StudentService {
         } catch (DeadlineExceedException deadlineExceedException) {
             throw new DeadlineExceedException(type, role == 1 ? 4031 : 4032);
         } catch (Exception e) {
-//            e.printStackTrace();
             throw new RuntimeException(e.getMessage());
         }
     }
 
+    /**
+     * 学生提交志愿信息
+     * POST /student/apply
+     * @param studentApplication 学生志愿信息
+     */
     @Override
     public void studentApplicationSubmit(StudentApplicationSubmitDTO studentApplication) {
         DeadlineEnum type = DeadlineEnum.SECOND_SUBMISSION;
@@ -309,12 +390,12 @@ public class StudentServiceImpl implements StudentService {
                 return;
 
             List<Integer> applications = studentApplication.getApplication();
-            for (int i = 0; i < applications.size(); i++)
-                studentApplyMapper.insertStudentApply(
-                        StudentApply.builder().tid(applications.get(i)).level(i+1).userId(uid).disabled(1).build()
-                );
+            for (int i = 0; i < applications.size(); i++) {
+                StudentApply studentApply = StudentApply.builder().tid(applications.get(i)).level(i + 1).userId(uid).disabled(1).build();
+                CompletableFuture.runAsync(()-> studentApplyMapper.insertStudentApply(studentApply));
+            }
 
-            student.setMajorStudy(studentApplication.getApplication().toString());
+            student.setMajorStudy(studentApplication.getMajorStudy().toString());
             student.setReassign(studentApplication.getReassign());
 
             studentMapper.updateStudent(student, Student.builder().userId(uid).build());
@@ -324,10 +405,16 @@ public class StudentServiceImpl implements StudentService {
         } catch (DeadlineExceedException deadlineExceedException) {
             throw new DeadlineExceedException(type, 403);
         } catch (Exception e) {
-//            e.printStackTrace();
             throw new RuntimeException(e.getMessage());
         }
     }
 
-
+    @Async
+    public CompletableFuture<MajorSubject> asyncGetMajorSubject(Integer id){
+        List<Major> majors = majorMapper.selectMajor(Major.builder().id(id).build(),
+                FieldsGenerator.generateFields(Major.class));
+        return (Objects.requireNonNull(majors.isEmpty() ? null
+                : CompletableFuture.completedFuture(studentConverter.INSTANCE.majorToMajorSubject(majors.getFirst()))))
+                .thenApply(v->v);
+    }
 }

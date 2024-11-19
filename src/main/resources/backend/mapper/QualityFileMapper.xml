@@ -66,4 +66,9 @@
         </where>
     </update>
 
+    <delete id="deleteQualityFile">
+        delete from QualityFile
+        where id = #{id}
+    </delete>
+
 </mapper>

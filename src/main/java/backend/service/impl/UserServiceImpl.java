@@ -2,10 +2,11 @@ package backend.service.impl;
 
 import java.util.List;
 import java.util.Map;
+import java.util.concurrent.CompletableFuture;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
-import backend.config.GlobalConfig;
+import backend.util.GlobalConfig;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
@@ -49,10 +50,10 @@ public class UserServiceImpl implements UserService {
     private TeacherMapper teacherMapper;
 
     /**
-     * 用户注册
-     *
-     * @param userLoginDTO 用户信息
-     * @return token
+     * 处理登录请求
+     * POST /unauthorized/user/login
+     * @param userLoginDTO 登录信息
+     * @return 登录结果
      */
     @Override
     public UserLoginVO login(UserLoginDTO userLoginDTO) {
@@ -87,7 +88,7 @@ public class UserServiceImpl implements UserService {
 
     /**
      * 获取用户信息
-     *
+     * GET /user/profile
      * @return 用户信息
      */
     @Override
@@ -97,7 +98,7 @@ public class UserServiceImpl implements UserService {
 
     /**
      * 刷新token
-     *
+     * GET /user/refresh
      * @return token
      */
     @Override
@@ -106,9 +107,9 @@ public class UserServiceImpl implements UserService {
     }
 
     /**
-     * 用户注册
-     *
-     * @param userRegisterDTO 用户信息
+     * 处理注册请求
+     * POST /unauthorized/user/register
+     * @param userRegisterDTO 注册信息
      * @return token
      */
     @Override
@@ -121,9 +122,11 @@ public class UserServiceImpl implements UserService {
             if (!userList.isEmpty()) throw new DuplicateUserException();
 
             userMapper.insertUser(user);
+
             if (user.getRole() == 1)
                 studentMapper.insertStudent(Student.builder().userId(user.getId()).valid(-1).disabled(1).build());
-            else teacherMapper.insertTeacher(backend.model.entity.Teacher.builder().userId(user.getId()).build());
+            else
+                teacherMapper.insertTeacher(backend.model.entity.Teacher.builder().userId(user.getId()).build());
         } catch (DuplicateUserException ex) {
             throw new DuplicateUserException();
         } catch (Exception e) {
@@ -136,7 +139,7 @@ public class UserServiceImpl implements UserService {
 
     /**
      * 更新用户信息
-     *
+     * PUT /user/profile
      * @param userProfileUpdateDTO 用户信息
      * @return 用户信息
      */
@@ -146,29 +149,54 @@ public class UserServiceImpl implements UserService {
         String username = userProfileUpdateDTO.getUsername();
         String email = userProfileUpdateDTO.getEmail();
         try {
-            if (!username.equals(User.getAuth().getUsername())) {
-                List<User> userList = userMapper.selectUser(User.builder().username(userProfileUpdateDTO.getUsername()).build(), Map.of("username", true));
+            User authUser = User.getAuth();
 
-                if (!userList.isEmpty()) throw new DuplicateUserException();
-            } else {
-                userProfileUpdateDTO.setUsername(null);
-            }
+            CompletableFuture<Void> usernameFuture = CompletableFuture.supplyAsync(() -> {
+                if (!username.equals(authUser.getUsername())) {
+                    List<User> userList = userMapper.selectUser(
+                            User.builder().username(userProfileUpdateDTO.getUsername()).build(),
+                            Map.of("username", true));
 
-            if (!email.equals(User.getAuth().getEmail())) {
-                List<User> userList = userMapper.selectUser(User.builder().email(email).build(), Map.of("email", true));
+                    if (!userList.isEmpty())
+                        throw new DuplicateUserException();
 
-                if (!userList.isEmpty()) throw new DuplicateUserEmailException();
-            } else {
-                userProfileUpdateDTO.setEmail(null);
-            }
-            if (userProfileUpdateDTO.getAvatar() != null)
-                userProfileUpdateDTO.setAvatar(FileManager.saveBase64Image(userProfileUpdateDTO.getAvatar()));
-            else
-                userProfileUpdateDTO.setAvatar(null);
+                } else {
+                    userProfileUpdateDTO.setUsername(null);
+                }
+                return userProfileUpdateDTO;
+            }).thenAccept(dto -> userProfileUpdateDTO.setUsername(dto.getUsername()));
 
+            CompletableFuture<Void> userEmailFuture = CompletableFuture.supplyAsync(() -> {
+                if (!email.equals(authUser.getEmail())) {
+                    List<User> userList = userMapper.selectUser(
+                            User.builder().email(email).build(),
+                            Map.of("email", true));
+
+                    if (!userList.isEmpty())
+                        throw new DuplicateUserEmailException();
+
+                } else {
+                    userProfileUpdateDTO.setEmail(null);
+                }
+                return userProfileUpdateDTO;
+            }).thenAccept(dto -> userProfileUpdateDTO.setUsername(dto.getUsername()));
+
+            CompletableFuture<Void> avatarFuture = CompletableFuture.supplyAsync(() -> {
+                if (userProfileUpdateDTO.getAvatar() != null)
+                    userProfileUpdateDTO.setAvatar(
+                            FileManager.saveBase64Image(userProfileUpdateDTO.getAvatar(), authUser)
+                    );
+                else
+                    userProfileUpdateDTO.setAvatar(null);
+
+                return userProfileUpdateDTO;
+            }).thenAccept(dto -> userProfileUpdateDTO.setAvatar(dto.getAvatar()));
+
+            CompletableFuture.allOf(usernameFuture, userEmailFuture, avatarFuture).join();
             User user = UserConverter.INSTANCE.UserProfileUpdateDTOToUser(userProfileUpdateDTO);
 
             userMapper.updateUser(user, User.getAuth());
+
         } catch (DuplicateUserException duplicateUserException) {
             throw new DuplicateUserException();
         } catch (DuplicateUserEmailException duplicateUserEmailException) {

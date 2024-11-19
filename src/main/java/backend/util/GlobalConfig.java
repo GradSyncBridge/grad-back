@@ -1,4 +1,4 @@
-package backend.config;
+package backend.util;
 
 public class GlobalConfig {
 

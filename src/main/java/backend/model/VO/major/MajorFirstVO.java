@@ -5,10 +5,12 @@ import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
+import java.io.Serializable;
+
 @Data
 @AllArgsConstructor
 @NoArgsConstructor
-public class MajorFirstVO {
+public class MajorFirstVO implements Serializable {
     private Integer majorID;
 
     private String name;
@@ -28,4 +30,6 @@ public class MajorFirstVO {
     private Integer year;
 
     private Integer department;
+
+    private Integer reassign;
 }

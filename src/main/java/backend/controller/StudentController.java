@@ -12,6 +12,17 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 
+/**
+ * StudentController
+ *
+ * @function getStudentSubmitTable 获取学生提交表
+ * @function searchStudent 搜索学生
+ * @function submitStudent 学生提交报名表单
+ * @function modifyStudent 学生修改报名表单
+ * @function submitStudentGrade 学生/教师提交成绩信息
+ * @function modifyStudentGrade 学生/教师修改成绩信息
+ *
+ */
 @RestController
 @RequestMapping(value = "/student")
 public class StudentController {
@@ -19,12 +30,29 @@ public class StudentController {
     @Autowired
     private StudentService studentService;
 
+    /**
+     * 获取学生提交信息
+     * GET /student
+     * @param targetUid 目标用户ID
+     * @return 学生提交表
+     */
     @GetMapping
-    public ResponseEntity<ResultEntity<Object>> getStudentSubmitTable(@RequestParam(value = "targetUid", defaultValue = "-1") Integer targetUid) {
-        return ResultEntity.success(HttpStatus.OK.value(), "Get Student's submission table successfully", studentService.getStudentSubmitTable(targetUid));
+    public ResponseEntity<ResultEntity<Object>> getStudentSubmitTable(
+            @RequestParam(value = "targetUid", defaultValue = "-1") Integer targetUid
+    ) {
+        return ResultEntity.success(
+                HttpStatus.OK.value(),
+                "Get Student's submission table successfully",
+                studentService.getStudentSubmitTable(targetUid));
     }
 
-    // New Interfaces
+    /**
+     * 搜索学生
+     * GET /student/search
+     * @param key 关键词
+     * @param valid 用户是否有效
+     * @return 学生列表
+     */
     @GetMapping(value = "/search")
     public ResponseEntity<ResultEntity<Object>> searchStudent(
             @RequestParam(value = "key", required = false) String key,
@@ -37,8 +65,16 @@ public class StudentController {
         );
     }
 
+    /**
+     * 学生提交报名表单
+     * Post /student
+     * @param submit 提交信息
+     * @return 提交结果
+     */
     @PostMapping
-    public ResponseEntity<ResultEntity<Object>> submitStudent(@RequestBody @Validated StudentSubmitDTO submit) {
+    public ResponseEntity<ResultEntity<Object>> submitStudent(
+            @RequestBody @Validated StudentSubmitDTO submit)
+    {
         studentService.studentSubmit(submit);
 
         return ResultEntity.success(
@@ -48,8 +84,16 @@ public class StudentController {
         );
     }
 
+    /**
+     * 学生修改报名表单
+     * PUT /student
+     * @param submit 提交信息
+     * @return 提交结果
+     */
     @PutMapping
-    public ResponseEntity<ResultEntity<Object>> modifyStudent(@RequestBody @Validated StudentSubmitDTO submit) {
+    public ResponseEntity<ResultEntity<Object>> modifyStudent(
+            @RequestBody @Validated StudentSubmitDTO submit)
+    {
         studentService.studentSubmit(submit);
 
         return ResultEntity.success(
@@ -59,8 +103,16 @@ public class StudentController {
         );
     }
 
+    /**
+     * 学生/教师提交成绩信息
+     * /student/grade
+     * @param studentGrade 学生成绩
+     * @return 提交结果
+     */
     @PostMapping(value = "/grade")
-    public ResponseEntity<ResultEntity<Object>> submitStudentGrade(@RequestBody StudentGradeSubmitDTO studentGrade) {
+    public ResponseEntity<ResultEntity<Object>> submitStudentGrade(
+            @RequestBody StudentGradeSubmitDTO studentGrade)
+    {
         studentService.studentGradeSubmit(studentGrade);
 
         return ResultEntity.success(
@@ -70,8 +122,16 @@ public class StudentController {
         );
     }
 
+    /**
+     * 学生/教师修改成绩信息
+     * PUT /student/grade
+     * @param studentGrade 学生成绩
+     * @return 提交结果
+     */
     @PutMapping(value = "/grade")
-    public ResponseEntity<ResultEntity<Object>> modifyStudentGrade(@RequestBody StudentGradeModifyDTO studentGrade) {
+    public ResponseEntity<ResultEntity<Object>> modifyStudentGrade(
+            @RequestBody StudentGradeModifyDTO studentGrade)
+    {
         studentService.studentGradeModify(studentGrade);
 
         return ResultEntity.success(
@@ -81,7 +141,12 @@ public class StudentController {
         );
     }
 
-
+    /**
+     * 学生提交志愿信息
+     * POST /student/apply
+     * @param studentApplication 学生志愿信息
+     * @return 提交结果
+     */
     @PostMapping(value = "/apply")
     public ResponseEntity<ResultEntity<Object>> submitStudentApplication(
             @RequestBody StudentApplicationSubmitDTO studentApplication

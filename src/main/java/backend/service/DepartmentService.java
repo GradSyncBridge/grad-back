@@ -9,10 +9,16 @@ public interface DepartmentService {
 
     /**
      * 获取所有部门
-     * 
+     *
      * @return 所有部门
      */
     List<DepartmentVO> getDepartment();
 
+    /**
+     * 获取学院详情
+     * GET /unauthorized/department/detail
+     * @param departmentID 学院ID
+     * @return 学院详情
+     */
     DepartmentDetailVO getDepartmentDetail(Integer departmentID);
 }

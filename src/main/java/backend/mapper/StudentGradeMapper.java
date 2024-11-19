@@ -36,4 +36,12 @@ public interface StudentGradeMapper {
      */
     void updateStudentGrade(StudentGrade studentGradeUpdate, StudentGrade studentGradeQuery);
 
+
+    /**
+     * 删除学生成绩
+     *
+     * @param studentId 学生 userId
+     * @param type 0: 删除初试成绩, 1: 删除复试成绩
+     * */
+    void deleteStudentGradeByRole(Integer studentId, Integer type);
 }

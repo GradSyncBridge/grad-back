@@ -12,7 +12,8 @@ import java.time.LocalDateTime;
  *
  * @field id 主键 int
  * @field time 截止日期 DateTime
- * @field type 截止日期类型 int (0 — 提交个人材料，1 — 第一轮导师选择学生，2 — 第二轮调剂，3 — 录取结束)
+ * @field type 截止日期类型 int (0: 提交初试材料截止；1: 提交复试材料截止；3: 录取结束)
+ * @field name 截止日期名称
  */
 
 @Data
@@ -25,7 +26,7 @@ public class Deadline {
 
     private LocalDateTime time;
 
-    // 0: 提交初试材料截止；1: 提交复试材料截止；2: 第一轮录取结束；3: 第二轮录取结束；4: 第三轮录取结束
+    // 0: 提交初试材料截止；1: 提交复试材料截止；3: 录取结束
     private Integer type;
 
     private String name;

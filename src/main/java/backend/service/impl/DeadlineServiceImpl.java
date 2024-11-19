@@ -9,7 +9,9 @@ import backend.util.FieldsGenerator;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import java.util.ArrayList;
 import java.util.List;
+import java.util.concurrent.CompletableFuture;
 
 @Service
 public class DeadlineServiceImpl implements DeadlineService {
@@ -19,12 +21,27 @@ public class DeadlineServiceImpl implements DeadlineService {
     @Autowired
     private DeadlineConverter deadlineConverter;
 
+    /**
+     * 获取所有截止日期
+     * GET /deadline
+     * @return 截止日期数组
+     */
     @Override
     public List<DeadlineVO> getDeadline() {
-        return deadlineMapper
-                .selectDeadline(Deadline.builder().build(), FieldsGenerator.generateFields(Deadline.class))
-                .stream()
-                .map(d -> deadlineConverter.INSTANCE.DeadlineToDeadlineVO(d, d.getTime().toString().split("T")[0]))
+        List<Deadline> deadlineList = deadlineMapper
+                .selectDeadline(Deadline.builder().build(), FieldsGenerator.generateFields(Deadline.class));
+
+        List<CompletableFuture<DeadlineVO>> deadlineVOListFuture = new ArrayList<>();
+        for(Deadline d: deadlineList){
+            CompletableFuture<DeadlineVO> deadlineVOCompletableFuture =
+                    CompletableFuture.supplyAsync(()->
+                                    deadlineConverter.INSTANCE.DeadlineToDeadlineVO(d, d.getTime().toString().split("T")[0])
+                    );
+            deadlineVOListFuture.add(deadlineVOCompletableFuture);
+        }
+
+        return deadlineVOListFuture.stream()
+                .map(CompletableFuture::join)
                 .toList();
     }
 }

@@ -86,4 +86,18 @@
         </where>
     </update>
 
+    <delete id="deleteStudentGradeByRole">
+        delete
+            from StudentGrade
+        where
+            user_id = #{studentId}
+            and sid in (
+                select id
+                    from Subject
+                where
+                    <if test="type == 1"> type = 2 </if>
+                    <if test="type == 0"> type != 2 </if>
+            )
+    </delete>
+
 </mapper>
