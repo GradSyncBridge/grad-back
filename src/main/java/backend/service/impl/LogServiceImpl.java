@@ -1,7 +1,14 @@
 package backend.service.impl;
 
+import java.util.List;
+import java.util.Map;
 import java.util.logging.Logger;
 
+import backend.exception.model.user.UserRoleDeniedException;
+import backend.model.VO.log.LogVO;
+import backend.model.entity.Teacher;
+import backend.model.entity.User;
+import backend.util.FieldsGenerator;
 import org.aspectj.lang.ProceedingJoinPoint;
 import org.aspectj.lang.annotation.Around;
 import org.aspectj.lang.annotation.Aspect;
@@ -26,31 +33,35 @@ public class LogServiceImpl implements LogService {
     @Autowired
     private LogConverter logConverter;
 
-//    @Override
-//    public List<LogVO> getLog() {
-//        User user = User.getAuth();
-//        Teacher teacher = user.getTeacher();
-//
-//        List<String> fields = List.of("id", "userId", "endpoint", "operation", "created");
-//        Map<String, Boolean> scope = FieldsGenerator.generateFields(Log.class, fields);
-//        try{
-//            if (teacher == null || teacher.getIdentity() != 3)
-//                throw new UserRoleDeniedException();
-//
-//            List<Log> logs = logMapper.selectLog(Log.builder().build(), scope);
-//
-//            return logConverter.LogListToLogVOList(logs);
-//        }catch (UserRoleDeniedException userRoleDeniedException){
-//            throw new UserRoleDeniedException(user.getRole(), 403, teacher == null ? null : teacher.getIdentity());
-//        }
-//        catch (Exception e){
-//            throw new RuntimeException(e.getMessage());
-//        }
-//    }
+    @Override
+    public List<LogVO> getLog() {
+        User user = User.getAuth();
+        Teacher teacher = user.getTeacher();
 
+        List<String> fields = List.of("id", "userId", "endpoint", "operation", "created");
+        Map<String, Boolean> scope = FieldsGenerator.generateFields(Log.class, fields);
+        try{
+            if (teacher == null || teacher.getIdentity() != 3)
+                throw new UserRoleDeniedException();
+
+            List<Log> logs = logMapper.selectLog(Log.builder().build(), scope);
+
+            return logConverter.logListToLogVOList(logs);
+        }catch (UserRoleDeniedException userRoleDeniedException){
+            throw new UserRoleDeniedException(user.getRole(), 403, teacher == null ? null : teacher.getIdentity());
+        }
+        catch (Exception e){
+            throw new RuntimeException(e.getMessage());
+        }
+    }
+
+    /**
+     * 拦截getthis方法，插入日志信息
+     * @param joinPoint 拦截方法 backend.model.LogDTO.getthis()方法
+     * @return getthis方法返回内容
+     * */
     @Around("execution(* backend.model.DTO.LogDTO.getThis(..))")
     public void logging(ProceedingJoinPoint joinPoint) {
-        System.out.println("hello");
         try {
             LogDTO logDTO = (LogDTO) joinPoint.proceed();
             logMapper.insertLog(

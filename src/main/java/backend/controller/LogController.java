@@ -21,7 +21,7 @@ public class LogController {
     @GetMapping
     public ResponseEntity<ResultEntity<Object>> getLog(){
         return ResultEntity.success(HttpStatus.OK.value(),
-                "Get Logs information successfully", null);
+                "Get Logs information successfully", logService.getLog());
     }
 
 }
