@@ -55,31 +55,20 @@ public class LogServiceImpl implements LogService {
     }
 
     @Override
-    @Around("execution(* backend.controller..*(..))" +
-            " && !execution(* backend.controller.EmailController.*(..))" +
-            " && !execution(* backend.controller.UnAuthController.*(..))")
+    @Around("execution(* backend.model.DTO.LogDTO.getthis(..))")
     public Object logging(ProceedingJoinPoint joinPoint) {
-        User user = User.getAuth();
-        String interfaceName = joinPoint.getSignature().getDeclaringTypeName();
-        String methodName = joinPoint.getSignature().getName();
-        String argsString = Arrays.toString(joinPoint.getArgs());
         Object result = null;
 
         try {
             result = joinPoint.proceed();
-        } catch (Throwable e) {
-            throw new RuntimeException(e);
-        }finally {
             try {
-                Log log = Log.builder().userId(user.getId()).endpoint(interfaceName + "." + methodName)
-                        .operation(argsString).created(LocalDateTime.now())
-                        .build();
+                Log log = (Log) result;
                 logMapper.insertLog(log);
             }catch (Exception exception){
-                //TODO: 容易出现异常 com.mysql.cj.jdbc.exceptions.MysqlDataTruncation: Data truncation: Data too long for column 'endpoint' at row 1
-                //建议修改一下 'endpoint' 字段的大小
                 exception.printStackTrace();
             }
+        } catch (Throwable e) {
+            throw new RuntimeException(e);
         }
         return result;
     }

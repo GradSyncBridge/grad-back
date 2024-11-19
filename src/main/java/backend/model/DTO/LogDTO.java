@@ -1,6 +1,5 @@
 package backend.model.DTO;
 
-import com.fasterxml.jackson.annotation.JsonInclude;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
@@ -18,4 +17,10 @@ public class LogDTO {
     private String endpoint;
     private String operation;
     private LocalDateTime created;
+
+
+    public LogDTO getthis(){
+        return this;
+    }
+
 }
