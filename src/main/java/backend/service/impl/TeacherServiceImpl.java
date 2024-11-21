@@ -1,11 +1,13 @@
 package backend.service.impl;
 
+import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
 import java.util.concurrent.CompletableFuture;
 
+import backend.util.GlobalLogging;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Service;
@@ -132,6 +134,9 @@ public class TeacherServiceImpl implements TeacherService {
             throw new UserRoleDeniedException(1, 403);
         } catch (Exception e) {
             throw new UserNotFoundException();
+        } finally {
+            GlobalLogging.builder().userId(User.getAuth().getId()).created(LocalDateTime.now())
+                    .endpoint("GET /teacher/profile").operation("uid: " + uid);
         }
     }
 
@@ -212,6 +217,9 @@ public class TeacherServiceImpl implements TeacherService {
             throw new DuplicateUserEmailException();
         } catch (Exception e) {
             throw new RuntimeException(e.getMessage());
+        }finally {
+            GlobalLogging.builder().userId(User.getAuth().getId()).created(LocalDateTime.now())
+                    .endpoint("PUT /teacher/profile").operation(teacherProfile.toString()).build().getThis();
         }
     }
 
@@ -260,6 +268,9 @@ public class TeacherServiceImpl implements TeacherService {
             throw new UserRoleDeniedException(role, 403);
         } catch (Exception e) {
             throw new RuntimeException(e.getMessage());
+        }finally {
+            GlobalLogging.builder().userId(user.getId()).created(LocalDateTime.now())
+                    .endpoint("GET /teacher/apply").operation("levle: " + level).build().getThis();
         }
     }
 

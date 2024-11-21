@@ -12,9 +12,11 @@ import backend.model.entity.User;
 import backend.service.SecretaryService;
 
 import backend.util.FieldsGenerator;
+import backend.util.GlobalLogging;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import java.time.LocalDateTime;
 import java.util.List;
 
 @Service
@@ -59,6 +61,9 @@ public class SecretaryServiceImpl implements SecretaryService {
             throw new UserNotFoundException(examineDTO.getStudentID(), 1);
         } catch (Exception e) {
             throw new RuntimeException(e.getMessage());
+        }finally {
+            GlobalLogging.builder().created(LocalDateTime.now()).userId(user.getId())
+                    .endpoint("POST /secretary/examine").operation(examineDTO.toString()).build().getThis();
         }
 
     }
@@ -99,6 +104,9 @@ public class SecretaryServiceImpl implements SecretaryService {
             throw new UserNotFoundException(gradeDTO.getStudentID(), 1);
         } catch (Exception e) {
             throw new RuntimeException(e.getMessage());
+        } finally {
+            GlobalLogging.builder().userId(user.getId()).created(LocalDateTime.now())
+                    .operation(gradeDTO.toString()).endpoint("PUT /secretary/grade").build().getThis();
         }
     }
 }

@@ -32,6 +32,7 @@ import backend.model.entity.*;
 import backend.service.EnrollService;
 import backend.util.FieldsGenerator;
 
+import backend.util.GlobalLogging;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -297,6 +298,9 @@ public class EnrollServiceImpl implements EnrollService {
             throw new MajorNotFoundException(confirm.getMajorID(), 4042);
         } catch (Exception e) {
             throw new RuntimeException(e.getMessage());
+        } finally {
+            GlobalLogging.builder().userId(User.getAuth().getId()).created(LocalDateTime.now())
+                    .endpoint("POST /enroll").operation(confirm.toString()).build().getThis();
         }
     }
 
@@ -369,6 +373,9 @@ public class EnrollServiceImpl implements EnrollService {
             throw new EnrollNotFoundException(enroll);
         } catch (Exception e) {
             throw new RuntimeException(e.getMessage());
+        } finally {
+            GlobalLogging.builder().userId(user.getId()).created(LocalDateTime.now())
+                    .endpoint("DELETE /enroll").operation("enroll: " + enroll).build().getThis();
         }
     }
 
@@ -436,6 +443,9 @@ public class EnrollServiceImpl implements EnrollService {
             throw new UserRoleDeniedException(user.getRole(), 4031, teacher == null ? null : teacher.getIdentity());
         } catch (Exception e) {
             throw new RuntimeException(e.getMessage());
+        } finally {
+            GlobalLogging.builder().userId(user.getId()).created(LocalDateTime.now())
+                    .endpoint("GET /enroll/list").operation("null").build().getThis();
         }
     }
 

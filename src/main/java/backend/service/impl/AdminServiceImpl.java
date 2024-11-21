@@ -20,12 +20,14 @@ import backend.model.entity.*;
 import backend.service.AdminService;
 import backend.util.FieldsGenerator;
 
+import backend.util.GlobalLogging;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDateTime;
 import java.util.Comparator;
 import java.util.List;
+import java.util.concurrent.CompletableFuture;
 
 @Service
 public class AdminServiceImpl implements AdminService {
@@ -42,9 +44,15 @@ public class AdminServiceImpl implements AdminService {
     @Autowired
     private StudentMapper studentMapper;
 
+    /**
+     * 管理员筛选拟录取学生信息
+     * PUT /admin/deadline
+     * @param deadlineDTO 截至日期修改信息
+     * */
     @Override
     public void adminModifyDeadline(AdminDeadlineDTO deadlineDTO) {
-
+        Integer userId = User.getAuth().getId();
+        LocalDateTime localDateTime = LocalDateTime.now();
         try {
             Deadline query = Deadline.builder().id(deadlineDTO.getDeadlineID()).build();
 
@@ -65,9 +73,16 @@ public class AdminServiceImpl implements AdminService {
             throw new DeadlineNotFoundException(deadlineDTO.getDeadlineID(), 1);
         } catch (Exception e) {
             throw new RuntimeException(e.getMessage());
+        }finally {
+            GlobalLogging.builder().userId(userId).created(localDateTime)
+                    .endpoint("PUT /admin/deadline").operation(deadlineDTO.toString()).build().getThis();
         }
     }
 
+    /**
+     * 管理员获取仍有剩余名额的导师
+     * GET /admin/teachers/remnant
+     * */
     @Override
     public List<TeacherProfileVO> getTeachersWithMetric() {
         try {
@@ -77,9 +92,16 @@ public class AdminServiceImpl implements AdminService {
             );
         } catch (Exception e) {
             throw new RuntimeException(e.getMessage());
+        } finally {
+            GlobalLogging.builder().userId(User.getAuth().getId()).created(LocalDateTime.now())
+                    .operation("null").endpoint("GET /admin/teachers/remnant").build().getThis();
         }
     }
 
+    /**
+     * 管理员获取所有教师信息
+     * GET /admin/teachers
+     * */
     @Override
     public List<TeacherProfileVO> getAllTeachers() {
         try {
@@ -89,9 +111,16 @@ public class AdminServiceImpl implements AdminService {
             );
         } catch (Exception e) {
             throw new RuntimeException(e.getMessage());
+        } finally {
+            GlobalLogging.builder().userId(User.getAuth().getId()).created(LocalDateTime.now())
+                    .endpoint("GET /admin/teachers").operation("null").build().getThis();
         }
     }
 
+    /**
+     * 管理员修改教师信息
+     * GET /admin/teacher
+     * */
     @Override
     public void adminModifyTeacher(AdminTeacherDTO teacherDTO) {
         try {
@@ -118,9 +147,16 @@ public class AdminServiceImpl implements AdminService {
             throw new UserNotFoundException(teacherDTO.getTeacherID(), 2);
         } catch (Exception e) {
             throw new RuntimeException(e.getMessage());
+        } finally {
+            GlobalLogging.builder().userId(User.getAuth().getId()).created(LocalDateTime.now())
+                    .endpoint("GET /admin/teacher").operation(teacherDTO.toString()).build().getThis();
         }
     }
 
+    /**
+     * 管理员获取所有无学生选择的教师
+     * GET /admin/teachers/empty
+     * */
     @Override
     public List<TeacherProfileVO> getTeachersWithoutEnrolls() {
         try {
@@ -129,9 +165,17 @@ public class AdminServiceImpl implements AdminService {
             );
         } catch (Exception e) {
             throw new RuntimeException(e.getMessage());
+        } finally {
+            GlobalLogging.builder().userId(User.getAuth().getId()).created(LocalDateTime.now())
+                    .endpoint("GET /admin/teachers/empty").operation("null").build().getThis();
         }
     }
 
+    /**
+     * 管理员按照比例筛选进入复试人员
+     * POST /admin/filter-enroll
+     * @param ratio 筛选比例
+     * */
     @Override
     public void adminFilterEnrolls(Double ratio) {
         DeadlineEnum type = DeadlineEnum.INITIAL_SUBMISSION;
@@ -175,9 +219,17 @@ public class AdminServiceImpl implements AdminService {
 
         } catch (DeadlineUnreachedException deadlineUnreachedException) {
             throw new DeadlineUnreachedException(type, 4031);
+        } finally {
+            GlobalLogging.builder().userId(User.getAuth().getId()).created(LocalDateTime.now())
+                    .endpoint("POST /admin/filter-enroll").operation("ratio: " + ratio).build().getThis();
         }
     }
 
+    /**
+     * 管理员筛选拟录取学生信息
+     * POST /admin/possible-enroll
+     *
+     * */
     @Override
     public void adminFilterPossibleEnrolls() {
         DeadlineEnum type = DeadlineEnum.SECOND_SUBMISSION;
@@ -222,9 +274,17 @@ public class AdminServiceImpl implements AdminService {
             throw new DeadlineUnreachedException(type, 4031);
         } catch (Exception e) {
             throw new RuntimeException(e.getMessage());
+        } finally {
+            GlobalLogging.builder().userId(User.getAuth().getId()).created(LocalDateTime.now())
+                    .endpoint("POST /admin/possible-enroll").operation("null").build().getThis();
         }
     }
 
+    /**
+     * 管理员筛选不接受调剂/未被录入的学生
+     * POST /admin/final-enroll
+     *
+     * */
     @Override
     public void adminFilterFinalEnrolls() {
         try {
@@ -237,6 +297,9 @@ public class AdminServiceImpl implements AdminService {
 
         } catch (Exception e) {
             throw new RuntimeException(e.getMessage());
+        } finally {
+            GlobalLogging.builder().userId(User.getAuth().getId()).created(LocalDateTime.now())
+                    .operation("null").endpoint("POST /admin/final-enroll").build().getThis();
         }
     }
 }
