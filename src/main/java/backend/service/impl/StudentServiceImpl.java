@@ -96,7 +96,7 @@ public class StudentServiceImpl implements StudentService {
         Student student;
 
         if (user.getRole() == 1)
-            student = User.getAuth().getStudent();
+            student = user.getStudent();
         else {
             List<Student> students = studentMapper.selectStudent(
                     Student.builder().userId(targetUid).build(),
@@ -261,13 +261,14 @@ public class StudentServiceImpl implements StudentService {
      */
     @Override
     public void studentGradeSubmit(StudentGradeSubmitDTO studentGrade) {
-        Integer role = User.getAuth().getRole();
+        User user = User.getAuth();
+        Integer role = user.getRole();
 
         DeadlineEnum type = role == 1 ? DeadlineEnum.INITIAL_SUBMISSION : DeadlineEnum.SECOND_SUBMISSION;
-        Integer studentID = role == 1 ? User.getAuth().getId() : studentGrade.getStudentID();
+        Integer studentID = role == 1 ? user.getId() : studentGrade.getStudentID();
 
         Student student = role == 1 ?
-                User.getAuth().getStudent() :
+                user.getStudent() :
                 studentMapper.selectStudent(
                         Student.builder().userId(studentID).build(),
                         FieldsGenerator.generateFields(Student.class)
@@ -322,13 +323,14 @@ public class StudentServiceImpl implements StudentService {
      */
     @Override
     public void studentGradeModify(StudentGradeModifyDTO studentGrade) {
-        Integer role = User.getAuth().getRole();
+        User user = User.getAuth();
+        Integer role = user.getRole();
 
         DeadlineEnum type = role == 1 ? DeadlineEnum.INITIAL_SUBMISSION : DeadlineEnum.SECOND_SUBMISSION;
-        Integer studentID = role == 1 ? User.getAuth().getId() : studentGrade.getStudentID();
+        Integer studentID = role == 1 ? user.getId() : studentGrade.getStudentID();
 
         Student student = role == 1 ?
-                User.getAuth().getStudent() :
+                user.getStudent() :
                 studentMapper.selectStudent(
                         Student.builder().userId(studentID).build(),
                         FieldsGenerator.generateFields(Student.class)

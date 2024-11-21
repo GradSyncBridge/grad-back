@@ -135,6 +135,7 @@ public class AdminServiceImpl implements AdminService {
     @Override
     public void adminFilterEnrolls(Double ratio) {
         DeadlineEnum type = DeadlineEnum.INITIAL_SUBMISSION;
+        Integer dept = User.getAuth().getTeacher().getDepartment();
 
         try {
             Deadline targetDeadline = deadlineMapper.selectDeadline(
@@ -146,7 +147,7 @@ public class AdminServiceImpl implements AdminService {
                 throw new DeadlineUnreachedException();
 
             Integer total = majorMapper.selectMajor(
-                            Major.builder().pid(0).department(User.getAuth().getTeacher().getDepartment()).build(),
+                            Major.builder().pid(0).department(dept).build(),
                             FieldsGenerator.generateFields(Major.class)
                     )
                     .stream()
@@ -157,7 +158,7 @@ public class AdminServiceImpl implements AdminService {
 
             List<Student> students = studentMapper
                     .selectStudent(
-                            Student.builder().department(User.getAuth().getTeacher().getDepartment()).valid(0).build(),
+                            Student.builder().department(dept).valid(0).build(),
                             FieldsGenerator.generateFields(Student.class)
                     )
                     .stream()
