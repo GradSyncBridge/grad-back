@@ -12,8 +12,8 @@ import java.util.List;
 @Mapper(componentModel = "spring")
 public interface LogConverter {
     LogConverter INSTANCE = Mappers.getMapper(LogConverter.class);
-    @Mapping(source = "id", target = "id")
-    @Mapping(source = "userId", target = "userId")
+
+    @Mapping(source = "userId", target = "uid")
     @Mapping(source = "endpoint", target = "endpoint")
     @Mapping(source = "operation", target = "operation")
     @Mapping(source = "created", target = "created")

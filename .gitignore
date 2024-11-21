@@ -34,7 +34,7 @@ build/
 
 
 ### Log files ###
-log/
+/log
 
 ### Static resources ###
 src/main/resources/static/
