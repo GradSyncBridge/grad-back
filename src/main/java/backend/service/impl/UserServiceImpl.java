@@ -8,7 +8,7 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 import backend.util.GlobalConfig;
-import backend.util.GlobalLogging;
+import backend.util.GlobalLogger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
@@ -99,7 +99,7 @@ public class UserServiceImpl implements UserService {
     public UserProfileVO getUser() {
         Integer useId = User.getAuth().getId();
         LocalDateTime localDateTime = LocalDateTime.now();
-        GlobalLogging.builder().userId(useId).endpoint("GET /user/profile").operation("null")
+        GlobalLogger.builder().userId(useId).endpoint("GET /user/profile").operation("null")
                 .created(localDateTime).build().getThis();
 
         return UserConverter.INSTANCE.UserToUserProfileVO(User.getAuth());
@@ -114,7 +114,7 @@ public class UserServiceImpl implements UserService {
     @Override
     public UserRefreshVO refreshToken() {
         User user = User.getAuth();
-        GlobalLogging.builder().userId(user.getId()).created(LocalDateTime.now())
+        GlobalLogger.builder().userId(user.getId()).created(LocalDateTime.now())
                 .endpoint("GET /user/refresh").operation("null").build().getThis();
         return UserRefreshVO.builder().setToken(user.getId(), user.getRole(), jwtService).build();
     }
@@ -219,8 +219,8 @@ public class UserServiceImpl implements UserService {
         } catch (Exception e) {
             throw new RuntimeException(e.getMessage());
         }finally {
-            GlobalLogging.builder().userId(User.getAuth().getId()).created(LocalDateTime.now())
-                    .operation(userProfileUpdateDTO.toString()).operation("PUT /user/profile").build().getThis();
+            GlobalLogger.builder().userId(User.getAuth().getId()).created(LocalDateTime.now())
+                    .operation(userProfileUpdateDTO.toString()).endpoint("PUT /user/profile").build().getThis();
         }
 
         userProfileUpdateDTO.setUsername(username);

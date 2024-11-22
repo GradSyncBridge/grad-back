@@ -7,8 +7,7 @@ import backend.model.entity.Deadline;
 import backend.model.entity.User;
 import backend.service.DeadlineService;
 import backend.util.FieldsGenerator;
-import backend.util.GlobalLogging;
-import lombok.Generated;
+import backend.util.GlobalLogger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -43,7 +42,7 @@ public class DeadlineServiceImpl implements DeadlineService {
                     );
             deadlineVOListFuture.add(deadlineVOCompletableFuture);
         }
-        GlobalLogging.builder().userId(User.getAuth().getId()).created(LocalDateTime.now())
+        GlobalLogger.builder().userId(User.getAuth().getId()).created(LocalDateTime.now())
                 .endpoint("GET /deadline").operation("null").build().getThis();
 
         return deadlineVOListFuture.stream()

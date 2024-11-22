@@ -20,14 +20,13 @@ import backend.model.entity.*;
 import backend.service.AdminService;
 import backend.util.FieldsGenerator;
 
-import backend.util.GlobalLogging;
+import backend.util.GlobalLogger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDateTime;
 import java.util.Comparator;
 import java.util.List;
-import java.util.concurrent.CompletableFuture;
 
 @Service
 public class AdminServiceImpl implements AdminService {
@@ -74,7 +73,7 @@ public class AdminServiceImpl implements AdminService {
         } catch (Exception e) {
             throw new RuntimeException(e.getMessage());
         }finally {
-            GlobalLogging.builder().userId(userId).created(localDateTime)
+            GlobalLogger.builder().userId(userId).created(localDateTime)
                     .endpoint("PUT /admin/deadline").operation(deadlineDTO.toString()).build().getThis();
         }
     }
@@ -93,7 +92,7 @@ public class AdminServiceImpl implements AdminService {
         } catch (Exception e) {
             throw new RuntimeException(e.getMessage());
         } finally {
-            GlobalLogging.builder().userId(User.getAuth().getId()).created(LocalDateTime.now())
+            GlobalLogger.builder().userId(User.getAuth().getId()).created(LocalDateTime.now())
                     .operation("null").endpoint("GET /admin/teachers/remnant").build().getThis();
         }
     }
@@ -112,7 +111,7 @@ public class AdminServiceImpl implements AdminService {
         } catch (Exception e) {
             throw new RuntimeException(e.getMessage());
         } finally {
-            GlobalLogging.builder().userId(User.getAuth().getId()).created(LocalDateTime.now())
+            GlobalLogger.builder().userId(User.getAuth().getId()).created(LocalDateTime.now())
                     .endpoint("GET /admin/teachers").operation("null").build().getThis();
         }
     }
@@ -148,7 +147,7 @@ public class AdminServiceImpl implements AdminService {
         } catch (Exception e) {
             throw new RuntimeException(e.getMessage());
         } finally {
-            GlobalLogging.builder().userId(User.getAuth().getId()).created(LocalDateTime.now())
+            GlobalLogger.builder().userId(User.getAuth().getId()).created(LocalDateTime.now())
                     .endpoint("GET /admin/teacher").operation(teacherDTO.toString()).build().getThis();
         }
     }
@@ -166,7 +165,7 @@ public class AdminServiceImpl implements AdminService {
         } catch (Exception e) {
             throw new RuntimeException(e.getMessage());
         } finally {
-            GlobalLogging.builder().userId(User.getAuth().getId()).created(LocalDateTime.now())
+            GlobalLogger.builder().userId(User.getAuth().getId()).created(LocalDateTime.now())
                     .endpoint("GET /admin/teachers/empty").operation("null").build().getThis();
         }
     }
@@ -220,7 +219,7 @@ public class AdminServiceImpl implements AdminService {
         } catch (DeadlineUnreachedException deadlineUnreachedException) {
             throw new DeadlineUnreachedException(type, 4031);
         } finally {
-            GlobalLogging.builder().userId(User.getAuth().getId()).created(LocalDateTime.now())
+            GlobalLogger.builder().userId(User.getAuth().getId()).created(LocalDateTime.now())
                     .endpoint("POST /admin/filter-enroll").operation("ratio: " + ratio).build().getThis();
         }
     }
@@ -275,7 +274,7 @@ public class AdminServiceImpl implements AdminService {
         } catch (Exception e) {
             throw new RuntimeException(e.getMessage());
         } finally {
-            GlobalLogging.builder().userId(User.getAuth().getId()).created(LocalDateTime.now())
+            GlobalLogger.builder().userId(User.getAuth().getId()).created(LocalDateTime.now())
                     .endpoint("POST /admin/possible-enroll").operation("null").build().getThis();
         }
     }
@@ -298,7 +297,7 @@ public class AdminServiceImpl implements AdminService {
         } catch (Exception e) {
             throw new RuntimeException(e.getMessage());
         } finally {
-            GlobalLogging.builder().userId(User.getAuth().getId()).created(LocalDateTime.now())
+            GlobalLogger.builder().userId(User.getAuth().getId()).created(LocalDateTime.now())
                     .operation("null").endpoint("POST /admin/final-enroll").build().getThis();
         }
     }

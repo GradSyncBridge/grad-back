@@ -13,7 +13,7 @@ import org.springframework.stereotype.Component;
 @Data
 @NoArgsConstructor
 @Component
-public class GlobalLogging implements ApplicationContextAware {
+public class GlobalLogger implements ApplicationContextAware {
 
     private Integer id;
 
@@ -26,7 +26,7 @@ public class GlobalLogging implements ApplicationContextAware {
     private LocalDateTime created;
 
     private static ApplicationContext context;
-    public GlobalLogging getThis() {
+    public GlobalLogger getThis() {
         return this;
     }
 
@@ -71,14 +71,14 @@ public class GlobalLogging implements ApplicationContextAware {
             return this;
         }
 
-        public GlobalLogging build() {
-            GlobalLogging globalLogging = context.getBean(GlobalLogging.class);
-            globalLogging.setId(id);
-            globalLogging.setUserId(userId);
-            globalLogging.setEndpoint(endpoint);
-            globalLogging.setOperation(operation);
-            globalLogging.setCreated(created);
-            return globalLogging;
+        public GlobalLogger build() {
+            GlobalLogger globalLogger = context.getBean(GlobalLogger.class);
+            globalLogger.setId(id);
+            globalLogger.setUserId(userId);
+            globalLogger.setEndpoint(endpoint);
+            globalLogger.setOperation(operation);
+            globalLogger.setCreated(created);
+            return globalLogger;
         }
     }
 

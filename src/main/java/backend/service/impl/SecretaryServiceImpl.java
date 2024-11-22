@@ -12,7 +12,7 @@ import backend.model.entity.User;
 import backend.service.SecretaryService;
 
 import backend.util.FieldsGenerator;
-import backend.util.GlobalLogging;
+import backend.util.GlobalLogger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -62,7 +62,7 @@ public class SecretaryServiceImpl implements SecretaryService {
         } catch (Exception e) {
             throw new RuntimeException(e.getMessage());
         }finally {
-            GlobalLogging.builder().created(LocalDateTime.now()).userId(user.getId())
+            GlobalLogger.builder().created(LocalDateTime.now()).userId(user.getId())
                     .endpoint("POST /secretary/examine").operation(examineDTO.toString()).build().getThis();
         }
 
@@ -105,7 +105,7 @@ public class SecretaryServiceImpl implements SecretaryService {
         } catch (Exception e) {
             throw new RuntimeException(e.getMessage());
         } finally {
-            GlobalLogging.builder().userId(user.getId()).created(LocalDateTime.now())
+            GlobalLogger.builder().userId(user.getId()).created(LocalDateTime.now())
                     .operation(gradeDTO.toString()).endpoint("PUT /secretary/grade").build().getThis();
         }
     }

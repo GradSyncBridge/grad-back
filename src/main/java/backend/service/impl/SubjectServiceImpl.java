@@ -7,7 +7,7 @@ import backend.model.entity.User;
 
 import backend.service.SubjectService;
 
-import backend.util.GlobalLogging;
+import backend.util.GlobalLogger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -34,7 +34,7 @@ public class SubjectServiceImpl implements SubjectService {
         } catch (Exception e) {
             throw new RuntimeException(e.getMessage());
         } finally {
-            GlobalLogging.builder().userId(User.getAuth().getId()).created(LocalDateTime.now())
+            GlobalLogger.builder().userId(User.getAuth().getId()).created(LocalDateTime.now())
                     .endpoint("GET /subject").operation("department ID: " + department).build().getThis();
         }
 

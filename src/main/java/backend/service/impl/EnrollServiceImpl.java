@@ -32,7 +32,7 @@ import backend.model.entity.*;
 import backend.service.EnrollService;
 import backend.util.FieldsGenerator;
 
-import backend.util.GlobalLogging;
+import backend.util.GlobalLogger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -299,7 +299,7 @@ public class EnrollServiceImpl implements EnrollService {
         } catch (Exception e) {
             throw new RuntimeException(e.getMessage());
         } finally {
-            GlobalLogging.builder().userId(User.getAuth().getId()).created(LocalDateTime.now())
+            GlobalLogger.builder().userId(User.getAuth().getId()).created(LocalDateTime.now())
                     .endpoint("POST /enroll").operation(confirm.toString()).build().getThis();
         }
     }
@@ -374,7 +374,7 @@ public class EnrollServiceImpl implements EnrollService {
         } catch (Exception e) {
             throw new RuntimeException(e.getMessage());
         } finally {
-            GlobalLogging.builder().userId(user.getId()).created(LocalDateTime.now())
+            GlobalLogger.builder().userId(user.getId()).created(LocalDateTime.now())
                     .endpoint("DELETE /enroll").operation("enroll: " + enroll).build().getThis();
         }
     }
@@ -444,7 +444,7 @@ public class EnrollServiceImpl implements EnrollService {
         } catch (Exception e) {
             throw new RuntimeException(e.getMessage());
         } finally {
-            GlobalLogging.builder().userId(user.getId()).created(LocalDateTime.now())
+            GlobalLogger.builder().userId(user.getId()).created(LocalDateTime.now())
                     .endpoint("GET /enroll/list").operation("null").build().getThis();
         }
     }

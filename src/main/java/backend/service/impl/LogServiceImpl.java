@@ -9,7 +9,7 @@ import backend.model.VO.log.LogVO;
 import backend.model.entity.Teacher;
 import backend.model.entity.User;
 import backend.util.FieldsGenerator;
-import backend.util.GlobalLogging;
+import backend.util.GlobalLogger;
 import org.aspectj.lang.ProceedingJoinPoint;
 import org.aspectj.lang.annotation.Around;
 import org.aspectj.lang.annotation.Aspect;
@@ -57,18 +57,18 @@ public class LogServiceImpl implements LogService {
 
     /**
      * 拦截getthis方法，插入日志信息
-     * @param joinPoint 拦截方法 backend.model.GlobalLogging.getthis()方法
+     * @param joinPoint 拦截方法 backend.model.GlobalLogger.getthis()方法
      * @return getthis方法返回内容
      * */
-    @Around("execution(* backend.util.GlobalLogging.getThis(..))")
+    @Around("execution(* backend.util.GlobalLogger.getThis(..))")
     public void logging(ProceedingJoinPoint joinPoint) {
         try {
-            GlobalLogging globalLogging = (GlobalLogging) joinPoint.proceed();
+            GlobalLogger globalLogger = (GlobalLogger) joinPoint.proceed();
             logMapper.insertLog(
-                    Log.builder().userId(globalLogging.getUserId())
-                            .endpoint(globalLogging.getEndpoint())
-                            .operation(globalLogging.getOperation())
-                            .created(globalLogging.getCreated())
+                    Log.builder().userId(globalLogger.getUserId())
+                            .endpoint(globalLogger.getEndpoint())
+                            .operation(globalLogger.getOperation())
+                            .created(globalLogger.getCreated())
                             .build()
             );
 

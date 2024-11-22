@@ -7,7 +7,7 @@ import java.util.Map;
 import java.util.Objects;
 import java.util.concurrent.CompletableFuture;
 
-import backend.util.GlobalLogging;
+import backend.util.GlobalLogger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Service;
@@ -135,8 +135,8 @@ public class TeacherServiceImpl implements TeacherService {
         } catch (Exception e) {
             throw new UserNotFoundException();
         } finally {
-            GlobalLogging.builder().userId(User.getAuth().getId()).created(LocalDateTime.now())
-                    .endpoint("GET /teacher/profile").operation("uid: " + uid);
+            GlobalLogger.builder().userId(User.getAuth().getId()).created(LocalDateTime.now())
+                    .endpoint("GET /teacher/profile").operation("uid: " + uid).build().getThis();
         }
     }
 
@@ -218,7 +218,7 @@ public class TeacherServiceImpl implements TeacherService {
         } catch (Exception e) {
             throw new RuntimeException(e.getMessage());
         }finally {
-            GlobalLogging.builder().userId(User.getAuth().getId()).created(LocalDateTime.now())
+            GlobalLogger.builder().userId(User.getAuth().getId()).created(LocalDateTime.now())
                     .endpoint("PUT /teacher/profile").operation(teacherProfile.toString()).build().getThis();
         }
     }
@@ -269,7 +269,7 @@ public class TeacherServiceImpl implements TeacherService {
         } catch (Exception e) {
             throw new RuntimeException(e.getMessage());
         }finally {
-            GlobalLogging.builder().userId(user.getId()).created(LocalDateTime.now())
+            GlobalLogger.builder().userId(user.getId()).created(LocalDateTime.now())
                     .endpoint("GET /teacher/apply").operation("levle: " + level).build().getThis();
         }
     }
