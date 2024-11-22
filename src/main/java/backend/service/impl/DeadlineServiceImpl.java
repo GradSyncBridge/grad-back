@@ -4,14 +4,11 @@ import backend.mapper.DeadlineMapper;
 import backend.model.VO.deadline.DeadlineVO;
 import backend.model.converter.DeadlineConverter;
 import backend.model.entity.Deadline;
-import backend.model.entity.User;
 import backend.service.DeadlineService;
 import backend.util.FieldsGenerator;
-import backend.util.GlobalLogger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
-import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.CompletableFuture;
@@ -42,8 +39,6 @@ public class DeadlineServiceImpl implements DeadlineService {
                     );
             deadlineVOListFuture.add(deadlineVOCompletableFuture);
         }
-        GlobalLogger.builder().userId(User.getAuth().getId()).created(LocalDateTime.now())
-                .endpoint("GET /deadline").operation("null").build().getThis();
 
         return deadlineVOListFuture.stream()
                 .map(CompletableFuture::join)

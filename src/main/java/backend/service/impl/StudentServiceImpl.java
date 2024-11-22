@@ -24,7 +24,6 @@ import backend.exception.model.deadline.DeadlineExceedException;
 import backend.exception.model.deadline.DeadlineNotFoundException;
 
 import backend.util.FieldsGenerator;
-import backend.util.GlobalLogger;
 import backend.util.StringToList;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -176,9 +175,6 @@ public class StudentServiceImpl implements StudentService {
 
         } catch (Exception e) {
             throw new RuntimeException(e.getMessage());
-        }finally {
-            GlobalLogger.builder().userId(user.getId()).created(LocalDateTime.now())
-                    .operation("null").endpoint("GET /student").build().getThis();
         }
     }
 
@@ -223,10 +219,6 @@ public class StudentServiceImpl implements StudentService {
 
         } catch (Exception e) {
             throw new RuntimeException(e);
-        } finally {
-            GlobalLogger.builder().userId(User.getAuth().getId()).created(LocalDateTime.now())
-                    .operation("key(String):" + key + " valid(Integer):" + valid)
-                    .endpoint("GET /student/search").build().getThis();
         }
     }
 
@@ -258,11 +250,7 @@ public class StudentServiceImpl implements StudentService {
         } catch (DeadlineExceedException deadlineExceedException) {
             throw new DeadlineExceedException(type, 403);
         } catch (Exception e) {
-            e.printStackTrace();
             throw new RuntimeException(e.getMessage());
-        } finally {
-            GlobalLogger.builder().userId(User.getAuth().getId()).created(LocalDateTime.now())
-                    .operation(submitDTO.toString()).endpoint("POST /student").build().getThis();
         }
     }
 
@@ -325,9 +313,6 @@ public class StudentServiceImpl implements StudentService {
             throw new DeadlineExceedException(type, role == 1 ? 4031 : 4032);
         } catch (Exception e) {
             throw new RuntimeException(e.getMessage());
-        }finally {
-            GlobalLogger.builder().userId(user.getId()).created(LocalDateTime.now())
-                    .endpoint("POST /student/grade").operation(studentGrade.toString()).build().getThis();
         }
     }
 
@@ -382,10 +367,6 @@ public class StudentServiceImpl implements StudentService {
             throw new DeadlineExceedException(type, role == 1 ? 4031 : 4032);
         } catch (Exception e) {
             throw new RuntimeException(e.getMessage());
-        }finally {
-            GlobalLogger.builder().userId(user.getId()).created(LocalDateTime.now())
-                    .operation(studentGrade.toString()).endpoint("PUT /student/grade").build().getThis();
-
         }
     }
 
@@ -427,9 +408,6 @@ public class StudentServiceImpl implements StudentService {
             throw new DeadlineExceedException(type, 403);
         } catch (Exception e) {
             throw new RuntimeException(e.getMessage());
-        }finally {
-            GlobalLogger.builder().userId(User.getAuth().getId()).created(LocalDateTime.now())
-                    .endpoint("POST /student/apply").operation(studentApplication.toString()).build().getThis();
         }
     }
 

@@ -9,7 +9,6 @@ import backend.model.entity.User;
 import backend.service.QualityFileService;
 import backend.util.FieldsGenerator;
 import backend.util.FileManager;
-import backend.util.GlobalLogger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
@@ -41,9 +40,6 @@ public class QualityFileServiceImpl implements QualityFileService {
             return FileUploadVO.builder().fileID(qualityFile.getId()).filePath(filePath).build();
         }catch (Exception e) {
             throw new RuntimeException(e.getMessage());
-        } finally {
-            GlobalLogger.builder().userId(User.getAuth().getId()).created(LocalDateTime.now())
-                    .endpoint("POST /file").operation("null").build().getThis();
         }
     }
 
@@ -73,9 +69,6 @@ public class QualityFileServiceImpl implements QualityFileService {
             throw new FileNotFoundException(file.getFileID());
         } catch (Exception e) {
             throw new RuntimeException(e.getMessage());
-        } finally {
-            GlobalLogger.builder().userId(User.getAuth().getId()).created(LocalDateTime.now())
-                    .endpoint("DELETE /file").operation(file.toString()).build().getThis();
         }
     }
 }

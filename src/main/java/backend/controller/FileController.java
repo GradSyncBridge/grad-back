@@ -1,5 +1,6 @@
 package backend.controller;
 
+import backend.annotation.SysLog;
 import backend.model.DTO.FileDeleteDTO;
 import backend.model.entity.QualityFile;
 import backend.service.QualityFileService;
@@ -31,6 +32,7 @@ public class FileController {
      * @param file 文件
      * @return 存储路径
      */
+    @SysLog(value = "POST /file - 文件上传")
     @PostMapping
     public ResponseEntity<ResultEntity<Object>> handleFileUpload(@RequestBody MultipartFile file) {
         return ResultEntity.success(
@@ -46,6 +48,7 @@ public class FileController {
      * @param fileDelete 文件删除信息
      * @return 删除结果
      */
+    @SysLog(value = "DELETE /file - 文件删除")
     @DeleteMapping
     public ResponseEntity<ResultEntity<Object>> handleFileDelete(@RequestBody FileDeleteDTO fileDelete) {
         qualityFileService.handleFileDelete(fileDelete);

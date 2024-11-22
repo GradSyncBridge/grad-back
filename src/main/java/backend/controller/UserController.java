@@ -1,5 +1,6 @@
 package backend.controller;
 
+import backend.annotation.SysLog;
 import backend.model.DTO.UserProfileUpdateDTO;
 import backend.model.VO.user.UserProfileVO;
 import backend.model.VO.user.UserRefreshVO;
@@ -23,6 +24,7 @@ public class UserController {
      * GET /user/profile
      * @return 用户信息
      */
+    @SysLog(value = "GET /user/profile - 获取用户信息")
     @GetMapping(value = "/profile")
     public ResponseEntity<ResultEntity<Object>> getUser() {
         UserProfileVO user = userService.getUser();
@@ -34,6 +36,7 @@ public class UserController {
      * GET /user/refresh
      * @return token
      */
+    @SysLog(value = "GET /user/refresh - 刷新token")
     @GetMapping(value = "/refresh")
     public ResponseEntity<ResultEntity<Object>> refreshToken() {
         UserRefreshVO userRefreshVO = userService.refreshToken();
@@ -47,6 +50,7 @@ public class UserController {
      * @param userProfileUpdateDTO 用户信息
      * @return 用户信息
      */
+    @SysLog(value = "PUT /user/profile - 更新用户信息")
     @PutMapping(value = "/profile")
     public ResponseEntity<ResultEntity<Object>> updateUserProfile(@RequestBody @Validated UserProfileUpdateDTO userProfileUpdateDTO) {
         UserProfileUpdateDTO data = userService.updateUserProfile(userProfileUpdateDTO);

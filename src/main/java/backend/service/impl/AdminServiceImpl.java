@@ -20,7 +20,6 @@ import backend.model.entity.*;
 import backend.service.AdminService;
 import backend.util.FieldsGenerator;
 
-import backend.util.GlobalLogger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -51,7 +50,6 @@ public class AdminServiceImpl implements AdminService {
     @Override
     public void adminModifyDeadline(AdminDeadlineDTO deadlineDTO) {
         Integer userId = User.getAuth().getId();
-        LocalDateTime localDateTime = LocalDateTime.now();
         try {
             Deadline query = Deadline.builder().id(deadlineDTO.getDeadlineID()).build();
 
@@ -72,9 +70,6 @@ public class AdminServiceImpl implements AdminService {
             throw new DeadlineNotFoundException(deadlineDTO.getDeadlineID(), 1);
         } catch (Exception e) {
             throw new RuntimeException(e.getMessage());
-        }finally {
-            GlobalLogger.builder().userId(userId).created(localDateTime)
-                    .endpoint("PUT /admin/deadline").operation(deadlineDTO.toString()).build().getThis();
         }
     }
 
@@ -91,9 +86,6 @@ public class AdminServiceImpl implements AdminService {
             );
         } catch (Exception e) {
             throw new RuntimeException(e.getMessage());
-        } finally {
-            GlobalLogger.builder().userId(User.getAuth().getId()).created(LocalDateTime.now())
-                    .operation("null").endpoint("GET /admin/teachers/remnant").build().getThis();
         }
     }
 
@@ -110,9 +102,6 @@ public class AdminServiceImpl implements AdminService {
             );
         } catch (Exception e) {
             throw new RuntimeException(e.getMessage());
-        } finally {
-            GlobalLogger.builder().userId(User.getAuth().getId()).created(LocalDateTime.now())
-                    .endpoint("GET /admin/teachers").operation("null").build().getThis();
         }
     }
 
@@ -146,9 +135,6 @@ public class AdminServiceImpl implements AdminService {
             throw new UserNotFoundException(teacherDTO.getTeacherID(), 2);
         } catch (Exception e) {
             throw new RuntimeException(e.getMessage());
-        } finally {
-            GlobalLogger.builder().userId(User.getAuth().getId()).created(LocalDateTime.now())
-                    .endpoint("GET /admin/teacher").operation(teacherDTO.toString()).build().getThis();
         }
     }
 
@@ -164,9 +150,6 @@ public class AdminServiceImpl implements AdminService {
             );
         } catch (Exception e) {
             throw new RuntimeException(e.getMessage());
-        } finally {
-            GlobalLogger.builder().userId(User.getAuth().getId()).created(LocalDateTime.now())
-                    .endpoint("GET /admin/teachers/empty").operation("null").build().getThis();
         }
     }
 
@@ -218,9 +201,6 @@ public class AdminServiceImpl implements AdminService {
 
         } catch (DeadlineUnreachedException deadlineUnreachedException) {
             throw new DeadlineUnreachedException(type, 4031);
-        } finally {
-            GlobalLogger.builder().userId(User.getAuth().getId()).created(LocalDateTime.now())
-                    .endpoint("POST /admin/filter-enroll").operation("ratio: " + ratio).build().getThis();
         }
     }
 
@@ -273,9 +253,6 @@ public class AdminServiceImpl implements AdminService {
             throw new DeadlineUnreachedException(type, 4031);
         } catch (Exception e) {
             throw new RuntimeException(e.getMessage());
-        } finally {
-            GlobalLogger.builder().userId(User.getAuth().getId()).created(LocalDateTime.now())
-                    .endpoint("POST /admin/possible-enroll").operation("null").build().getThis();
         }
     }
 
@@ -296,9 +273,6 @@ public class AdminServiceImpl implements AdminService {
 
         } catch (Exception e) {
             throw new RuntimeException(e.getMessage());
-        } finally {
-            GlobalLogger.builder().userId(User.getAuth().getId()).created(LocalDateTime.now())
-                    .operation("null").endpoint("POST /admin/final-enroll").build().getThis();
         }
     }
 }

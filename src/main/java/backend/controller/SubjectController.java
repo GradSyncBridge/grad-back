@@ -1,5 +1,6 @@
 package backend.controller;
 
+import backend.annotation.SysLog;
 import backend.service.SubjectService;
 
 import backend.util.ResultEntity;
@@ -29,6 +30,7 @@ public class SubjectController {
      * @param department 学院
      * @return 学科信息
      */
+    @SysLog(value = "GET /subject - 获取学科信息")
     @GetMapping
     public ResponseEntity<ResultEntity<Object>> getSubject(@RequestParam(value = "departmentID", defaultValue = "0") Integer department) {
         return ResultEntity.success(

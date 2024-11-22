@@ -1,5 +1,6 @@
 package backend.controller;
 
+import backend.annotation.SysLog;
 import backend.service.DeadlineService;
 import backend.util.ResultEntity;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -23,8 +24,9 @@ public class DeadlineController {
     /**
      * 获取所有截止日期
      * GET /deadline
-     * @return
+     * @return 所有截止日期
      */
+    @SysLog(value = "GET /deadline - 获取所有截止日期")
     @GetMapping
     public ResponseEntity<ResultEntity<Object>> getDeadline() {
         return ResultEntity.success(
