@@ -1,5 +1,6 @@
 package backend.controller;
 
+import backend.annotation.SysLog;
 import backend.service.EmailService;
 import backend.util.ResultEntity;
 import org.apache.ibatis.annotations.Param;
@@ -13,8 +14,10 @@ import org.springframework.web.bind.annotation.RestController;
 
 @RestController
 public class EmailController {
+
     @Autowired
     private EmailService emailService;
+
     @PostMapping(value = "/unauthorized/email")
     public ResponseEntity<ResultEntity<Object>> sendResetPasswordEmail(@Param(value = "email") String email) {
         emailService.sendResetPasswordEmail(email);

@@ -1,5 +1,6 @@
 package backend.controller;
 
+import backend.annotation.SysLog;
 import backend.model.DTO.SecretaryExamineDTO;
 import backend.model.DTO.SecretaryGradeDTO;
 import backend.service.SecretaryService;
@@ -18,6 +19,7 @@ import org.springframework.web.bind.annotation.*;
 @RestController
 @RequestMapping(value = "/secretary")
 public class SecretaryController {
+
     @Autowired
     private SecretaryService secretaryService;
 
@@ -27,6 +29,7 @@ public class SecretaryController {
      * @param examineDTO 学生报名表单审核信息
      * @return void
      */
+    @SysLog(value = "POST /secretary/examine - 研究生管理秘书审核学生报名表单")
     @PostMapping(value = "/examine")
     public ResponseEntity<ResultEntity<Object>> examineStudentSubmission(
             @RequestBody SecretaryExamineDTO examineDTO
@@ -46,6 +49,7 @@ public class SecretaryController {
      * @param gradeDTO 学生成绩信息
      * @return void
      */
+    @SysLog(value = "PUT /secretary/grade - 研究生管理秘书修改初试成绩")
     @PutMapping(value = "/grade")
     public ResponseEntity<ResultEntity<Object>> modifyStudentGrade(
             @RequestBody SecretaryGradeDTO gradeDTO

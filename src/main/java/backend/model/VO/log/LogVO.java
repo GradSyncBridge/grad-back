@@ -1,4 +1,4 @@
-package backend.model.DTO;
+package backend.model.VO.log;
 
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -9,11 +9,9 @@ import lombok.NoArgsConstructor;
 @AllArgsConstructor
 @NoArgsConstructor
 @Builder
-public class AdminDeadlineDTO {
-    private Integer deadlineID;
-
-    private String name;
-
-    private String deadline;
-
+public class LogVO {
+    private Integer uid;
+    private String endpoint;
+    private String operation;
+    private String created;
 }

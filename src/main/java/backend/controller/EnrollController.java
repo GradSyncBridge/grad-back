@@ -1,5 +1,6 @@
 package backend.controller;
 
+import backend.annotation.SysLog;
 import backend.model.DTO.EnrollConfirmDTO;
 import backend.service.EnrollService;
 import backend.util.ResultEntity;
@@ -31,6 +32,7 @@ public class EnrollController {
      * @param confirmDTO 确认信息
      * @return null
      */
+    @SysLog(value = "POST /enroll - 导师确认录取学生")
     @PostMapping
     public ResponseEntity<ResultEntity<Object>> enrollConfirm(
             @RequestBody EnrollConfirmDTO confirmDTO
@@ -50,10 +52,10 @@ public class EnrollController {
      * @param cancelDTO 取消信息
      * @return null
      */
+    @SysLog(value = "DELETE /enroll - 导师取消录取关系")
     @DeleteMapping
     public ResponseEntity<ResultEntity<Object>> enrollCancel(@RequestBody Map<String, Integer> cancelDTO) {
         enrollService.enrollCancel(cancelDTO.get("enrollmentID"));
-
         return ResultEntity.success(
                 HttpStatus.OK.value(),
                 "Enroll relationship canceled successfully",
@@ -66,6 +68,7 @@ public class EnrollController {
      * GET /enroll/list
      * @return 已选学生列表
      */
+    @SysLog(value = "GET /enroll/list - 导师查看已选学生信息")
     @GetMapping(value = "/list")
     public ResponseEntity<ResultEntity<Object>> enrollList() {
         return ResultEntity.success(

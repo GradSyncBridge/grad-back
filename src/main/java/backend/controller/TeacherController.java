@@ -1,5 +1,6 @@
 package backend.controller;
 
+import backend.annotation.SysLog;
 import backend.model.DTO.TeacherProfileUpdateDTO;
 import backend.service.TeacherService;
 import backend.util.ResultEntity;
@@ -23,6 +24,7 @@ public class TeacherController {
      * @param uid 教师uid
      * @return 教师个人信息
      */
+    @SysLog(value = "GET /teacher/profile - 获取教师个人信息")
     @GetMapping(value = "/profile")
     public ResponseEntity<ResultEntity<Object>> getTeacherProfile(
             @RequestParam(value = "uid") Integer uid
@@ -40,6 +42,7 @@ public class TeacherController {
      * @param teacherProfile 教师个人信息
      * @return 修改结果
      */
+    @SysLog(value = "PUT /teacher/profile - 修改教师个人信息")
     @PutMapping(value = "/profile")
     public ResponseEntity<ResultEntity<Object>> alterTeacherProfile(
             @RequestBody @Validated TeacherProfileUpdateDTO teacherProfile
@@ -58,6 +61,7 @@ public class TeacherController {
      * @param level 志愿等级
      * @return 学生信息
      */
+    @SysLog(value = "GET /teacher/apply - 获取第一/第二/第三志愿选择教师的学生信息")
     @GetMapping(value = "/apply")
     public ResponseEntity<ResultEntity<Object>> getTeacherApplicationByLevel(
             @RequestParam(value = "level") Integer level

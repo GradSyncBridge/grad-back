@@ -12,7 +12,8 @@ import java.time.LocalDateTime;
  *
  * @field id 主键 int
  * @field userId 用户 ID int userId -> user.id
- * @field content 内容 text
+ * @field endpoint 具体接口 /admin/teacher 等
+ * @field operation 具体操作(请求内容)
  * @field created 创建时间 DateTime
  */
 
@@ -27,7 +28,9 @@ public class Log {
     // userId -> user.id
     private Integer userId;
 
-    private String content;
+    private  String endpoint;
+
+    private  String operation;
 
     private LocalDateTime created;
 }

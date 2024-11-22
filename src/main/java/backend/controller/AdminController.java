@@ -1,5 +1,6 @@
 package backend.controller;
 
+import backend.annotation.SysLog;
 import backend.model.DTO.AdminDeadlineDTO;
 import backend.model.DTO.AdminTeacherDTO;
 import backend.service.AdminService;
@@ -26,6 +27,7 @@ public class AdminController {
     @Autowired
     private AdminService adminService;
 
+    @SysLog(value = "Put /admin/deadline - 管理员修改截止日期")
     @PutMapping(value = "/deadline")
     public ResponseEntity<ResultEntity<Object>> adminModifyDeadline(
             @RequestBody AdminDeadlineDTO deadlineDTO
@@ -39,6 +41,7 @@ public class AdminController {
         );
     }
 
+    @SysLog(value = "Get /admin/teachers/remnant - 管理员获取教师剩余名额")
     @GetMapping(value = "/teachers/remnant")
     public ResponseEntity<ResultEntity<Object>> getTeachersWithMetric() {
         return ResultEntity.success(
@@ -48,6 +51,7 @@ public class AdminController {
         );
     }
 
+    @SysLog(value = "Get /admin/teachers - 管理员获取所有教师")
     @GetMapping(value = "/teachers")
     public ResponseEntity<ResultEntity<Object>> getAllTeachers() {
         return ResultEntity.success(
@@ -57,6 +61,7 @@ public class AdminController {
         );
     }
 
+    @SysLog(value = "Put /admin/teacher - 管理员修改教师信息")
     @PutMapping(value = "/teacher")
     public ResponseEntity<ResultEntity<Object>> adminModifyTeacher(
             @RequestBody @Validated AdminTeacherDTO adminTeacherDTO
@@ -70,6 +75,7 @@ public class AdminController {
         );
     }
 
+    @SysLog(value = "Get /admin/teachers/empty - 管理员获取无学生的教师")
     @GetMapping(value = "/teachers/empty")
     public ResponseEntity<ResultEntity<Object>> getTeachersWithoutEnrolls() {
         return ResultEntity.success(
@@ -79,6 +85,7 @@ public class AdminController {
         );
     }
 
+    @SysLog(value = "Get /admin/possible-enroll - 管理员获取可能录取结果")
     @PostMapping(value = "/possible-enroll")
     public ResponseEntity<ResultEntity<Object>> adminFilterPossibleEnrolls() {
         adminService.adminFilterPossibleEnrolls();
@@ -90,6 +97,7 @@ public class AdminController {
         );
     }
 
+    @SysLog(value = "Get /admin/final-enroll - 管理员获取最终录取结果")
     @PostMapping(value = "/final-enroll")
     public ResponseEntity<ResultEntity<Object>> adminFilterFinalEnrolls() {
         adminService.adminFilterFinalEnrolls();
@@ -101,6 +109,7 @@ public class AdminController {
         );
     }
 
+    @SysLog(value = "Get /admin/filter-enroll - 管理员获取录取结果")
     @PostMapping(value = "/filter-enroll")
     public ResponseEntity<ResultEntity<Object>> adminFilterEnrolls(@RequestBody Map<String, Double> adminFilter) {
         adminService.adminFilterEnrolls(adminFilter.get("ratio"));

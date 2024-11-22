@@ -42,9 +42,14 @@ public class AdminServiceImpl implements AdminService {
     @Autowired
     private StudentMapper studentMapper;
 
+    /**
+     * 管理员筛选拟录取学生信息
+     * PUT /admin/deadline
+     * @param deadlineDTO 截至日期修改信息
+     * */
     @Override
     public void adminModifyDeadline(AdminDeadlineDTO deadlineDTO) {
-
+        Integer userId = User.getAuth().getId();
         try {
             Deadline query = Deadline.builder().id(deadlineDTO.getDeadlineID()).build();
 
@@ -68,6 +73,10 @@ public class AdminServiceImpl implements AdminService {
         }
     }
 
+    /**
+     * 管理员获取仍有剩余名额的导师
+     * GET /admin/teachers/remnant
+     * */
     @Override
     public List<TeacherProfileVO> getTeachersWithMetric() {
         try {
@@ -80,6 +89,10 @@ public class AdminServiceImpl implements AdminService {
         }
     }
 
+    /**
+     * 管理员获取所有教师信息
+     * GET /admin/teachers
+     * */
     @Override
     public List<TeacherProfileVO> getAllTeachers() {
         try {
@@ -92,6 +105,10 @@ public class AdminServiceImpl implements AdminService {
         }
     }
 
+    /**
+     * 管理员修改教师信息
+     * GET /admin/teacher
+     * */
     @Override
     public void adminModifyTeacher(AdminTeacherDTO teacherDTO) {
         try {
@@ -121,6 +138,10 @@ public class AdminServiceImpl implements AdminService {
         }
     }
 
+    /**
+     * 管理员获取所有无学生选择的教师
+     * GET /admin/teachers/empty
+     * */
     @Override
     public List<TeacherProfileVO> getTeachersWithoutEnrolls() {
         try {
@@ -132,6 +153,11 @@ public class AdminServiceImpl implements AdminService {
         }
     }
 
+    /**
+     * 管理员按照比例筛选进入复试人员
+     * POST /admin/filter-enroll
+     * @param ratio 筛选比例
+     * */
     @Override
     public void adminFilterEnrolls(Double ratio) {
         DeadlineEnum type = DeadlineEnum.INITIAL_SUBMISSION;
@@ -178,6 +204,11 @@ public class AdminServiceImpl implements AdminService {
         }
     }
 
+    /**
+     * 管理员筛选拟录取学生信息
+     * POST /admin/possible-enroll
+     *
+     * */
     @Override
     public void adminFilterPossibleEnrolls() {
         DeadlineEnum type = DeadlineEnum.SECOND_SUBMISSION;
@@ -225,6 +256,11 @@ public class AdminServiceImpl implements AdminService {
         }
     }
 
+    /**
+     * 管理员筛选不接受调剂/未被录入的学生
+     * POST /admin/final-enroll
+     *
+     * */
     @Override
     public void adminFilterFinalEnrolls() {
         try {

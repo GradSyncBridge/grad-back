@@ -1,16 +1,24 @@
 package backend.controller;
 
+import backend.annotation.SysLog;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
+import org.springframework.validation.annotation.Validated;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.PutMapping;
+import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.RestController;
+
 import backend.model.DTO.StudentApplicationSubmitDTO;
 import backend.model.DTO.StudentGradeModifyDTO;
 import backend.model.DTO.StudentGradeSubmitDTO;
 import backend.model.DTO.StudentSubmitDTO;
 import backend.service.StudentService;
 import backend.util.ResultEntity;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.http.HttpStatus;
-import org.springframework.http.ResponseEntity;
-import org.springframework.validation.annotation.Validated;
-import org.springframework.web.bind.annotation.*;
 
 /**
  * StudentController
@@ -36,6 +44,7 @@ public class StudentController {
      * @param targetUid 目标用户ID
      * @return 学生提交表
      */
+    @SysLog(value = "GET /student 获取学生提交信息")
     @GetMapping
     public ResponseEntity<ResultEntity<Object>> getStudentSubmitTable(
             @RequestParam(value = "targetUid", defaultValue = "-1") Integer targetUid
@@ -53,6 +62,7 @@ public class StudentController {
      * @param valid 用户是否有效
      * @return 学生列表
      */
+    @SysLog(value = "GET /student/search 搜索学生")
     @GetMapping(value = "/search")
     public ResponseEntity<ResultEntity<Object>> searchStudent(
             @RequestParam(value = "key", required = false) String key,
@@ -71,6 +81,7 @@ public class StudentController {
      * @param submit 提交信息
      * @return 提交结果
      */
+    @SysLog(value = "POST /student 学生提交报名表单")
     @PostMapping
     public ResponseEntity<ResultEntity<Object>> submitStudent(
             @RequestBody @Validated StudentSubmitDTO submit)
@@ -90,6 +101,7 @@ public class StudentController {
      * @param submit 提交信息
      * @return 提交结果
      */
+    @SysLog(value = "PUT /student 学生修改报名表单")
     @PutMapping
     public ResponseEntity<ResultEntity<Object>> modifyStudent(
             @RequestBody @Validated StudentSubmitDTO submit)
@@ -109,6 +121,7 @@ public class StudentController {
      * @param studentGrade 学生成绩
      * @return 提交结果
      */
+    @SysLog(value = "POST /student/grade 学生/教师提交成绩信息")
     @PostMapping(value = "/grade")
     public ResponseEntity<ResultEntity<Object>> submitStudentGrade(
             @RequestBody StudentGradeSubmitDTO studentGrade)
@@ -128,6 +141,7 @@ public class StudentController {
      * @param studentGrade 学生成绩
      * @return 提交结果
      */
+    @SysLog(value = "PUT /student/grade 学生/教师修改成绩信息")
     @PutMapping(value = "/grade")
     public ResponseEntity<ResultEntity<Object>> modifyStudentGrade(
             @RequestBody StudentGradeModifyDTO studentGrade)
@@ -147,6 +161,7 @@ public class StudentController {
      * @param studentApplication 学生志愿信息
      * @return 提交结果
      */
+    @SysLog(value = "POST /student/apply - 学生提交志愿信息")
     @PostMapping(value = "/apply")
     public ResponseEntity<ResultEntity<Object>> submitStudentApplication(
             @RequestBody StudentApplicationSubmitDTO studentApplication

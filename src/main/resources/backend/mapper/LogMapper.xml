@@ -8,8 +8,9 @@
     <sql id="DynamicFields">
         <trim suffixOverrides=",">
             <if test="scope.id == true"> id, </if>
-            <if test="scope.userId == true"> userId, </if>
-            <if test="scope.content == true"> content, </if>
+            <if test="scope.userId == true"> user_id, </if>
+            <if test="scope.endpoint == true"> endpoint, </if>
+            <if test="scope.operation == true"> operation, </if>
             <if test="scope.created == true"> created, </if>
         </trim>
     </sql>
@@ -17,17 +18,18 @@
     <sql id="DynamicWhere">
         <where>
             <if test="log.id != null"> and id = #{log.id} </if>
-            <if test="log.userId != null"> and userId = #{log.userId} </if>
-            <if test="log.content != null"> and content = #{log.content} </if>
+            <if test="log.userId != null"> and user_id = #{log.userId} </if>
+            <if test="log.endpoint != null"> and endpoint = #{log.endpoint} </if>
+            <if test="log.operation != null"> and operation = #{log.operation} </if>
             <if test="log.created != null"> and created = #{log.created} </if>
         </where>
     </sql>
 
     <insert id="insertLog">
         insert into Log
-        (user_id, content, created)
+        (user_id, endpoint, operation, created)
         values
-        (#{userId}, #{content}, #{created})
+        (#{userId}, #{endpoint}, #{operation}, #{created})
     </insert>
 
     <select id="selectLog" resultType="backend.model.entity.Log">
@@ -41,13 +43,15 @@
         update Log
         <set>
             <if test="logUpdate.userId != null"> user_id = #{logUpdate.userId}, </if>
-            <if test="logUpdate.content != null"> content = #{logUpdate.content}, </if>
+            <if test="logUpdate.endpoint != null"> endpoint = #{logUpdate.endpoint}, </if>
+            <if test="logUpdate.operation != null"> operation = #{logUpdate.operation}, </if>
             <if test="logUpdate.created != null"> created = #{logUpdate.created}, </if>
         </set>
         <where>
             <if test="logQuery.id != null"> and id = #{logQuery.id} </if>
             <if test="logQuery.userId != null"> and user_id = #{logQuery.userId} </if>
-            <if test="logQuery.content != null"> and content = #{logQuery.content} </if>
+            <if test="logQuery.endpoint != null"> and endpoint = #{logQuery.endpoint} </if>
+            <if test="logQuery.operation != null"> and operation = #{logQuery.operation} </if>
             <if test="logQuery.created != null"> and created = #{logQuery.created} </if>
         </where>
     </update>
