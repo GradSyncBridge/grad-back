@@ -84,9 +84,11 @@
     <select id="selectSubjectWithDept" resultMap="subjectEntityMap">
         select * from Subject
         <where>
-            Subject.department = #{department}
-            or Subject.type = 0
-            <if test="type == 1">  or Subject.type = 2 </if>
+            <if test="type == 1">Subject.type = 2</if>
+            <if test="type == 0">
+                Subject.department = #{department}
+                or Subject.type = 0
+            </if>
         </where>
     </select>
 
