@@ -17,4 +17,6 @@ public class UserRegisterDTO {
     private Integer gender;
 
     private Integer role;
+
+    private Integer department;
 }

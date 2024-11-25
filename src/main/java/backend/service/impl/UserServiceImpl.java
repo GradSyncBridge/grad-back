@@ -6,7 +6,7 @@ import java.util.concurrent.CompletableFuture;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
-import backend.annotation.SysLog;
+import backend.model.entity.Teacher;
 import backend.util.GlobalConfig;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
@@ -132,7 +132,11 @@ public class UserServiceImpl implements UserService {
             if (user.getRole() == 1)
                 studentMapper.insertStudent(Student.builder().userId(user.getId()).valid(-1).disabled(1).build());
             else
-                teacherMapper.insertTeacher(backend.model.entity.Teacher.builder().userId(user.getId()).build());
+                teacherMapper.insertTeacher(
+                        Teacher.builder().userId(user.getId())
+                                .department(userRegisterDTO.getDepartment())
+                                .title(2).build()
+                );
         } catch (DuplicateUserException ex) {
             throw new DuplicateUserException();
         } catch (Exception e) {
