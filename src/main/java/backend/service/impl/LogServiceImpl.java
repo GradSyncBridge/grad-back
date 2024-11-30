@@ -76,7 +76,7 @@ public class LogServiceImpl implements LogService {
             logMapper.insertLog(
                     Log.builder().userId(User.getAuth().getId())
                             .endpoint(endPoint)
-                            .operation(operation.toString())
+                            .operation(operation.toString().length() > 255 ? operation.substring(0, 255) : operation.toString())
                             .created(LocalDateTime.now())
                             .build()
             );
