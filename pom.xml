@@ -175,6 +175,12 @@
             <version>3.38.1</version>
         </dependency>
 
+        <!-- PageHelper -->
+        <dependency>
+            <groupId>com.github.pagehelper</groupId>
+            <artifactId>pagehelper-spring-boot-starter</artifactId>
+            <version>2.1.0</version>
+        </dependency>
 
     </dependencies>
 

@@ -1,9 +1,7 @@
 package backend.service;
 
 
-import backend.model.VO.log.LogVO;
-
-import java.util.List;
+import backend.model.VO.log.PageLogVO;
 
 public interface LogService {
     /**
@@ -11,7 +9,7 @@ public interface LogService {
      * GET /log
      * @return 日志列表
     * */
-     List<LogVO> getLog();
+     PageLogVO getLog(Integer pageIndex, Integer pageSize);
 
 
 }

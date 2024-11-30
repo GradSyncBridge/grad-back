@@ -2,15 +2,17 @@ package backend.service.impl;
 
 import java.time.LocalDateTime;
 import java.util.List;
-import java.util.Map;
 import java.util.logging.Logger;
 
 import backend.annotation.SysLog;
 import backend.exception.model.user.UserRoleDeniedException;
+import backend.model.VO.log.PageLogVO;
 import backend.model.VO.log.LogVO;
 import backend.model.entity.Teacher;
 import backend.model.entity.User;
 import backend.util.FieldsGenerator;
+import com.github.pagehelper.Page;
+import com.github.pagehelper.PageHelper;
 import org.aspectj.lang.JoinPoint;
 import org.aspectj.lang.annotation.Aspect;
 import org.aspectj.lang.annotation.Before;
@@ -36,19 +38,21 @@ public class LogServiceImpl implements LogService {
     private LogConverter logConverter;
 
     @Override
-    public List<LogVO> getLog() {
+    public PageLogVO getLog(Integer pageIndex, Integer pageSize) {
         User user = User.getAuth();
         Teacher teacher = user.getTeacher();
 
-        List<String> fields = List.of("id", "userId", "endpoint", "operation", "created");
-        Map<String, Boolean> scope = FieldsGenerator.generateFields(Log.class, fields);
         try{
             if (teacher == null || teacher.getIdentity() != 3)
                 throw new UserRoleDeniedException();
 
-            List<Log> logs = logMapper.selectLog(Log.builder().build(), scope);
+            Page<Object> page = PageHelper.startPage(pageIndex, pageSize, true);
 
-            return logConverter.logListToLogVOList(logs);
+            List<LogVO> logVOS = logConverter.logListToLogVOList(
+                    logMapper.selectLog(Log.builder().build(), FieldsGenerator.generateFields(Log.class))
+            );
+
+            return PageLogVO.builder().logs(logVOS).total((int) page.getTotal()).build();
         }catch (UserRoleDeniedException userRoleDeniedException){
             throw new UserRoleDeniedException(user.getRole(), 403, teacher == null ? null : teacher.getIdentity());
         }

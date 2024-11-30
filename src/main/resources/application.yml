@@ -5,6 +5,12 @@ server:
 spring:
   profiles:
     active: dev,rs,pool
+  pagehelper:
+    helperDialect: mysql
+    offsetAsPageNum: true
+    rowBoundsWithCount: true
+    reasonable: true
+
 
 logging:
   file:
