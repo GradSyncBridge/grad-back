@@ -19,6 +19,7 @@ public class RedissionService {
 
     @Around("execution(* backend.service.impl.EnrollServiceImpl.enrollConfirm(backend.model.DTO.EnrollConfirmDTO)) && args(confirm)")
     public Object enrollLockedTransaction(ProceedingJoinPoint joinPoint, EnrollConfirmDTO confirm) throws Throwable {
+
         RLock lock = redissonClient.getLock("enroll-lock:" + confirm.getStudentID());
 
         boolean lockAcquired = false;
