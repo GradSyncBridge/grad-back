@@ -72,6 +72,10 @@ public class TeacherServiceImpl implements TeacherService {
      */
     @Override
     public List<TeacherVO> getTeacher(Integer department) {
+        List<TeacherVO> teacherVOS = (List<TeacherVO>) redisService.getData("teachersByDepartment:" + department);
+
+        if(teacherVOS != null) return teacherVOS;
+
         List<Teacher> teachers = teacherMapper.selectTeacher(
                 Teacher.builder().department(department).build(),
                 FieldsGenerator.generateFields(Teacher.class)
@@ -82,7 +86,11 @@ public class TeacherServiceImpl implements TeacherService {
 
         List<User> users = getTeacherAsync(teachers).join();
 
-        return teacherConverter.INSTANCE.TeacherListToTeacherVOList(teachers, users);
+        teacherVOS = teacherConverter.INSTANCE.TeacherListToTeacherVOList(teachers, users);
+
+        redisService.saveDataWithExpiration("teachersByDepartment:" + department, 30, teacherVOS);
+
+        return teacherVOS;
     }
 
     /**
