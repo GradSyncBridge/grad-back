@@ -2,7 +2,13 @@ package backend.util;
 
 import backend.exception.model.file.FileStorageException;
 import backend.model.entity.User;
+import com.amazonaws.AmazonClientException;
+import com.amazonaws.services.s3.AmazonS3;
+import com.amazonaws.services.s3.model.ObjectMetadata;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpStatus;
+import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 
 import javax.xml.bind.DatatypeConverter;
@@ -10,7 +16,14 @@ import java.io.*;
 import java.nio.file.Path;
 import java.util.UUID;
 
+@Service
 public class FileManager {
+
+    @Value("${cloud.aws.s3.bucket}")
+    private String bucketName;
+
+    @Autowired
+    private AmazonS3 r2Client;
 
     private static final String basePath = "src/main/resources/media";
 
@@ -196,6 +209,32 @@ public class FileManager {
             }
         } catch (Exception e) {
             throw new FileStorageException(HttpStatus.INTERNAL_SERVER_ERROR.value(), "Failed to store file: " + e.getMessage());
+        }
+    }
+
+
+    public String uploadFile(MultipartFile file) {
+        try {
+            ObjectMetadata metadata = new ObjectMetadata();
+            metadata.setContentLength(file.getSize());
+            metadata.setContentType(file.getContentType());
+
+            final String fileName = UUID.randomUUID().toString();
+
+            r2Client.putObject(bucketName, fileName, file.getInputStream(), metadata);
+
+            return " https://image.lavendermar.site/" + fileName;
+        } catch (AmazonClientException | IOException e) {
+
+            throw new RuntimeException("Error uploading file");
+        }
+    }
+
+    public void deleteFile(String fileName){
+        try {
+            r2Client.deleteObject(bucketName, fileName);
+        }catch (Exception e){
+            throw new RuntimeException("Error deleting file");
         }
     }
 
