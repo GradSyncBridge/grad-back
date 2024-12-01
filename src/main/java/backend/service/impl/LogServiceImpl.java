@@ -46,11 +46,11 @@ public class LogServiceImpl implements LogService {
             if (teacher == null || teacher.getIdentity() != 3)
                 throw new UserRoleDeniedException();
 
-            Page<Object> page = PageHelper.startPage(pageIndex, pageSize, true);
+            PageHelper.startPage(pageIndex, pageSize, true);
 
-            List<LogVO> logVOS = logConverter.logListToLogVOList(
-                    logMapper.selectLog(Log.builder().build(), FieldsGenerator.generateFields(Log.class))
-            );
+            Page<Log> page = logMapper.selectLog(Log.builder().build(), FieldsGenerator.generateFields(Log.class));
+
+            List<LogVO> logVOS = logConverter.logListToLogVOList(page.getResult());
 
             return PageLogVO.builder().logs(logVOS).total((int) page.getTotal()).build();
         }catch (UserRoleDeniedException userRoleDeniedException){

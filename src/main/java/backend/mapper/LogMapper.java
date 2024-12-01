@@ -1,6 +1,7 @@
 package backend.mapper;
 
 import backend.model.entity.Log;
+import com.github.pagehelper.Page;
 import org.apache.ibatis.annotations.Mapper;
 
 import java.util.List;
@@ -23,7 +24,7 @@ public interface LogMapper {
      * @param scope 查询返回的字段
      * @return 日志列表
      */
-    List<Log> selectLog(Log log, Map<String, Boolean> scope);
+    Page<Log> selectLog(Log log, Map<String, Boolean> scope);
 
     /**
      * 更新日志
