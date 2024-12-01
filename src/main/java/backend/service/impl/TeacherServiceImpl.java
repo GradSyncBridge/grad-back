@@ -6,6 +6,7 @@ import java.util.Map;
 import java.util.Objects;
 import java.util.concurrent.CompletableFuture;
 
+import backend.redis.RedisService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Service;
@@ -60,6 +61,9 @@ public class TeacherServiceImpl implements TeacherService {
     @Autowired
     private UserConverter userConverter;
 
+    @Autowired
+    private RedisService redisService;
+
     /**
      * 获取学院下属所有老师
      * GET /unauthorized/department/teachers
@@ -68,6 +72,10 @@ public class TeacherServiceImpl implements TeacherService {
      */
     @Override
     public List<TeacherVO> getTeacher(Integer department) {
+        List<TeacherVO> teacherVOS = (List<TeacherVO>) redisService.getData("teachersByDepartment:" + department);
+
+        if(teacherVOS != null) return teacherVOS;
+
         List<Teacher> teachers = teacherMapper.selectTeacher(
                 Teacher.builder().department(department).build(),
                 FieldsGenerator.generateFields(Teacher.class)
@@ -78,7 +86,11 @@ public class TeacherServiceImpl implements TeacherService {
 
         List<User> users = getTeacherAsync(teachers).join();
 
-        return teacherConverter.INSTANCE.TeacherListToTeacherVOList(teachers, users);
+        teacherVOS = teacherConverter.INSTANCE.TeacherListToTeacherVOList(teachers, users);
+
+        redisService.saveDataWithExpiration("teachersByDepartment:" + department, 30, teacherVOS);
+
+        return teacherVOS;
     }
 
     /**
@@ -89,6 +101,10 @@ public class TeacherServiceImpl implements TeacherService {
      */
     @Override
     public List<TeacherVO> getTeachersByCatalogue(Integer majorID) {
+
+        List<TeacherVO> teacherVOS = (List<TeacherVO>) redisService.getData("teachersByCatalogue:" + majorID);
+
+        if(teacherVOS != null) return teacherVOS;
 
         List<MajorToTeacher> majorToTeachers = majorToTeacherMapper.selectMajorToTeacher(
                 MajorToTeacher.builder().mid(majorID).build(),
@@ -101,7 +117,11 @@ public class TeacherServiceImpl implements TeacherService {
         List<Teacher> teachers = teacherMapper.selectTeacherForeach(majorToTeachers);
         List<User> users = getTeacherAsync(teachers).join();
 
-        return teacherConverter.INSTANCE.TeacherListToTeacherVOList(teachers, users);
+        teacherVOS = teacherConverter.INSTANCE.TeacherListToTeacherVOList(teachers, users);
+
+        redisService.saveDataWithExpiration("teachersByCatalogue:" + majorID, 30, teacherVOS);
+
+        return teacherVOS;
     }
 
     /**
@@ -194,7 +214,6 @@ public class TeacherServiceImpl implements TeacherService {
             CompletableFuture.allOf(usernameFuture, emailFuture, avatarFuture).join();
 
             targetTeacher.setDescription(teacherProfile.getDescription());
-
 
             CompletableFuture.runAsync(()->
                 userMapper.updateUser(targetUser,

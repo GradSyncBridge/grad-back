@@ -10,6 +10,7 @@ import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
+import org.springframework.web.servlet.NoHandlerFoundException;
 
 import javax.naming.AuthenticationException;
 import java.nio.file.AccessDeniedException;
@@ -71,6 +72,11 @@ public class GlobalExceptionHandler {
     @ExceptionHandler
     public ResponseEntity<ResultEntity<Object>> handleRuntimeException(RuntimeException ex) {
         return ResultEntity.error(HttpStatus.INTERNAL_SERVER_ERROR.value(), "No handler found for " + ex.getMessage());
+    }
+
+    @ExceptionHandler
+    public ResponseEntity<ResultEntity<Object>> noHandleFoundException(NoHandlerFoundException ex) {
+        return ResultEntity.error(HttpStatus.NOT_FOUND.value(), "No handler found for " + ex.getMessage());
     }
 
 }
