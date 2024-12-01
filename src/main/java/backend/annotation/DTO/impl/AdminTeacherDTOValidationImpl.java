@@ -14,7 +14,6 @@ public class AdminTeacherDTOValidationImpl implements ConstraintValidator<AdminT
             constraintValidatorContext
                     .buildConstraintViolationWithTemplate("Null request body")
                     .addConstraintViolation();
-
             return false;
         }
 

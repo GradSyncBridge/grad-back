@@ -52,21 +52,33 @@ public class UserDetailsServiceImpl implements UserDetailsService {
     }
 
     public User loadUserById(Integer id) throws UsernameNotFoundException {
-
-        Map<String, Boolean> scope = FieldsGenerator.generateFields(User.class);
-
         User user;
+
         try {
-            user = userMapper.selectUser(User.builder().id(id).build(), scope).getFirst();
+            user = userMapper.selectUser(
+                    User.builder().id(id).build(),
+                    FieldsGenerator.generateFields(User.class)
+            ).getFirst();
+
             Integer role = user.getRole();
 
             if (role == 1) {
-                List<Student> students = studentMapper.selectStudent(Student.builder().userId(id).build(), FieldsGenerator.generateFields(Student.class));
+                List<Student> students = studentMapper.selectStudent(
+                        Student.builder().userId(id).build(),
+                        FieldsGenerator.generateFields(Student.class)
+                );
+
                 user.setStudent(students.isEmpty() ? null : students.getFirst());
+
             } else if (role == 2) {
-                List<Teacher> teachers = teacherMapper.selectTeacher(Teacher.builder().userId(id).build(), FieldsGenerator.generateFields(Teacher.class));
+                List<Teacher> teachers = teacherMapper.selectTeacher(
+                        Teacher.builder().userId(id).build(),
+                        FieldsGenerator.generateFields(Teacher.class)
+                );
+
                 user.setTeacher(teachers.isEmpty() ? null : teachers.getFirst());
             }
+
         } catch (Exception e) {
             System.out.println(e.getMessage());
             throw new UsernameNotFoundException("user not found");
