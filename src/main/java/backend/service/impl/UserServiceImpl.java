@@ -32,6 +32,7 @@ import backend.model.entity.User;
 import backend.service.UserService;
 import backend.util.FieldsGenerator;
 import backend.util.FileManager;
+import org.springframework.transaction.annotation.Transactional;
 
 @Service
 public class UserServiceImpl implements UserService {
@@ -49,6 +50,9 @@ public class UserServiceImpl implements UserService {
 
     @Autowired
     private TeacherMapper teacherMapper;
+
+    @Autowired
+    private FileManager fileManager;
 
     /**
      * 处理登录请求
@@ -119,6 +123,7 @@ public class UserServiceImpl implements UserService {
      * @return token
      */
     @Override
+    @Transactional
     public UserRegisterVO register(UserRegisterDTO userRegisterDTO) {
         User user = UserConverter.INSTANCE.UserRegisterDTOToUser(userRegisterDTO);
         try {
@@ -155,6 +160,7 @@ public class UserServiceImpl implements UserService {
      * @return 用户信息
      */
     @Override
+    @Transactional
     public UserProfileUpdateDTO updateUserProfile(UserProfileUpdateDTO userProfileUpdateDTO) {
 
         String username = userProfileUpdateDTO.getUsername();
@@ -193,10 +199,16 @@ public class UserServiceImpl implements UserService {
             }).thenAccept(dto -> userProfileUpdateDTO.setUsername(dto.getUsername()));
 
             CompletableFuture<Void> avatarFuture = CompletableFuture.supplyAsync(() -> {
-                if (userProfileUpdateDTO.getAvatar() != null)
+                if (userProfileUpdateDTO.getAvatar() != null) {
+                    String avatar = authUser.getAvatar();
+                    if (avatar != null && !avatar.isEmpty())
+                        CompletableFuture.runAsync(()->
+                                fileManager.deleteFile(avatar)
+                        );
                     userProfileUpdateDTO.setAvatar(
-                            FileManager.saveBase64Image(userProfileUpdateDTO.getAvatar(), authUser)
+                            fileManager.uploadBase64Image(userProfileUpdateDTO.getAvatar(), authUser)
                     );
+                }
                 else
                     userProfileUpdateDTO.setAvatar(null);
 
@@ -216,8 +228,20 @@ public class UserServiceImpl implements UserService {
             throw new RuntimeException(e.getMessage());
         }
 
-        userProfileUpdateDTO.setUsername(username);
-        userProfileUpdateDTO.setEmail(email);
+        User resultUser = userMapper.selectUser(
+                User.builder()
+                        .id(User.getAuth().getId())
+                        .build(),
+                FieldsGenerator.generateFields(User.class)
+        ).getFirst();
+
+        userProfileUpdateDTO.setUid(resultUser.getId());
+        userProfileUpdateDTO.setUsername(resultUser.getUsername());
+        userProfileUpdateDTO.setEmail(resultUser.getEmail());
+        userProfileUpdateDTO.setAvatar(resultUser.getAvatar());
+        userProfileUpdateDTO.setGender(resultUser.getGender());
+        userProfileUpdateDTO.setName(resultUser.getName());
+        userProfileUpdateDTO.setPhone(resultUser.getPhone());
 
         return userProfileUpdateDTO;
     }

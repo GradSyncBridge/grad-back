@@ -14,6 +14,7 @@ import backend.service.SecretaryService;
 import backend.util.FieldsGenerator;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
 
@@ -29,6 +30,7 @@ public class SecretaryServiceImpl implements SecretaryService {
      * @param examineDTO 学生报名表单审核信息
      */
     @Override
+    @Transactional
     public void examineStudentSubmission(SecretaryExamineDTO examineDTO) {
         User user = User.getAuth();
         Integer role = user.getRole();
@@ -69,6 +71,7 @@ public class SecretaryServiceImpl implements SecretaryService {
      * @param gradeDTO 学生成绩信息
      */
     @Override
+    @Transactional
     public void modifyStudentGrade(SecretaryGradeDTO gradeDTO) {
         User user = User.getAuth();
         Integer role = user.getRole();

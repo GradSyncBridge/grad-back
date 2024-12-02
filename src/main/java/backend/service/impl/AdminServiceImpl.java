@@ -22,6 +22,7 @@ import backend.util.FieldsGenerator;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDateTime;
 import java.util.Comparator;
@@ -48,6 +49,7 @@ public class AdminServiceImpl implements AdminService {
      * @param deadlineDTO 截至日期修改信息
      * */
     @Override
+    @Transactional
     public void adminModifyDeadline(AdminDeadlineDTO deadlineDTO) {
         Integer userId = User.getAuth().getId();
         try {
@@ -159,6 +161,7 @@ public class AdminServiceImpl implements AdminService {
      * @param ratio 筛选比例
      * */
     @Override
+    @Transactional
     public void adminFilterEnrolls(Double ratio) {
         DeadlineEnum type = DeadlineEnum.INITIAL_SUBMISSION;
         Integer dept = User.getAuth().getTeacher().getDepartment();
@@ -210,6 +213,7 @@ public class AdminServiceImpl implements AdminService {
      *
      * */
     @Override
+    @Transactional
     public void adminFilterPossibleEnrolls() {
         DeadlineEnum type = DeadlineEnum.SECOND_SUBMISSION;
 
@@ -262,6 +266,7 @@ public class AdminServiceImpl implements AdminService {
      *
      * */
     @Override
+    @Transactional
     public void adminFilterFinalEnrolls() {
         try {
             List<Student> students = studentMapper.selectStudentWithoutEnroll(

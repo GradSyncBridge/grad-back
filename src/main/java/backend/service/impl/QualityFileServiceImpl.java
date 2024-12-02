@@ -11,6 +11,7 @@ import backend.util.FieldsGenerator;
 import backend.util.FileManager;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.time.LocalDateTime;
@@ -23,6 +24,9 @@ public class QualityFileServiceImpl implements QualityFileService {
     @Autowired
     private QualityFileMapper qualityFileMapper;
 
+    @Autowired
+    private FileManager fileManager;
+
     /**
      * 处理文件上传请求
      * POST /file
@@ -30,9 +34,10 @@ public class QualityFileServiceImpl implements QualityFileService {
      * @return 存储路径
      */
     @Override
+    @Transactional
     public FileUploadVO handleFileUpload(MultipartFile file) {
         try {
-            String filePath = FileManager.store(file);
+            String filePath = fileManager.uploadFile(file, User.getAuth());
 
             QualityFile qualityFile = QualityFile.builder().userId(User.getAuth().getId()).file(filePath).created(LocalDateTime.now()).build();
             qualityFileMapper.insertQualityFile(qualityFile);
@@ -50,6 +55,7 @@ public class QualityFileServiceImpl implements QualityFileService {
      * @param file 文件删除信息
      */
     @Override
+    @Transactional
     public void handleFileDelete(FileDeleteDTO file) {
         try {
             List<QualityFile> files = qualityFileMapper.selectQualityFile(
@@ -61,7 +67,7 @@ public class QualityFileServiceImpl implements QualityFileService {
                 throw new FileNotFoundException();
 
             CompletableFuture.runAsync(() ->
-                    FileManager.remove(files.getFirst().getFile())
+                    fileManager.deleteFile(files.getFirst().getFile())
             );
             qualityFileMapper.deleteQualityFile(file.getFileID());
 

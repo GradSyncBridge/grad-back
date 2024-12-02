@@ -5,6 +5,8 @@ import backend.model.entity.User;
 import com.amazonaws.AmazonClientException;
 import com.amazonaws.services.s3.AmazonS3;
 import com.amazonaws.services.s3.model.ObjectMetadata;
+import org.apache.commons.fileupload.FileItem;
+import org.apache.commons.fileupload.disk.DiskFileItemFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpStatus;
@@ -212,18 +214,50 @@ public class FileManager {
         }
     }
 
+    public String uploadBase64Image(String base64Image, User user){
+        // 从Base64字符串中提取文件类型
+        String[] parts = base64Image.split(",");
+        String metadata = parts[0];
 
-    public String uploadFile(MultipartFile file) {
+        // 根据格式提取文件类型
+        String[] metadataParts = metadata.split(";");
+        String fileType = metadataParts[0].split(":")[1].split("/")[1];
+
+        if (!fileType.equals("png") && !fileType.equals("jpg") && !fileType.equals("jpeg")) {
+            throw new FileStorageException(HttpStatus.BAD_REQUEST.value(), "Invalid file type");
+        }
+
+        // 从Base64字符串中提取文件内容
+        byte[] data = DatatypeConverter.parseBase64Binary(parts[1]);
+
+        InputStream targetStream = new ByteArrayInputStream(data);
+
+        try {
+            ObjectMetadata metadataStream = new ObjectMetadata();
+            metadataStream.setContentLength(data.length);
+            metadataStream.setContentType(fileType);
+
+            final String fileName = user.getId().toString() + "/" + UUID.randomUUID().toString();
+
+            r2Client.putObject(bucketName, fileName, targetStream, metadataStream);
+
+            return fileName;
+        } catch (AmazonClientException e) {
+            throw new RuntimeException("Error uploading file");
+        }
+    }
+
+    public String uploadFile(MultipartFile file, User user) {
         try {
             ObjectMetadata metadata = new ObjectMetadata();
             metadata.setContentLength(file.getSize());
             metadata.setContentType(file.getContentType());
 
-            final String fileName = UUID.randomUUID().toString();
+            final String fileName = user.getId().toString() + "/" + UUID.randomUUID().toString();
 
             r2Client.putObject(bucketName, fileName, file.getInputStream(), metadata);
 
-            return " https://image.lavendermar.site/" + fileName;
+            return fileName;
         } catch (AmazonClientException | IOException e) {
 
             throw new RuntimeException("Error uploading file");
