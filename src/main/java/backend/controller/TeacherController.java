@@ -47,11 +47,10 @@ public class TeacherController {
     public ResponseEntity<ResultEntity<Object>> alterTeacherProfile(
             @RequestBody @Validated TeacherProfileUpdateDTO teacherProfile
     ) {
-        teacherService.updateTeacherProfile(teacherProfile);
         return ResultEntity.success(
                 HttpStatus.OK.value(),
                 "Modify teacher's profile successfully",
-                null
+                teacherService.updateTeacherProfile(teacherProfile)
         );
     }
 

@@ -10,6 +10,7 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor
 @UserProfileUpdateDTOValidation
 public class UserProfileUpdateDTO {
+    private Integer uid;
     private String username;
     private String avatar;
     private String name;

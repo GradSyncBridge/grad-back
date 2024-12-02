@@ -38,7 +38,7 @@ public interface TeacherService {
      * PUT /teacher/profile
      * @param teacherProfile 教师个人信息
      */
-    void updateTeacherProfile(TeacherProfileUpdateDTO teacherProfile);
+    TeacherProfileUpdateDTO updateTeacherProfile(TeacherProfileUpdateDTO teacherProfile);
 
     /**
      * 获取第一/第二/第三志愿选择教师的学生信息

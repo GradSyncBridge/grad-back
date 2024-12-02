@@ -29,6 +29,7 @@ import backend.util.StringToList;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -229,6 +230,7 @@ public class StudentServiceImpl implements StudentService {
      * @param submitDTO 提交信息
      */
     @Override
+    @Transactional
     public void studentSubmit(StudentSubmitDTO submitDTO) {
         DeadlineEnum type = DeadlineEnum.INITIAL_SUBMISSION;
 
@@ -260,6 +262,7 @@ public class StudentServiceImpl implements StudentService {
      * @param studentGrade 学生成绩
      */
     @Override
+    @Transactional
     public void studentGradeSubmit(StudentGradeSubmitDTO studentGrade) {
         User user = User.getAuth();
         Integer role = user.getRole();
@@ -322,6 +325,7 @@ public class StudentServiceImpl implements StudentService {
      * @param studentGrade 学生成绩
      */
     @Override
+    @Transactional
     public void studentGradeModify(StudentGradeModifyDTO studentGrade) {
         User user = User.getAuth();
         Integer role = user.getRole();
@@ -376,6 +380,7 @@ public class StudentServiceImpl implements StudentService {
      * @param studentApplication 学生志愿信息
      */
     @Override
+    @Transactional
     public void studentApplicationSubmit(StudentApplicationSubmitDTO studentApplication) {
         DeadlineEnum type = DeadlineEnum.SECOND_SUBMISSION;
 

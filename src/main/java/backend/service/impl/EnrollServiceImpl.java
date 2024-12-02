@@ -34,6 +34,7 @@ import backend.util.FieldsGenerator;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDateTime;
 import java.util.*;
@@ -200,6 +201,7 @@ public class EnrollServiceImpl implements EnrollService {
      *                7. 更新教师录取名额 (Do NOT perform in-place subtraction)
      */
     @Override
+    @Transactional
     public void enrollConfirm(EnrollConfirmDTO confirm) {
         DeadlineEnum ddl = DeadlineEnum.ENROLL;
         User user = User.getAuth();
@@ -315,6 +317,7 @@ public class EnrollServiceImpl implements EnrollService {
      *               6. 更新教师录取名额 (Do NOT perform in-place addition)
      */
     @Override
+    @Transactional
     public void enrollCancel(Integer enroll) {
         DeadlineEnum ddl = DeadlineEnum.ENROLL;
         User user = User.getAuth();

@@ -39,6 +39,7 @@ import backend.service.TeacherService;
 
 import backend.util.FieldsGenerator;
 import backend.util.FileManager;
+import org.springframework.transaction.annotation.Transactional;
 
 @Service
 public class TeacherServiceImpl implements TeacherService {
@@ -63,6 +64,9 @@ public class TeacherServiceImpl implements TeacherService {
 
     @Autowired
     private RedisService redisService;
+
+    @Autowired
+    private FileManager fileManager;
 
     /**
      * 获取学院下属所有老师
@@ -161,7 +165,8 @@ public class TeacherServiceImpl implements TeacherService {
      * @param teacherProfile 教师个人信息
      */
     @Override
-    public void updateTeacherProfile(TeacherProfileUpdateDTO teacherProfile) {
+    @Transactional
+    public TeacherProfileUpdateDTO updateTeacherProfile(TeacherProfileUpdateDTO teacherProfile) {
         try {
             User targetUser = User.getAuth();
             targetUser.setGender(teacherProfile.getGender());
@@ -204,9 +209,9 @@ public class TeacherServiceImpl implements TeacherService {
                     String avatar = targetUser.getAvatar();
                     if (avatar != null && !avatar.isEmpty())
                         CompletableFuture.runAsync(()->
-                            FileManager.remove(avatar)
+                            fileManager.deleteFile(avatar)
                         );
-                    targetUser.setAvatar(FileManager.saveBase64Image(teacherProfile.getAvatar(), targetUser));
+                    targetUser.setAvatar(fileManager.uploadBase64Image(avatar, targetUser));
                 } else
                     targetUser.setAvatar(targetUser.getAvatar());
             });
@@ -215,15 +220,11 @@ public class TeacherServiceImpl implements TeacherService {
 
             targetTeacher.setDescription(teacherProfile.getDescription());
 
-            CompletableFuture.runAsync(()->
-                userMapper.updateUser(targetUser,
-                        User.builder().id(targetUser.getId()).build()
-            ));
+            userMapper.updateUser(targetUser,
+                        User.builder().id(targetUser.getId()).build());
 
-            CompletableFuture.runAsync(()->
-                teacherMapper.updateTeacher(targetTeacher,
-                        Teacher.builder().userId(targetTeacher.getUserId()).build())
-            );
+            teacherMapper.updateTeacher(targetTeacher,
+                    Teacher.builder().userId(targetTeacher.getUserId()).build());
 
         } catch (DuplicateUserException duplicateUserException) {
             throw new DuplicateUserException();
@@ -232,6 +233,30 @@ public class TeacherServiceImpl implements TeacherService {
         } catch (Exception e) {
             throw new RuntimeException(e.getMessage());
         }
+
+        User resultUser = userMapper.selectUser(
+                User.builder()
+                        .id(User.getAuth().getId())
+                        .build(),
+                FieldsGenerator.generateFields(User.class)
+        ).getFirst();
+
+        Teacher resultTeacher = teacherMapper.selectTeacher(
+                Teacher.builder()
+                        .userId(User.getAuth().getId())
+                        .build(),
+                FieldsGenerator.generateFields(Teacher.class)
+        ).getFirst();
+
+        teacherProfile.setUsername(resultUser.getUsername());
+        teacherProfile.setEmail(resultUser.getEmail());
+        teacherProfile.setAvatar(resultUser.getAvatar());
+        teacherProfile.setDescription(resultTeacher.getDescription());
+        teacherProfile.setGender(resultUser.getGender());
+        teacherProfile.setName(resultUser.getName());
+        teacherProfile.setPhone(resultUser.getPhone());
+
+        return teacherProfile;
     }
 
     /**
