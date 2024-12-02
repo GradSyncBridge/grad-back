@@ -207,11 +207,12 @@ public class TeacherServiceImpl implements TeacherService {
             CompletableFuture<Void> avatarFuture = CompletableFuture.runAsync(()->{
                 if (teacherProfile.getAvatar() != null) {
                     String avatar = targetUser.getAvatar();
-                    if (avatar != null && !avatar.isEmpty())
-                        CompletableFuture.runAsync(()->
-                            fileManager.deleteFile(avatar)
+                    if (avatar != null && !avatar.isEmpty()) {
+                        CompletableFuture.runAsync(() ->
+                                fileManager.deleteFile(avatar)
                         );
-                    targetUser.setAvatar(fileManager.uploadBase64Image(avatar, targetUser));
+                        targetUser.setAvatar(fileManager.uploadBase64Image(avatar, targetUser));
+                    }
                 } else
                     targetUser.setAvatar(targetUser.getAvatar());
             });

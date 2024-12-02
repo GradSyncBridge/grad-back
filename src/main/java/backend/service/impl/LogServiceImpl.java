@@ -1,7 +1,11 @@
 package backend.service.impl;
 
+import java.lang.reflect.Field;
+import java.lang.reflect.Method;
 import java.time.LocalDateTime;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.logging.Logger;
 
 import backend.annotation.SysLog;
@@ -11,6 +15,7 @@ import backend.model.VO.log.LogVO;
 import backend.model.entity.Teacher;
 import backend.model.entity.User;
 import backend.util.FieldsGenerator;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import com.github.pagehelper.Page;
 import com.github.pagehelper.PageHelper;
 import org.aspectj.lang.JoinPoint;
@@ -24,6 +29,8 @@ import backend.mapper.LogMapper;
 import backend.model.converter.LogConverter;
 import backend.model.entity.Log;
 import backend.service.LogService;
+import org.springframework.transaction.annotation.Transactional;
+import org.springframework.web.multipart.MultipartFile;
 
 @Aspect
 @Service
@@ -62,6 +69,7 @@ public class LogServiceImpl implements LogService {
     }
 
     @Before("@annotation(sysLog)")
+    @Transactional
     public void logMethodExecution(JoinPoint joinPoint, SysLog sysLog){
 
         String endPoint = sysLog.value();
@@ -71,16 +79,49 @@ public class LogServiceImpl implements LogService {
         String[] parameterNames = signature.getParameterNames();
 
         Object[] args = joinPoint.getArgs();
-        StringBuilder operation = new StringBuilder();
 
-        for(int i= 0; i < args.length; i++)
-            operation.append(parameterNames[i]).append(": ").append(args[i]).append(" ");
+        Map<String, Object> map = new HashMap<>();
+        for(int i= 0; i < args.length; i++) {
+            if(
+                    args[i] instanceof Integer || args[i] instanceof String ||
+                    args[i] instanceof Boolean || args[i] instanceof Long ||
+                    args[i] instanceof Double  || args[i] instanceof Float ||
+                    args[i] instanceof Short
+            )
+                map.put(parameterNames[i], args[i]);
+            if(args[i] instanceof MultipartFile)
+                map.put(parameterNames[i], ((MultipartFile) args[i]).getOriginalFilename());
+        }
 
         try {
+            ObjectMapper objectMapper = new ObjectMapper();
+            String result, avatar = "";
+
+
+            if(!map.isEmpty())
+                result = objectMapper.writerWithDefaultPrettyPrinter().writeValueAsString(map);
+            else{
+                Field[] fields = args[0].getClass().getDeclaredFields();
+                Method setAvatar = null;
+
+                for(Field field : fields){
+                    if(field.getName().equals("avatar")){
+                        setAvatar = args[0].getClass().getDeclaredMethod("setAvatar", String.class);
+                        Method getAvatar = args[0].getClass().getDeclaredMethod("getAvatar");
+                        avatar = (String) getAvatar.invoke(args[0]);
+                        setAvatar.invoke(args[0], "avatar");
+                    }
+                }
+
+                result = objectMapper.writerWithDefaultPrettyPrinter().writeValueAsString(args[0]);
+
+                if(setAvatar != null) setAvatar.invoke(args[0], avatar);
+            }
+
             logMapper.insertLog(
                     Log.builder().userId(User.getAuth().getId())
                             .endpoint(endPoint)
-                            .operation(operation.toString().length() > 255 ? operation.substring(0, 255) : operation.toString())
+                            .operation(result)
                             .created(LocalDateTime.now())
                             .build()
             );
