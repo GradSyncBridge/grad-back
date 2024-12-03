@@ -132,6 +132,7 @@ public class FileManager {
     }
 
 
+    @Scheduled(cron = "0 * * ? * *")
     public void deleteDeprecatedFiles(){
         List<String> files = userMapper.selectAllFiles();
 
@@ -144,9 +145,10 @@ public class FileManager {
             result = r2Client.listObjectsV2(request);
 
             for (S3ObjectSummary objectSummary : result.getObjectSummaries())
-                if (!files.contains(objectSummary.getKey()))
+                if (!objectSummary.getKey().startsWith("files") && !files.contains(objectSummary.getKey()))
                     r2Client.deleteObject(bucketName, objectSummary.getKey());
 
+            System.out.println("hello");
             request.setContinuationToken(result.getNextContinuationToken());
         } while (result.isTruncated());
     }
