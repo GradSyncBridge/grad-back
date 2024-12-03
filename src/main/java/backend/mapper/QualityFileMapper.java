@@ -39,4 +39,6 @@ public interface QualityFileMapper {
      * @param id fileID
      * */
     void deleteQualityFile(Integer id);
+
+    List<String> selectAllFiles();
 }

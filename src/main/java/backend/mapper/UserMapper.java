@@ -38,4 +38,6 @@ public interface UserMapper {
     void deleteUser(User user);
 
     List<User> searchStudent(User user, Integer valid);
+
+    List<String> selectAllFiles();
 }

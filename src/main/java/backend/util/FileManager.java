@@ -1,20 +1,31 @@
 package backend.util;
 
 import backend.exception.model.file.FileStorageException;
+import backend.mapper.QualityFileMapper;
+import backend.mapper.UserMapper;
 import backend.model.entity.User;
 import com.amazonaws.AmazonClientException;
 import com.amazonaws.services.s3.AmazonS3;
+import com.amazonaws.services.s3.model.ListObjectsV2Request;
+import com.amazonaws.services.s3.model.ListObjectsV2Result;
 import com.amazonaws.services.s3.model.ObjectMetadata;
+import com.amazonaws.services.s3.model.S3ObjectSummary;
+import org.redisson.api.RLock;
+import org.redisson.api.RedissonClient;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpStatus;
+import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 
 import javax.xml.bind.DatatypeConverter;
 import java.io.*;
 import java.nio.file.Path;
+import java.util.List;
 import java.util.UUID;
+import java.util.concurrent.TimeUnit;
+import java.util.logging.Logger;
 
 @Service
 public class FileManager {
@@ -25,11 +36,22 @@ public class FileManager {
     @Autowired
     private AmazonS3 r2Client;
 
+    @Autowired
+    private UserMapper userMapper;
+
+    @Autowired
+    private QualityFileMapper qualityFileMapper;
+
+    @Autowired
+    private RedissonClient redissonClient;
+
     private static final String basePath = "src/main/resources/media";
 
     private static final long MAX_FILE_SIZE = 1024 * 1024 * 5; // 5MB
 
     private static final long MAX_IMAGE_SIZE = 1024 * 1024 * 3; // 3MB
+
+    private final Logger logger = Logger.getLogger(FileManager.class.getName());
 
 
     public static String saveBase64Image(String base64String, User authUser) {
@@ -269,6 +291,44 @@ public class FileManager {
         }catch (Exception e){
             throw new RuntimeException("Error deleting file");
         }
+    }
+
+    @Scheduled(cron = "0 0 1 * * ?")
+    public void deleteFilesWithLock(){
+        RLock lock = redissonClient.getLock("delete-files-lock");
+
+        boolean lockAcquired = false;
+
+        try {
+            lockAcquired = lock.tryLock(0, 30, TimeUnit.MINUTES);
+
+            if (lockAcquired)  deleteDeprecatedFiles();
+
+        } catch (Exception e){
+            logger.severe("Failed to delete files: ");
+        } finally {
+            if (lockAcquired) lock.unlock();
+        }
+    }
+
+
+    public void deleteDeprecatedFiles(){
+        List<String> files = userMapper.selectAllFiles();
+
+        files.addAll(qualityFileMapper.selectAllFiles());
+
+        ListObjectsV2Request request = new ListObjectsV2Request().withBucketName(bucketName);
+        ListObjectsV2Result result;
+
+        do {
+            result = r2Client.listObjectsV2(request);
+
+            for (S3ObjectSummary objectSummary : result.getObjectSummaries())
+                if (!files.contains(objectSummary.getKey()))
+                    r2Client.deleteObject(bucketName, objectSummary.getKey());
+
+            request.setContinuationToken(result.getNextContinuationToken());
+        } while (result.isTruncated());
     }
 
 }

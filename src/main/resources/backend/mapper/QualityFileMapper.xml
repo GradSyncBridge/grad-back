@@ -71,4 +71,8 @@
         where id = #{id}
     </delete>
 
+    <select id="selectAllFiles" resultType="java.lang.String">
+        select file from QualityFile
+    </select>
+
 </mapper>
