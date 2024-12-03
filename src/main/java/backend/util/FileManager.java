@@ -45,8 +45,6 @@ public class FileManager {
     @Autowired
     private RedissonClient redissonClient;
 
-    private static final String basePath = "src/main/resources/media";
-
     private static final long MAX_FILE_SIZE = 1024 * 1024 * 100; // 5MB
 
     private static final long MAX_IMAGE_SIZE = 1024 * 1024 * 3; // 3MB
