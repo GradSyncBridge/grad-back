@@ -1,6 +1,5 @@
 package backend.service.impl;
 
-import java.lang.reflect.Field;
 import java.lang.reflect.Method;
 import java.time.LocalDateTime;
 import java.util.HashMap;
@@ -10,11 +9,13 @@ import java.util.logging.Logger;
 
 import backend.annotation.SysLog;
 import backend.exception.model.user.UserRoleDeniedException;
+import backend.model.DTO.LogDTO;
+import backend.model.DTO.TeacherProfileUpdateDTO;
+import backend.model.DTO.UserProfileUpdateDTO;
 import backend.model.VO.log.PageLogVO;
 import backend.model.VO.log.LogVO;
 import backend.model.entity.Teacher;
 import backend.model.entity.User;
-import backend.util.FieldsGenerator;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.github.pagehelper.Page;
 import com.github.pagehelper.PageHelper;
@@ -55,7 +56,7 @@ public class LogServiceImpl implements LogService {
 
             PageHelper.startPage(pageIndex, pageSize, true);
 
-            Page<Log> page = logMapper.selectLog(Log.builder().build(), FieldsGenerator.generateFields(Log.class));
+            Page<LogDTO> page = logMapper.selectLog();
 
             List<LogVO> logVOS = logConverter.logListToLogVOList(page.getResult());
 
@@ -101,16 +102,15 @@ public class LogServiceImpl implements LogService {
             if(!map.isEmpty())
                 result = objectMapper.writerWithDefaultPrettyPrinter().writeValueAsString(map);
             else{
-                Field[] fields = args[0].getClass().getDeclaredFields();
                 Method setAvatar = null;
 
-                for(Field field : fields){
-                    if(field.getName().equals("avatar")){
-                        setAvatar = args[0].getClass().getDeclaredMethod("setAvatar", String.class);
-                        Method getAvatar = args[0].getClass().getDeclaredMethod("getAvatar");
-                        avatar = (String) getAvatar.invoke(args[0]);
-                        setAvatar.invoke(args[0], "avatar");
-                    }
+                if(args[0] instanceof UserProfileUpdateDTO ||
+                        args[0] instanceof User || args[0] instanceof TeacherProfileUpdateDTO
+                ){
+                    setAvatar = args[0].getClass().getDeclaredMethod("setAvatar", String.class);
+                    Method getAvatar = args[0].getClass().getDeclaredMethod("getAvatar");
+                    avatar = (String) getAvatar.invoke(args[0]);
+                    setAvatar.invoke(args[0], User.getAuth().getAvatar());
                 }
 
                 result = objectMapper.writerWithDefaultPrettyPrinter().writeValueAsString(args[0]);

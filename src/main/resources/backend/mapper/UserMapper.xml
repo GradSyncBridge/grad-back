@@ -164,4 +164,9 @@
         </where>
     </select>
 
+
+    <select id="selectAllFiles" resultType="java.lang.String">
+        select avatar from User
+    </select>
+
 </mapper>

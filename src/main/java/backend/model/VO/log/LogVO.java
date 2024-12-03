@@ -1,17 +1,44 @@
 package backend.model.VO.log;
 
-import lombok.AllArgsConstructor;
-import lombok.Builder;
-import lombok.Data;
-import lombok.NoArgsConstructor;
+import lombok.*;
+
+import java.util.Map;
 
 @Data
 @AllArgsConstructor
-@NoArgsConstructor
 @Builder
 public class LogVO {
-    private Integer uid;
+
+    private OperationUser user;
+
     private String endpoint;
-    private String operation;
+
+    private Object operation;
+
     private String created;
+
+    public LogVO() {
+        this.user = new OperationUser();
+    }
+
+    @Getter
+    @Setter
+    @AllArgsConstructor
+    @NoArgsConstructor
+    public class OperationUser {
+
+        private String uid;
+
+        private String username;
+
+        private String avatar;
+
+        private String name;
+
+        private String email;
+
+        private String gender;
+
+        private String phone;
+    }
 }

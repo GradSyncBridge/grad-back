@@ -1,10 +1,10 @@
 package backend.mapper;
 
+import backend.model.DTO.LogDTO;
 import backend.model.entity.Log;
 import com.github.pagehelper.Page;
 import org.apache.ibatis.annotations.Mapper;
 
-import java.util.List;
 import java.util.Map;
 
 @Mapper
@@ -20,11 +20,9 @@ public interface LogMapper {
     /**
      * 查询日志
      *
-     * @param log   查询条件
-     * @param scope 查询返回的字段
      * @return 日志列表
      */
-    Page<Log> selectLog(Log log, Map<String, Boolean> scope);
+    Page<LogDTO> selectLog();
 
     /**
      * 更新日志
