@@ -215,11 +215,9 @@ public class FileManager {
     }
 
     public String uploadBase64Image(String base64Image, User user){
-        // 从Base64字符串中提取文件类型
         String[] parts = base64Image.split(",");
         String metadata = parts[0];
 
-        // 根据格式提取文件类型
         String[] metadataParts = metadata.split(";");
         String fileType = metadataParts[0].split(":")[1].split("/")[1];
 
@@ -227,8 +225,11 @@ public class FileManager {
             throw new FileStorageException(HttpStatus.BAD_REQUEST.value(), "Invalid file type");
         }
 
-        // 从Base64字符串中提取文件内容
         byte[] data = DatatypeConverter.parseBase64Binary(parts[1]);
+
+        if (data.length > MAX_IMAGE_SIZE) {
+            throw new FileStorageException(HttpStatus.BAD_REQUEST.value(), "file size exceeds the limit");
+        }
 
         InputStream targetStream = new ByteArrayInputStream(data);
 
