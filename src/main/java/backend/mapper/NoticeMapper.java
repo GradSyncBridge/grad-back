@@ -29,10 +29,9 @@ public interface NoticeMapper {
     /**
      * 更新公告
      *
-     * @param noticeUpdate 更新值
-     * @param noticeQuery  更新的条件
+     * @param notice 更新值
      */
-    void updateNotice(Notice noticeUpdate, Notice noticeQuery);
+    void updateNotice(Notice notice, Notice scope);
 
 
     Page<Notice> selectNoticeByPage();
@@ -42,4 +41,8 @@ public interface NoticeMapper {
     Page<Notice> selectNoticeByPageWithCondition(Integer publish);
 
     Notice selectNoticeById(Integer noticeID);
+
+    Page<Notice> selectNoticeBuPageWithAll();
+
+    Notice selectNoticeByIdWithAdmin(Integer noticeID);
 }

@@ -1,19 +1,18 @@
 package backend.service.impl;
 
+import backend.exception.model.notice.NoticeLockedException;
 import backend.exception.model.notice.NoticeNotFoundException;
 import backend.exception.model.user.UserRoleDeniedException;
 import backend.mapper.NoticeMapper;
 import backend.mapper.QualityFileMapper;
 import backend.mapper.UserMapper;
 import backend.model.DTO.NoticeCreateDTO;
-import backend.model.VO.notice.NoticeBriefVO;
-import backend.model.VO.notice.NoticeDetailVO;
-import backend.model.VO.notice.NoticeFile;
-import backend.model.VO.notice.PageResult;
+import backend.model.VO.notice.*;
 import backend.model.converter.NoticeConverter;
 import backend.model.entity.Notice;
 import backend.model.entity.QualityFile;
 import backend.model.entity.User;
+import backend.redis.RedisService;
 import backend.service.NoticeService;
 import backend.util.FieldsGenerator;
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -42,6 +41,20 @@ public class NoticeServiceImpl implements NoticeService {
     @Autowired
     private QualityFileMapper qualityFileMapper;
 
+    @Autowired
+    private RedisService redisService;
+
+    private static final String NOTICE_PREFIX = "notice:";
+
+    private static final String LOCKED = "locked";
+
+    private static final String UNLOCKED = "unlocked";
+
+    /**
+     * 创建公告
+     * @param noticeCreateDTO 公告信息
+     * @return null
+     */
     @Override
     @Transactional
     public void createNotice(NoticeCreateDTO noticeCreateDTO) {
@@ -50,23 +63,32 @@ public class NoticeServiceImpl implements NoticeService {
 
             String files = objectMapper.writeValueAsString(noticeCreateDTO.getNoticeFile());
 
-            noticeMapper.insertNotice(
-                    Notice.builder().uid(User.getAuth().getId())
-                        .title(noticeCreateDTO.getNoticeTitle())
-                        .content(noticeCreateDTO.getNoticeContent())
-                        .files(files).publish(noticeCreateDTO.getPublish())
-                        .draft(noticeCreateDTO.getDraft())
-                        .disabled(1)
-                        .created(LocalDateTime.now())
-                        .updated(LocalDateTime.now())
-                        .build()
-            );
+            Notice notice = Notice.builder().uid(User.getAuth().getId())
+                    .title(noticeCreateDTO.getNoticeTitle())
+                    .content(noticeCreateDTO.getNoticeContent())
+                    .files(files).publish(noticeCreateDTO.getPublish())
+                    .draft(noticeCreateDTO.getDraft())
+                    .disabled(1)
+                    .created(LocalDateTime.now())
+                    .updated(LocalDateTime.now())
+                    .build();
 
+            noticeMapper.insertNotice(notice);
+
+            if(notice.getDraft() == 1 && notice.getPublish() == 0)
+                redisService.saveData(NOTICE_PREFIX + notice.getId(), UNLOCKED);
         }catch (Exception e){
             throw new RuntimeException("Error creating notice");
         }
     }
 
+    /**
+     * 获取公告
+     * GET /unauthorized/notice
+     * @param pageIndex 当前页
+     * @param pageSize 每页数量
+     * @return 公告列表
+     */
     @Override
     public PageResult getAllNotice(Integer pageIndex, Integer pageSize) {
 
@@ -85,6 +107,12 @@ public class NoticeServiceImpl implements NoticeService {
                 .build();
     }
 
+    /**
+     * 删除公告
+     * DELETE /notice
+     * @param noticeID 公告ID
+     * @return null
+     */
     @Override
     @Transactional
     public void deleteNotice(Integer noticeID) {
@@ -93,13 +121,24 @@ public class NoticeServiceImpl implements NoticeService {
 
         try{
             noticeMapper.deleteNotice(noticeID);
+
+            if(redisService.getData(NOTICE_PREFIX + noticeID) != null)
+                redisService.deleteData(NOTICE_PREFIX + noticeID);
         }catch (Exception e){
             throw new RuntimeException("Error deleting notice");
         }
     }
 
+    /**
+     * 获取公告
+     * GET /notice
+     * @param pageIndex 当前页
+     * @param pageSize 每页数量
+     * @param publish 是否发布
+     * @return 公告列表
+     */
     @Override
-    public PageResult getNotice(Integer pageIndex, Integer pageSize, Integer publish) {
+    public PageNotice getNotice(Integer pageIndex, Integer pageSize, Integer publish) {
         if(User.getAuth().getTeacher() == null || User.getAuth().getTeacher().getIdentity() != 3)
             throw new UserRoleDeniedException();
 
@@ -109,19 +148,120 @@ public class NoticeServiceImpl implements NoticeService {
 
         if(page == null)  return null;
 
-        List<NoticeBriefVO> noticeBriefVOList =
-                noticeConverter.INSTANCE.NoticeListToNoticeBriefVOList(page.getResult());
+        List<User> userList = userMapper.selectUser(
+                User.builder().id(User.getAuth().getId()).build(),
+                FieldsGenerator.generateFields(User.class)
+        );
 
-        return PageResult.builder()
-                .noticeList(noticeBriefVOList)
+        List<NoticeBriefList> noticeBriefList =
+                noticeConverter.INSTANCE.NoticeListToNoticeBriefList(page.getResult(), userList.getFirst());
+
+        return PageNotice.builder()
+                .noticeList(noticeBriefList)
                 .total((int) page.getTotal())
                 .build();
     }
 
+    /**
+     * 获取公告详情
+     * GET /unauthorized/notice/detail
+     * @param noticeID 公告ID
+     * @return 公告详情
+     */
     @Override
     public NoticeDetailVO getNoticeDetail(Integer noticeID) {
+        return getNoticeDetailWithCondition(noticeID, 0);
+    }
 
-        Notice notice = noticeMapper.selectNoticeById(noticeID);
+    /**
+     * 更新公告
+     * PUT /notice
+     * @param noticeCreateDTO 公告信息
+     * @return null
+     */
+    @Override
+    @Transactional
+    public void updateNotice(NoticeCreateDTO noticeCreateDTO) {
+        if(User.getAuth().getTeacher() == null || User.getAuth().getTeacher().getIdentity() != 3)
+            throw new UserRoleDeniedException();
+
+        try{
+            ObjectMapper objectMapper = new ObjectMapper();
+
+            String files = objectMapper.writeValueAsString(noticeCreateDTO.getNoticeFile());
+
+            if(noticeCreateDTO.getPublish() == 1) noticeCreateDTO.setDraft(0);
+            Notice notice = Notice.builder().id(noticeCreateDTO.getNoticeID())
+                    .uid(User.getAuth().getId())
+                    .title(noticeCreateDTO.getNoticeTitle())
+                    .content(noticeCreateDTO.getNoticeContent())
+                    .files(files).publish(noticeCreateDTO.getPublish())
+                    .draft(noticeCreateDTO.getDraft())
+                    .disabled(noticeCreateDTO.getPublish() == 1 ? 1 : 0)
+                    .updated(LocalDateTime.now())
+                    .build();
+
+            noticeMapper.updateNotice(
+                    notice,
+                    Notice.builder().id(noticeCreateDTO.getNoticeID()).build()
+            );
+
+            String lock = (String) redisService.getData(NOTICE_PREFIX + notice.getId());
+
+            if(lock == null && notice.getDraft() == 1)
+                redisService.saveData(NOTICE_PREFIX + notice.getId(), UNLOCKED);
+            else if(lock != null && notice.getDraft() == 0)
+                redisService.deleteData(NOTICE_PREFIX + notice.getId());
+            else if(lock != null && notice.getPublish() == 1)
+                redisService.deleteData(NOTICE_PREFIX + notice.getId());
+
+        }catch (Exception e){
+            throw new RuntimeException("Error updating notice");
+        }
+    }
+
+    /**
+     * 获取公告详情
+     * GET /notice/detail
+     * @param noticeID 公告ID
+     * @return 公告详情
+     */
+    @Override
+    @Transactional
+    public NoticeDetailVO getNoticeDetailByAdmin(Integer noticeID) {
+        if(User.getAuth().getTeacher() == null || User.getAuth().getTeacher().getIdentity() != 3)
+            throw new UserRoleDeniedException();
+
+        String lock = (String) redisService.getData(NOTICE_PREFIX + noticeID);
+
+        if(lock == null)  {
+            redisService.saveData(NOTICE_PREFIX + noticeID, UNLOCKED);
+            lock  = UNLOCKED;
+        }
+
+        if(lock.equals(LOCKED)) throw new NoticeLockedException();
+
+        redisService.setData(NOTICE_PREFIX + noticeID, LOCKED);
+
+        noticeMapper.updateNotice(
+                Notice.builder().draft(1).build(),
+                Notice.builder().id(noticeID).build()
+        );
+
+        return getNoticeDetailWithCondition(noticeID, 1);
+    }
+
+
+    public NoticeDetailVO getNoticeDetailWithCondition(Integer noticeID, Integer mode) {
+        if(User.getAuth().getTeacher() == null || User.getAuth().getTeacher().getIdentity() != 3)
+            throw new UserRoleDeniedException();
+
+        Notice notice = null;
+
+        if(mode == 1)
+            noticeMapper.selectNoticeByIdWithAdmin(noticeID);
+        else
+            noticeMapper.selectNoticeById(noticeID);
 
         if(notice == null)  throw new NoticeNotFoundException();
 

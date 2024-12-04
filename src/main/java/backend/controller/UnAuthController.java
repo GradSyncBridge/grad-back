@@ -222,6 +222,13 @@ public class UnAuthController {
         );
     }
 
+    /**
+     * 获取公告
+     * GET /unauthorized/notice
+     * @param pageIndex 当前页
+     * @param pageSize 每页数量
+     * @return
+     */
     @GetMapping(value = "/notice")
     public ResponseEntity<ResultEntity<Object>> getNotice(
             @RequestParam(value = "pageIndex", defaultValue = "1") Integer pageIndex,
@@ -234,6 +241,12 @@ public class UnAuthController {
         );
     }
 
+    /**
+     * 获取公告详情
+     * GET /unauthorized/notice/detail
+     * @param noticeID 公告ID
+     * @return 公告详情
+     */
     @GetMapping(value = "/notice/detail")
     public ResponseEntity<ResultEntity<Object>> getNoticeDetail(
             @RequestParam(value = "noticeID") Integer noticeID

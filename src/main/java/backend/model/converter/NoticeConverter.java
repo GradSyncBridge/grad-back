@@ -1,9 +1,6 @@
 package backend.model.converter;
 
-import backend.model.VO.notice.NoticeBriefVO;
-import backend.model.VO.notice.NoticeDetailVO;
-import backend.model.VO.notice.NoticeFile;
-import backend.model.VO.notice.NoticeRefUser;
+import backend.model.VO.notice.*;
 import backend.model.entity.Notice;
 import backend.model.entity.User;
 import org.mapstruct.Mapper;
@@ -56,4 +53,32 @@ public interface NoticeConverter {
                 .build();
     }
 
+    default NoticeBriefList NoticeToNoticeBriefList(Notice notice, User user) {
+        NoticeRefUser noticeRefUser = NoticeRefUser.builder()
+                .uid(user.getId())
+                .email(user.getEmail())
+                .phone(user.getPhone())
+                .avatar(user.getAvatar())
+                .username(user.getUsername())
+                .name(user.getName())
+                .gender(user.getGender())
+                .build();
+
+        return NoticeBriefList.builder()
+                .noticeID(notice.getId())
+                .noticeTitle(notice.getTitle())
+                .updated(notice.getUpdated().toString().split("T")[0])
+                .user(noticeRefUser)
+                .build();
+    }
+
+
+
+    default List<NoticeBriefList> NoticeListToNoticeBriefList(List<Notice> result, User first){
+        List<NoticeBriefList> noticeBriefList = new ArrayList<>();
+
+        result.forEach(notice -> noticeBriefList.add(NoticeToNoticeBriefList(notice, first)));
+
+        return noticeBriefList;
+    }
 }

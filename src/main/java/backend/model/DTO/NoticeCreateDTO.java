@@ -15,6 +15,8 @@ import java.util.List;
 @NoticeCreateValidation
 public class NoticeCreateDTO {
 
+    private Integer noticeID;
+
     private String noticeTitle;
 
     private String noticeContent;

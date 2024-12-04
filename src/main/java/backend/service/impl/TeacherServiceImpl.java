@@ -211,7 +211,7 @@ public class TeacherServiceImpl implements TeacherService {
                         CompletableFuture.runAsync(() ->
                                 fileManager.deleteFile(avatar)
                         );
-                        targetUser.setAvatar(fileManager.uploadBase64Image(avatar, targetUser));
+                        targetUser.setAvatar(fileManager.uploadBase64Image(teacherProfile.getAvatar(), targetUser));
                     }
                 } else
                     targetUser.setAvatar(targetUser.getAvatar());

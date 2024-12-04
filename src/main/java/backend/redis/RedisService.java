@@ -17,6 +17,18 @@ public class RedisService {
         redisTemplate.expire(key, timeout, TimeUnit.MINUTES);
     }
 
+    public void setData(String key, Object value) {
+        redisTemplate.opsForValue().set(key, value);
+    }
+
+    public void setDataWithExpiration(String key, Object value, Integer timeout) {
+        redisTemplate.opsForValue().set(key, value, timeout, TimeUnit.MINUTES);
+    }
+
+    public void saveData(String key, Object value) {
+        redisTemplate.opsForValue().set(key, value);
+    }
+
     public Object getData(String key) {
         return redisTemplate.opsForValue().get(key);
     }
