@@ -71,6 +71,26 @@
             <if test="messageContentQuery.draft != null"> and draft = #{messageContentQuery.draft} </if>
             <if test="messageContentQuery.disabled != null"> and disabled = #{messageContentQuery.disabled} </if>
         </where>
-    </update>   
+    </update>
+
+
+    <insert id="insertContent" useGeneratedKeys="true" keyProperty="id">
+        insert into MessageContent
+                (
+                    content,
+                    created,
+                    sender,
+                    draft,
+                    disabled
+                )
+        values
+        (
+            #{content},
+            #{created},
+            #{sender},
+            #{draft},
+            #{disabled}
+        )
+    </insert>
      
 </mapper>

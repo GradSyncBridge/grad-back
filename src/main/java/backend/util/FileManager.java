@@ -113,7 +113,6 @@ public class FileManager {
         }
     }
 
-    @Scheduled(cron = "0 0 1 * * ?")
     public void deleteFilesWithLock(){
         RLock lock = redissonClient.getLock("delete-files-lock");
 
@@ -131,8 +130,6 @@ public class FileManager {
         }
     }
 
-
-    @Scheduled(cron = "0 * * ? * *")
     public void deleteDeprecatedFiles(){
         List<String> files = userMapper.selectAllFiles();
 
@@ -148,7 +145,6 @@ public class FileManager {
                 if (!objectSummary.getKey().startsWith("files") && !files.contains(objectSummary.getKey()))
                     r2Client.deleteObject(bucketName, objectSummary.getKey());
 
-            System.out.println("hello");
             request.setContinuationToken(result.getNextContinuationToken());
         } while (result.isTruncated());
     }
