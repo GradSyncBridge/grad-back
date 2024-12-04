@@ -9,9 +9,13 @@ import lombok.NoArgsConstructor;
 @AllArgsConstructor
 @NoArgsConstructor
 @Builder
-public class EnrollDTO {
+public class MessageDTO {
 
-    private Integer studentID;
+    private Integer id;
 
-    private Integer courseID;
+    private Integer sender;
+
+    private Integer receiver;
+
+    private String content;
 }

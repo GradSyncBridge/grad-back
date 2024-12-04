@@ -29,4 +29,6 @@ public interface MessageContentMapper {
      * @param messageContentQuery  更新条件
      */
     void updateMessageContent(MessageContent messageContentUpdate, MessageContent messageContentQuery);
+
+    void insertContent(MessageContent messageContent);
 }

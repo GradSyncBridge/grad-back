@@ -32,4 +32,6 @@ public interface MessageMapper {
      * @param messageQuery  更新的条件
      */
     void updateMessage(Message messageUpdate, Message messageQuery);
+
+    void InsertMessage(Message message);
 }

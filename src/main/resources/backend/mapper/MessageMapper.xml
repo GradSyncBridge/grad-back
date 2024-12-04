@@ -67,4 +67,9 @@
         </where>
     </update>
 
+    <insert id="InsertMessage" keyProperty="id" useGeneratedKeys="true">
+        INSERT INTO message (cid, receiver, is_read, disabled)
+        VALUES (#{cid}, #{receiver}, #{isRead}, #{disabled})
+    </insert>
+
 </mapper>

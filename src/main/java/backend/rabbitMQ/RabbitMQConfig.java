@@ -13,7 +13,7 @@ import org.springframework.context.annotation.Profile;
 @Profile("mq")
 public class RabbitMQConfig {
 
-    private static final String QUEUE_NAME = "enroll-queue";
+    private static final String QUEUE_NAME = "message-queue";
 
     private static final String EXCHANGE_NAME = "topic-exchange";
 
@@ -38,6 +38,6 @@ public class RabbitMQConfig {
      */
     @Bean
     public Binding binding(Queue queue, TopicExchange exchange) {
-        return BindingBuilder.bind(queue).to(exchange).with("enroll.*");
+        return BindingBuilder.bind(queue).to(exchange).with("message.*");
     }
 }

@@ -1,6 +1,5 @@
 package backend.rabbitMQ;
 
-import backend.rabbitMQ.EnrollDTO;
 import backend.util.ResultEntity;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Profile;
@@ -14,10 +13,16 @@ import org.springframework.web.bind.annotation.RestController;
 public class MessageQueueController {
 
     @Autowired
-    private EnrollService enrollService;
+    private MessageService messageService;
 
-    @PostMapping("/enroll")
-    public ResponseEntity<ResultEntity<Object>> enroll(@RequestBody EnrollDTO enrollDTO) {
-        return enrollService.enroll(enrollDTO.getStudentID());
+    @PostMapping("/message")
+    public ResponseEntity<ResultEntity<Object>> enroll(@RequestBody MessageDTO messageDTO) {
+        messageService.send(messageDTO);
+
+        return ResultEntity.success(
+                200,
+                "Sending message successfully.",
+                null
+        );
     }
 }

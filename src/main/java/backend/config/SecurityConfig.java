@@ -76,7 +76,7 @@ public class SecurityConfig implements WebMvcConfigurer {
 
         return http.csrf(customizer -> customizer.disable()).
                 authorizeHttpRequests(request -> request
-                        .requestMatchers("/resources/**", "/unauthorized/**")
+                        .requestMatchers("/resources/**", "/unauthorized/**", "/demo/**", "/websocket/**")
                         .permitAll()
                         .anyRequest()
                         .authenticated()
