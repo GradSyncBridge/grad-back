@@ -53,7 +53,6 @@ public class NoticeServiceImpl implements NoticeService {
     /**
      * 创建公告
      * @param noticeCreateDTO 公告信息
-     * @return null
      */
     @Override
     @Transactional
@@ -111,7 +110,6 @@ public class NoticeServiceImpl implements NoticeService {
      * 删除公告
      * DELETE /notice
      * @param noticeID 公告ID
-     * @return null
      */
     @Override
     @Transactional
@@ -177,7 +175,6 @@ public class NoticeServiceImpl implements NoticeService {
      * 更新公告
      * PUT /notice
      * @param noticeCreateDTO 公告信息
-     * @return null
      */
     @Override
     @Transactional
@@ -239,9 +236,9 @@ public class NoticeServiceImpl implements NoticeService {
             lock  = UNLOCKED;
         }
 
-        if(lock.equals(LOCKED)) throw new NoticeLockedException();
+        if(!lock.equals(LOCKED + ":" + User.getAuth().getId())) throw new NoticeLockedException();
 
-        redisService.setData(NOTICE_PREFIX + noticeID, LOCKED);
+        redisService.setData(NOTICE_PREFIX + noticeID, LOCKED + ":" + User.getAuth().getId());
 
         noticeMapper.updateNotice(
                 Notice.builder().draft(1).build(),
@@ -256,12 +253,12 @@ public class NoticeServiceImpl implements NoticeService {
         if(User.getAuth().getTeacher() == null || User.getAuth().getTeacher().getIdentity() != 3)
             throw new UserRoleDeniedException();
 
-        Notice notice = null;
+        Notice notice;
 
         if(mode == 1)
-            noticeMapper.selectNoticeByIdWithAdmin(noticeID);
+            notice = noticeMapper.selectNoticeByIdWithAdmin(noticeID);
         else
-            noticeMapper.selectNoticeById(noticeID);
+            notice = noticeMapper.selectNoticeById(noticeID);
 
         if(notice == null)  throw new NoticeNotFoundException();
 
