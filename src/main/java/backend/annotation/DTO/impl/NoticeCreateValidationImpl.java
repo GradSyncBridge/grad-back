@@ -21,11 +21,11 @@ public class NoticeCreateValidationImpl implements ConstraintValidator<NoticeCre
 
         context.disableDefaultConstraintViolation();
 
-        if(User.getAuth().getTeacher() == null || User.getAuth().getTeacher().getIdentity() != 3){
+        if(User.getAuth().getTeacher() == null){
             context.buildConstraintViolationWithTemplate("User is not authorized to create notice")
                     .addConstraintViolation();
 
-            throw new UserRoleDeniedException(1, 403);
+            return false;
         }
 
         if( noticeCreateDTO.getNoticeContent() == null || noticeCreateDTO.getNoticeContent().isEmpty() ||
