@@ -115,7 +115,7 @@ public class NoticeServiceImpl implements NoticeService {
     @Override
     @Transactional
     public void deleteNotice(Integer noticeID) {
-        if(User.getAuth().getTeacher() == null || User.getAuth().getTeacher().getIdentity() != 3)
+        if(User.getAuth().getTeacher() == null)
             throw new UserRoleDeniedException();
 
         try{
@@ -138,7 +138,7 @@ public class NoticeServiceImpl implements NoticeService {
      */
     @Override
     public PageNotice getNotice(Integer pageIndex, Integer pageSize, Integer publish) {
-        if(User.getAuth().getTeacher() == null || User.getAuth().getTeacher().getIdentity() != 3)
+        if(User.getAuth().getTeacher() == null)
             throw new UserRoleDeniedException();
 
         PageHelper.startPage(pageIndex, pageSize, true);
@@ -180,7 +180,7 @@ public class NoticeServiceImpl implements NoticeService {
     @Override
     @Transactional
     public void updateNotice(NoticeCreateDTO noticeCreateDTO) {
-        if(User.getAuth().getTeacher() == null || User.getAuth().getTeacher().getIdentity() != 3)
+        if(User.getAuth().getTeacher() == null)
             throw new UserRoleDeniedException();
 
         try{
@@ -227,7 +227,7 @@ public class NoticeServiceImpl implements NoticeService {
     @Override
     @Transactional
     public NoticeDetailVO getNoticeDetailByAdmin(Integer noticeID) {
-        if(User.getAuth().getTeacher() == null || User.getAuth().getTeacher().getIdentity() != 3)
+        if(User.getAuth().getTeacher() == null)
             throw new UserRoleDeniedException();
 
         String lock = (String) redisService.getData(NOTICE_PREFIX + noticeID);
