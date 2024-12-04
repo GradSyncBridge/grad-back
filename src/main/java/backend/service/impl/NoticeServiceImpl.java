@@ -190,14 +190,14 @@ public class NoticeServiceImpl implements NoticeService {
 
             String files = objectMapper.writeValueAsString(noticeCreateDTO.getNoticeFile());
 
-            if(noticeCreateDTO.getPublish() == 1) noticeCreateDTO.setDraft(0);
             Notice notice = Notice.builder().id(noticeCreateDTO.getNoticeID())
                     .uid(User.getAuth().getId())
                     .title(noticeCreateDTO.getNoticeTitle())
                     .content(noticeCreateDTO.getNoticeContent())
                     .files(files).publish(noticeCreateDTO.getPublish())
-                    .draft(noticeCreateDTO.getDraft())
+                    .draft(noticeCreateDTO.getPublish() == 1 ? 0 : 1)
                     .disabled(noticeCreateDTO.getPublish() == 1 ? 1 : 0)
+                    .publish(noticeCreateDTO.getPublish())
                     .updated(LocalDateTime.now())
                     .build();
 
@@ -206,13 +206,7 @@ public class NoticeServiceImpl implements NoticeService {
                     Notice.builder().id(noticeCreateDTO.getNoticeID()).build()
             );
 
-            String lock = (String) redisService.getData(NOTICE_PREFIX + notice.getId());
-
-            if(lock == null && notice.getDraft() == 1)
-                redisService.saveData(NOTICE_PREFIX + notice.getId(), UNLOCKED);
-            else if(lock != null && notice.getDraft() == 0)
-                redisService.deleteData(NOTICE_PREFIX + notice.getId());
-            else if(lock != null && notice.getPublish() == 1)
+            if(redisService.getData(NOTICE_PREFIX + notice.getId()) != null)
                 redisService.deleteData(NOTICE_PREFIX + notice.getId());
 
         }catch (UserRoleDeniedException e){
