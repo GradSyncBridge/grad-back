@@ -33,7 +33,7 @@ public interface NoticeConverter {
     default NoticeDetailVO NoticeToNoticeDetailVO(Notice notice, User user, List<NoticeFile> noticeFiles) {
 
         NoticeRefUser noticeRefUser = NoticeRefUser.builder()
-                .uid(notice.getId())
+                .uid(user.getId())
                 .email(user.getEmail())
                 .phone(user.getPhone())
                 .avatar(user.getAvatar())
@@ -55,7 +55,7 @@ public interface NoticeConverter {
 
     default NoticeBriefList NoticeToNoticeBriefList(Notice notice, User user) {
         NoticeRefUser noticeRefUser = NoticeRefUser.builder()
-                .uid(notice.getId())
+                .uid(user.getId())
                 .email(user.getEmail())
                 .phone(user.getPhone())
                 .avatar(user.getAvatar())
@@ -75,10 +75,14 @@ public interface NoticeConverter {
 
 
 
-    default List<NoticeBriefList> NoticeListToNoticeBriefList(List<Notice> result, User first){
+    default List<NoticeBriefList> NoticeListToNoticeBriefList(List<Notice> result, List<User> userList){
         List<NoticeBriefList> noticeBriefList = new ArrayList<>();
 
-        result.forEach(notice -> noticeBriefList.add(NoticeToNoticeBriefList(notice, first)));
+        for(int i = 0; i < result.size(); i++){
+            noticeBriefList.add(NoticeToNoticeBriefList(
+                    result.get(i), userList.get(i)
+            ));
+        }
 
         return noticeBriefList;
     }

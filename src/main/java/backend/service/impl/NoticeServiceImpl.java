@@ -143,13 +143,19 @@ public class NoticeServiceImpl implements NoticeService {
 
         if (page == null) return null;
 
-        List<User> userList = userMapper.selectUser(
-                User.builder().id(User.getAuth().getId()).build(),
-                FieldsGenerator.generateFields(User.class)
-        );
+        List<User> userList = new ArrayList<>();
+
+        for(Notice notice: page.getResult()){
+            List<User> users = userMapper.selectUser(
+                    User.builder().id(notice.getUid()).build(),
+                    FieldsGenerator.generateFields(User.class)
+            );
+            if(!users.isEmpty()) userList.add(users.getFirst());
+            else userList.add(new User());
+        }
 
         List<NoticeBriefList> noticeBriefList =
-                noticeConverter.INSTANCE.NoticeListToNoticeBriefList(page.getResult(), userList.getFirst());
+                noticeConverter.INSTANCE.NoticeListToNoticeBriefList(page.getResult(), userList);
 
         return PageNotice.builder()
                 .noticeList(noticeBriefList)
