@@ -25,7 +25,7 @@ public class NoticeCreateValidationImpl implements ConstraintValidator<NoticeCre
             context.buildConstraintViolationWithTemplate("User is not authorized to create notice")
                     .addConstraintViolation();
 
-            throw new UserRoleDeniedException();
+            throw new UserRoleDeniedException(1, 403);
         }
 
         if( noticeCreateDTO.getNoticeContent() == null || noticeCreateDTO.getNoticeContent().isEmpty() ||

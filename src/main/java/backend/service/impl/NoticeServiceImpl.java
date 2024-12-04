@@ -115,19 +115,13 @@ public class NoticeServiceImpl implements NoticeService {
     @Override
     @Transactional
     public void deleteNotice(Integer noticeID) {
-        try{
-            if(User.getAuth().getTeacher() == null)
-                throw new UserRoleDeniedException();
+        if(User.getAuth().getTeacher() == null)
+            throw new UserRoleDeniedException(1, 403);
 
-            noticeMapper.deleteNotice(noticeID);
+        noticeMapper.deleteNotice(noticeID);
 
-            if(redisService.getData(NOTICE_PREFIX + noticeID) != null)
-                redisService.deleteData(NOTICE_PREFIX + noticeID);
-        }catch (UserRoleDeniedException e){
-            throw new UserRoleDeniedException();
-        } catch (Exception e){
-            throw new RuntimeException("Error deleting notice");
-        }
+        if(redisService.getData(NOTICE_PREFIX + noticeID) != null)
+            redisService.deleteData(NOTICE_PREFIX + noticeID);
     }
 
     /**
@@ -140,31 +134,27 @@ public class NoticeServiceImpl implements NoticeService {
      */
     @Override
     public PageNotice getNotice(Integer pageIndex, Integer pageSize, Integer publish) {
-        try {
-            if (User.getAuth().getTeacher() == null)
-                throw new UserRoleDeniedException();
+        if (User.getAuth().getTeacher() == null)
+            throw new UserRoleDeniedException(1, 403);
 
-            PageHelper.startPage(pageIndex, pageSize, true);
+        PageHelper.startPage(pageIndex, pageSize, true);
 
-            Page<Notice> page = noticeMapper.selectNoticeByPageWithCondition(publish);
+        Page<Notice> page = noticeMapper.selectNoticeByPageWithCondition(publish);
 
-            if (page == null) return null;
+        if (page == null) return null;
 
-            List<User> userList = userMapper.selectUser(
-                    User.builder().id(User.getAuth().getId()).build(),
-                    FieldsGenerator.generateFields(User.class)
-            );
+        List<User> userList = userMapper.selectUser(
+                User.builder().id(User.getAuth().getId()).build(),
+                FieldsGenerator.generateFields(User.class)
+        );
 
-            List<NoticeBriefList> noticeBriefList =
-                    noticeConverter.INSTANCE.NoticeListToNoticeBriefList(page.getResult(), userList.getFirst());
+        List<NoticeBriefList> noticeBriefList =
+                noticeConverter.INSTANCE.NoticeListToNoticeBriefList(page.getResult(), userList.getFirst());
 
-            return PageNotice.builder()
-                    .noticeList(noticeBriefList)
-                    .total((int) page.getTotal())
-                    .build();
-        }catch (UserRoleDeniedException e) {
-            throw new UserRoleDeniedException();
-        }
+        return PageNotice.builder()
+                .noticeList(noticeBriefList)
+                .total((int) page.getTotal())
+                .build();
     }
 
     /**
@@ -188,7 +178,7 @@ public class NoticeServiceImpl implements NoticeService {
     public void updateNotice(NoticeCreateDTO noticeCreateDTO) {
         try{
             if(User.getAuth().getTeacher() == null)
-                throw new UserRoleDeniedException();
+                throw new UserRoleDeniedException(1, 403);
 
             ObjectMapper objectMapper = new ObjectMapper();
 
@@ -220,7 +210,7 @@ public class NoticeServiceImpl implements NoticeService {
                 redisService.deleteData(NOTICE_PREFIX + notice.getId());
 
         }catch (UserRoleDeniedException e){
-            throw new UserRoleDeniedException();
+            throw new UserRoleDeniedException(1, 403);
         }catch (Exception e) {
             throw new RuntimeException("Error updating notice");
         }
@@ -235,31 +225,27 @@ public class NoticeServiceImpl implements NoticeService {
     @Override
     @Transactional
     public NoticeDetailVO getNoticeDetailByAdmin(Integer noticeID) {
-        try {
-            if (User.getAuth().getTeacher() == null)
-                throw new UserRoleDeniedException();
+        if (User.getAuth().getTeacher() == null)
+            throw new UserRoleDeniedException(1, 403);
 
-            String lock = (String) redisService.getData(NOTICE_PREFIX + noticeID);
+        String lock = (String) redisService.getData(NOTICE_PREFIX + noticeID);
 
-            if (lock == null) {
-                redisService.saveData(NOTICE_PREFIX + noticeID, UNLOCKED);
-                lock = UNLOCKED;
-            }
-
-            if (!lock.equals(UNLOCKED) && !lock.equals(LOCKED + ":" + User.getAuth().getId()))
-                throw new NoticeLockedException();
-
-            redisService.setData(NOTICE_PREFIX + noticeID, LOCKED + ":" + User.getAuth().getId());
-
-            noticeMapper.updateNotice(
-                    Notice.builder().draft(1).build(),
-                    Notice.builder().id(noticeID).build()
-            );
-
-            return getNoticeDetailWithCondition(noticeID);
-        }catch (UserRoleDeniedException e){
-            throw new UserRoleDeniedException();
+        if (lock == null) {
+            redisService.saveData(NOTICE_PREFIX + noticeID, UNLOCKED);
+            lock = UNLOCKED;
         }
+
+        if (!lock.equals(UNLOCKED) && !lock.equals(LOCKED + ":" + User.getAuth().getId()))
+            throw new NoticeLockedException();
+
+        redisService.setData(NOTICE_PREFIX + noticeID, LOCKED + ":" + User.getAuth().getId());
+
+        noticeMapper.updateNotice(
+                Notice.builder().draft(1).build(),
+                Notice.builder().id(noticeID).build()
+        );
+
+        return getNoticeDetailWithCondition(noticeID);
     }
 
 

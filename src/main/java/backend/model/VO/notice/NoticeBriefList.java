@@ -19,4 +19,6 @@ public class NoticeBriefList {
 
     private String updated;
 
+    private Integer draft;
+
 }
