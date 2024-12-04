@@ -40,9 +40,9 @@ public interface NoticeMapper {
 
     Page<Notice> selectNoticeByPageWithCondition(Integer publish);
 
-    Notice selectNoticeById(Integer noticeID);
+    Notice selectNoticeById(Integer id);
 
     Page<Notice> selectNoticeBuPageWithAll();
 
-    Notice selectNoticeByIdWithAdmin(Integer noticeID);
+    Notice selectNoticeByIdWithAdmin(Integer id);
 }

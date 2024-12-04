@@ -250,9 +250,6 @@ public class NoticeServiceImpl implements NoticeService {
 
 
     public NoticeDetailVO getNoticeDetailWithCondition(Integer noticeID, Integer mode) {
-        if(User.getAuth().getTeacher() == null || User.getAuth().getTeacher().getIdentity() != 3)
-            throw new UserRoleDeniedException();
-
         Notice notice;
 
         if(mode == 1)
