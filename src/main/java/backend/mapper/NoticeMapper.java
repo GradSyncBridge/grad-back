@@ -1,6 +1,7 @@
 package backend.mapper;
 
 import backend.model.entity.Notice;
+import com.github.pagehelper.Page;
 import org.apache.ibatis.annotations.Mapper;
 
 import java.util.List;
@@ -32,4 +33,13 @@ public interface NoticeMapper {
      * @param noticeQuery  更新的条件
      */
     void updateNotice(Notice noticeUpdate, Notice noticeQuery);
+
+
+    Page<Notice> selectNoticeByPage();
+
+    void deleteNotice(Integer id);
+
+    Page<Notice> selectNoticeByPageWithCondition(Integer publish);
+
+    Notice selectNoticeById(Integer noticeID);
 }

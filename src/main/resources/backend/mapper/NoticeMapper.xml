@@ -27,14 +27,26 @@
     <insert id="insertNotice">
         insert into Notice
         (
+            uid,
+            title,
             content,
+            files,
             created,
+            updated,
+            draft,
+            publish,
             disabled
         )
         values
         (
+            #{uid},
+            #{title},
             #{content},
+            #{files},
             #{created},
+            #{updated},
+            #{draft},
+            #{publish},
             #{disabled}
         )
     </insert>
@@ -60,5 +72,26 @@
             <if test="noticeQuery.disabled != null"> and disabled = #{noticeQuery.disabled} </if>
         </where>
     </update>
+    
+    <select id="selectNoticeByPage">
+        select * from Notice
+        where disabled = 1 and publish = 1 and draft = 0
+    </select>
+
+    <update id="deleteNotice">
+        update Notice
+        set disabled = 0
+        where id = #{id}
+    </update>
+
+    <select id="selectNoticeByPageWithCondition">
+        select * from Notice
+        where publish = #{publish}
+    </select>
+
+    <select id="selectNoticeById">
+        select * from Notice
+        where id = #{id} and disabled = 1 and publish = 1 and draft = 0
+    </select>
 
 </mapper>
