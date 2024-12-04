@@ -24,10 +24,21 @@ public class Notice {
 
     private Integer id;
 
+    private Integer uid;
+
+    private String title;
+
     private String content;
+
+    private String files;
 
     private LocalDateTime created;
 
-    // 0 -> 有效, 1 -> 无效
+    private LocalDateTime updated;
+
+    private Integer draft;
+
+    private Integer publish;
+
     private Integer disabled;
 }

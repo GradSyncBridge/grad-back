@@ -202,16 +202,17 @@ public class UserServiceImpl implements UserService {
                 if (userProfileUpdateDTO.getAvatar() != null) {
                     String avatar = authUser.getAvatar();
                     if (avatar != null && !avatar.isEmpty()) {
-                        CompletableFuture.runAsync(() ->
-                                fileManager.deleteFile(avatar)
-                        );
+                        if(!authUser.getAvatar().equals("default.png"))
+                            CompletableFuture.runAsync(() ->
+                                    fileManager.deleteFile(avatar)
+                            );
                         userProfileUpdateDTO.setAvatar(
                                 fileManager.uploadBase64Image(userProfileUpdateDTO.getAvatar(), authUser)
                         );
                     }
                 }
                 else
-                    userProfileUpdateDTO.setAvatar(null);
+                    userProfileUpdateDTO.setAvatar(User.getAuth().getAvatar());
 
                 return userProfileUpdateDTO;
             }).thenAccept(dto -> userProfileUpdateDTO.setAvatar(dto.getAvatar()));

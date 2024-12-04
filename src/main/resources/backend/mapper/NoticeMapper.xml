@@ -8,33 +8,57 @@
 
     <sql id="DynamicFields">
         <trim suffixOverrides=",">
-            <if test="scope.id == true"> id, </if>
-            <if test="scope.content == true"> content, </if>
-            <if test="scope.created == true"> created, </if>
-            <if test="scope.disabled == true"> disabled, </if>
+            <if test="scope.id != null"> id, </if>
+            <if test="scope.uid != null"> uid, </if>
+            <if test="scope.title != null"> title, </if>
+            <if test="scope.content != null"> content, </if>
+            <if test="scope.files != null"> files, </if>
+            <if test="scope.created != null"> created, </if>
+            <if test="scope.updated != null"> updated, </if>
+            <if test="scope.draft != null"> draft, </if>
+            <if test="scope.publish != null"> publish, </if>
+            <if test="scope.disabled != null"> disabled, </if>
         </trim>
     </sql>
 
     <sql id="DynamicWhere">
         <where>
             <if test="notice.id != null"> and id = #{notice.id} </if>
+            <if test="notice.uid != null"> and uid = #{notice.uid} </if>
+            <if test="notice.title != null"> and title = #{notice.title} </if>
             <if test="notice.content != null"> and content = #{notice.content} </if>
+            <if test="notice.files != null"> and files = #{notice.files} </if>
             <if test="notice.created != null"> and created = #{notice.created} </if>
+            <if test="notice.updated != null"> and updated = #{notice.updated} </if>
+            <if test="notice.draft != null"> and draft = #{notice.draft} </if>
+            <if test="notice.publish != null"> and publish = #{notice.publish} </if>
             <if test="notice.disabled != null"> and disabled = #{notice.disabled} </if>
         </where>
     </sql>
 
-    <insert id="insertNotice">
+    <insert id="insertNotice" keyProperty="id" useGeneratedKeys="true">
         insert into Notice
         (
+            uid,
+            title,
             content,
+            files,
             created,
+            updated,
+            draft,
+            publish,
             disabled
         )
         values
         (
+            #{uid},
+            #{title},
             #{content},
+            #{files},
             #{created},
+            #{updated},
+            #{draft},
+            #{publish},
             #{disabled}
         )
     </insert>
@@ -49,16 +73,49 @@
     <update id="updateNotice">
         update Notice
         <set>
-            <if test="noticeUpdate.content != null"> content = #{noticeUpdate.content}, </if>
-            <if test="noticeUpdate.created != null"> created = #{noticeUpdate.created}, </if>
-            <if test="noticeUpdate.disabled != null"> disabled = #{noticeUpdate.disabled}, </if>
+            <if test="notice.uid != null"> uid = #{notice.uid}, </if>
+            <if test="notice.title != null"> title = #{notice.title}, </if>
+            <if test="notice.content != null"> content = #{notice.content}, </if>
+            <if test="notice.files != null"> files = #{notice.files}, </if>
+            <if test="notice.created != null"> created = #{notice.created}, </if>
+            <if test="notice.updated != null"> updated = #{notice.updated}, </if>
+            <if test="notice.draft != null"> draft = #{notice.draft}, </if>
+            <if test="notice.publish != null"> publish = #{notice.publish}, </if>
+            <if test="notice.disabled != null"> disabled = #{notice.disabled}, </if>
         </set>
         <where>
-            <if test="noticeQuery.id != null"> and id = #{noticeQuery.id} </if>
-            <if test="noticeQuery.content != null"> and content = #{noticeQuery.content} </if>
-            <if test="noticeQuery.created != null"> and created = #{noticeQuery.created} </if>
-            <if test="noticeQuery.disabled != null"> and disabled = #{noticeQuery.disabled} </if>
+            id = #{scope.id}
         </where>
     </update>
+    
+    <select id="selectNoticeByPage">
+        select * from Notice
+        where disabled = 1 and publish = 1 and draft = 0
+    </select>
+
+    <update id="deleteNotice">
+        update Notice
+        set disabled = 0, publish = 0, draft = 0
+        where id = #{id}
+    </update>
+
+    <select id="selectNoticeByPageWithCondition">
+        select * from Notice
+        <where>
+            <if test="publish != -1">publish = #{publish}</if>
+            <if test="publish == 1">and draft = 0</if>
+            and disabled = 1
+        </where>
+    </select>
+
+    <select id="selectNoticeById">
+        select * from Notice
+        where id = #{id} and disabled = 1 and publish = 1 and draft = 0
+    </select>
+
+    <select id="selectNoticeByIdWithAdmin">
+        select * from Notice
+        where id = #{id} and disabled = 1
+    </select>
 
 </mapper>

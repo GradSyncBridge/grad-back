@@ -54,6 +54,9 @@ public class UnAuthController {
     @Autowired
     private EnrollService enrollService;
 
+    @Autowired
+    private NoticeService noticeService;
+
     /**
      * 处理登录请求
      * POST /unauthorized/user/login
@@ -216,6 +219,42 @@ public class UnAuthController {
                 HttpStatus.OK.value(),
                 "Get enroll table successfully",
                 enrollService.getEnrollTable(department, year)
+        );
+    }
+
+    /**
+     * 获取公告
+     * GET /unauthorized/notice
+     * @param pageIndex 当前页
+     * @param pageSize 每页数量
+     * @return
+     */
+    @GetMapping(value = "/notice")
+    public ResponseEntity<ResultEntity<Object>> getNotice(
+            @RequestParam(value = "pageIndex", defaultValue = "1") Integer pageIndex,
+            @RequestParam(value = "pageSize", defaultValue = "10") Integer pageSize
+    ) {
+        return ResultEntity.success(
+                HttpStatus.OK.value(),
+                "Get notice successfully",
+                noticeService.getAllNotice(pageIndex, pageSize)
+        );
+    }
+
+    /**
+     * 获取公告详情
+     * GET /unauthorized/notice/detail
+     * @param noticeID 公告ID
+     * @return 公告详情
+     */
+    @GetMapping(value = "/notice/detail")
+    public ResponseEntity<ResultEntity<Object>> getNoticeDetail(
+            @RequestParam(value = "noticeID") Integer noticeID
+    ) {
+        return ResultEntity.success(
+                HttpStatus.OK.value(),
+                "Get notice detail successfully",
+                noticeService.getNoticeDetail(noticeID)
         );
     }
 

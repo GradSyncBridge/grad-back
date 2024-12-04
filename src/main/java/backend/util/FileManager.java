@@ -142,7 +142,12 @@ public class FileManager {
             result = r2Client.listObjectsV2(request);
 
             for (S3ObjectSummary objectSummary : result.getObjectSummaries())
-                if (!objectSummary.getKey().startsWith("files") && !files.contains(objectSummary.getKey()))
+                if (!objectSummary.getKey().startsWith("index") &&
+                        !objectSummary.getKey().startsWith("login") &&
+                        !objectSummary.getKey().startsWith("logo") &&
+                        !objectSummary.getKey().startsWith("default.png") &&
+                        !files.contains(objectSummary.getKey())
+                )
                     r2Client.deleteObject(bucketName, objectSummary.getKey());
 
             request.setContinuationToken(result.getNextContinuationToken());
