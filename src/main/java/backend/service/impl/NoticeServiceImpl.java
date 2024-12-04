@@ -196,9 +196,9 @@ public class NoticeServiceImpl implements NoticeService {
                     .content(noticeCreateDTO.getNoticeContent())
                     .files(files).publish(noticeCreateDTO.getPublish())
                     .draft(noticeCreateDTO.getPublish() == 1 ? 0 : 1)
-                    .disabled(noticeCreateDTO.getPublish() == 1 ? 1 : 0)
-                    .publish(noticeCreateDTO.getPublish())
+                    .publish(noticeCreateDTO.getPublish() == 1 ? 1 : 0)
                     .updated(LocalDateTime.now())
+                    .disabled(1)
                     .build();
 
             noticeMapper.updateNotice(
