@@ -19,6 +19,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.github.pagehelper.Page;
 import com.github.pagehelper.PageHelper;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -168,7 +169,7 @@ public class NoticeServiceImpl implements NoticeService {
      */
     @Override
     public NoticeDetailVO getNoticeDetail(Integer noticeID) {
-        return getNoticeDetailWithCondition(noticeID, 0);
+        return getNoticeDetailWithCondition(noticeID);
     }
 
     /**
@@ -236,7 +237,8 @@ public class NoticeServiceImpl implements NoticeService {
             lock  = UNLOCKED;
         }
 
-        if(!lock.equals(LOCKED + ":" + User.getAuth().getId())) throw new NoticeLockedException();
+        if(!lock.equals(UNLOCKED) && !lock.equals(LOCKED + ":" + User.getAuth().getId()))
+                throw new NoticeLockedException();
 
         redisService.setData(NOTICE_PREFIX + noticeID, LOCKED + ":" + User.getAuth().getId());
 
@@ -245,14 +247,14 @@ public class NoticeServiceImpl implements NoticeService {
                 Notice.builder().id(noticeID).build()
         );
 
-        return getNoticeDetailWithCondition(noticeID, 1);
+        return getNoticeDetailWithCondition(noticeID);
     }
 
 
-    public NoticeDetailVO getNoticeDetailWithCondition(Integer noticeID, Integer mode) {
+    public NoticeDetailVO getNoticeDetailWithCondition(Integer noticeID) {
         Notice notice;
 
-        if(mode == 1)
+        if(SecurityContextHolder.getContext().getAuthentication() != null)
             notice = noticeMapper.selectNoticeByIdWithAdmin(noticeID);
         else
             notice = noticeMapper.selectNoticeById(noticeID);
