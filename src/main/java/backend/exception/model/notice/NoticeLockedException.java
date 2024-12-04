@@ -5,6 +5,6 @@ import backend.exception.model.BaseException;
 public class NoticeLockedException extends BaseException {
 
     public NoticeLockedException() {
-        super("Notice has locked", 409);
+        super("Notice has locked", 403);
     }
 }
