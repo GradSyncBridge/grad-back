@@ -91,6 +91,7 @@
     <select id="selectNoticeByPage">
         select * from Notice
         where disabled = 1 and publish = 1 and draft = 0
+        order by updated desc
     </select>
 
     <update id="deleteNotice">
@@ -106,6 +107,7 @@
             <if test="publish == 1">and draft = 0</if>
             and disabled = 1
         </where>
+        order by updated desc
     </select>
 
     <select id="selectNoticeById">
