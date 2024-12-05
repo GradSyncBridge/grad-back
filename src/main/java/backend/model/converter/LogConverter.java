@@ -18,12 +18,12 @@ public interface LogConverter {
 
     default LogVO logDTOToLogVO(LogDTO log) {
         LogVO logVO = new LogVO();
-        logVO.getUser().setUid(log.getUid());
+        logVO.getUser().setUid(Integer.parseInt(log.getUid()));
         logVO.getUser().setUsername(log.getUsername());
         logVO.getUser().setAvatar(log.getAvatar());
         logVO.getUser().setName(log.getName());
         logVO.getUser().setEmail(log.getEmail());
-        logVO.getUser().setGender(log.getGender());
+        logVO.getUser().setGender(Integer.parseInt(log.getGender()));
         logVO.getUser().setPhone(log.getPhone());
         logVO.setEndpoint(log.getEndpoint());
         logVO.setCreated(log.getCreated());

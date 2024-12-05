@@ -27,7 +27,7 @@ public class LogVO {
     @NoArgsConstructor
     public class OperationUser {
 
-        private String uid;
+        private Integer uid;
 
         private String username;
 
@@ -37,7 +37,7 @@ public class LogVO {
 
         private String email;
 
-        private String gender;
+        private Integer gender;
 
         private String phone;
     }
