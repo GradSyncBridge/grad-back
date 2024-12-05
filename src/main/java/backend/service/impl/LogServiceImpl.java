@@ -60,7 +60,7 @@ public class LogServiceImpl implements LogService {
 
             List<LogVO> logVOS = logConverter.logListToLogVOList(page.getResult());
 
-            return PageLogVO.builder().logs(logVOS).total((int) page.getTotal()).build();
+            return PageLogVO.builder().logList(logVOS).total((int) page.getTotal()).build();
         }catch (UserRoleDeniedException userRoleDeniedException){
             throw new UserRoleDeniedException(user.getRole(), 403, teacher == null ? null : teacher.getIdentity());
         }

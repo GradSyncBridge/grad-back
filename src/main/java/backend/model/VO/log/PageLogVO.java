@@ -16,5 +16,5 @@ public class PageLogVO {
 
     Integer total;
 
-    List<LogVO> logs;
+    List<LogVO> logList;
 }
