@@ -91,4 +91,24 @@
         </where>
     </update>
 
+    <!--  Do not use the following in production  -->
+    <select id="selectEnrollWithDeptAndUser" resultType="backend.model.entity.Enroll">
+        select
+            e.id as "id",
+            e.sid as "sid",
+            e.mid as "mid",
+            e.tid as "tid",
+            e.year as "year",
+            e.disabled as "disabled"
+        from
+            Enroll as e
+            join Teacher as t on e.tid = t.user_id
+            join User as u on t.user_id = u.id
+        where
+            t.department = #{department}
+            and u.disabled = 1
+            and e.year = #{year}
+            and e.disabled = 1
+    </select>
+
 </mapper>

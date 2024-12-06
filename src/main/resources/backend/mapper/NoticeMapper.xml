@@ -120,4 +120,26 @@
         where id = #{id} and disabled = 1
     </select>
 
+    <!--  Do not use the following in production  -->
+    <select id="selectNoticeWithTeacher" >
+        select
+            Notice.id as "noticeID",
+            Notice.title as "noticeTitle",
+            Notice.created as "created",
+            Notice.updated as "updated",
+            User.name as "writerName",
+            Department.name as "departmentName",
+        from
+            Notice
+            join Teacher on Notice.uid = Teacher.user_id
+            join Department on Teacher.department = Department.id
+            join User on User.id = Notice.uid
+        where
+            User.disabled = 0
+            and Notice.disabled = 1
+            <if test="publish == 1">and Notice.publish = 1</if>
+            <if test="publish == 0">and Notice.draft = 1</if>
+            <if test="publish == -1">and 1 = 1</if>
+    </select>
+
 </mapper>
