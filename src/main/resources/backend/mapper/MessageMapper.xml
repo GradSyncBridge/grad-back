@@ -72,4 +72,22 @@
         VALUES (#{cid}, #{receiver}, #{isRead}, #{disabled})
     </insert>
 
+    <!--  Do not use the following in production  -->
+    <select id="selectMessageWithReceiver">
+        select
+            Message.id as "messageID",
+            Message.is_read as "isRead",
+            MessageContent.content as "content",
+            MessageContent.created as "created",
+            MessageContent.sender as "sender"
+        from
+            Message
+            join MessageContent on Message.cid = MessageContent.id
+            join User on User.id = Messsage.receiver
+        where
+            Message.receiver = #{uid}
+            and Message.disabled = 1
+            and MessageContent.disabled = 1
+            and MessageContent.Draft = 0
+    </select>
 </mapper>
