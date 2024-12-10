@@ -1,0 +1,9 @@
+cloud:
+  aws:
+    s3:
+      accesskey: fcfa3d7b231064c247a7c0ad512dad82
+      secretkey: 09bbf428b998e98a05ada65b100d651cfd1f0bb5c065b40f5ff332a71dc3ca54
+      region: auto
+      endpoint: https://59e23cd718019c6eb2ab24187dda9ca1.r2.cloudflarestorage.com
+      bucket: grad-sync
+      path-style-access: true

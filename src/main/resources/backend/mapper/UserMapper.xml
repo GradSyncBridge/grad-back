@@ -4,8 +4,169 @@
         "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
 
 <mapper namespace="backend.mapper.UserMapper">
-    <select id="getUser" resultType="backend.model.entity.User">
-        SELECT id, username, password
-        FROM user WHERE username = #{username}
+    <sql id="DynamicFields">
+        <trim suffixOverrides=",">
+            <if test="scope.id == true"> id, </if>
+            <if test="scope.username == true"> username, </if>
+            <if test="scope.name == true"> name, </if>
+            <if test="scope.password == true"> password, </if>
+            <if test="scope.email == true"> email, </if>
+            <if test="scope.avatar == true"> avatar, </if>
+            <if test="scope.role == true"> role, </if>
+            <if test="scope.phone == true"> phone, </if>
+            <if test="scope.gender == true"> gender, </if>
+            <if test="scope.disabled == true"> disabled, </if>
+        </trim>
+    </sql>
+
+    <sql id="DynamicWhere">
+        <where>
+            <if test="user.id != null">
+                and id = #{user.id}
+            </if>
+            <if test="user.username != null">
+                and username = #{user.username}
+            </if>
+            <if test="user.name != null">
+                and name LIKE CONCAT('%', #{user.name}, '%')
+            </if>
+            <if test="user.email != null">
+                and email = #{user.email}
+            </if>
+            <if test="user.role != null">
+                and role = #{user.role}
+            </if>
+            <if test="user.phone != null">
+                and phone = #{user.phone}
+            </if>
+            <if test="user.gender != null">
+                and gender = #{user.gender}
+            </if>
+            <if test="user.disabled != null">
+                and disabled = #{user.disabled}
+            </if>
+        </where>
+
+    </sql>
+
+
+    <insert id="insertUser" parameterType="backend.model.entity.User" keyColumn="id" keyProperty="id">
+        insert into User
+            (
+                username,
+                password,
+                role,
+                name,
+                email,
+                phone,
+                gender
+            )
+        values
+            (
+                #{username},
+                #{password},
+                #{role},
+                #{name},
+                #{email},
+                #{phone},
+                #{gender}
+            )
+
+        <selectKey keyProperty="id" resultType="int" order="AFTER">
+            SELECT LAST_INSERT_ID()
+        </selectKey>
+    </insert>
+
+    <select id="selectUser" resultType="backend.model.entity.User">
+        select
+            <include refid="DynamicFields" />
+        from User
+            <include refid="DynamicWhere" />
     </select>
+
+    <update id="updateUser">
+        update User
+        <set>
+            <if test="userUpdate.username != null">
+                username = #{userUpdate.username},
+            </if>
+            <if test="userUpdate.name != null">
+                name = #{userUpdate.name},
+            </if>
+            <if test="userUpdate.password != null">
+                password = #{userUpdate.password},
+            </if>
+            <if test="userUpdate.role != null">
+                role = #{userUpdate.role},
+            </if>
+            <if test="userUpdate.email != null">
+                email = #{userUpdate.email},
+            </if>
+            <if test="userUpdate.phone != null">
+                phone = #{userUpdate.phone},
+            </if>
+            <if test="userUpdate.avatar != null">
+                avatar = #{userUpdate.avatar},
+            </if>
+            <if test="userUpdate.gender != null">
+                gender = #{userUpdate.gender},
+            </if>
+        </set>
+        <where>
+            <if test="userQuery.id != null">
+                and id = #{userQuery.id}
+            </if>
+            <if test="userQuery.username != null">
+                and username = #{userQuery.username}
+            </if>
+            <if test="userQuery.name != null">
+                and name = #{userQuery.name}
+            </if>
+            <if test="userQuery.password != null">
+                and password = #{userQuery.password}
+            </if>
+            <if test="userQuery.role != null">
+                and role = #{userQuery.role}
+            </if>
+            <if test="userQuery.email != null">
+                and email = #{userQuery.email}
+            </if>
+            <if test="userQuery.phone != null">
+                and phone = #{userQuery.phone}
+            </if>
+            <if test="userQuery.avatar != null">
+                and avatar = #{userQuery.avatar}
+            </if>
+            <if test="userQuery.gender != null">
+                and gender = #{userQuery.gender}
+            </if>
+        </where>
+
+    </update>
+
+    <delete id="deleteUser">
+        delete from User
+        where username = #{username}
+    </delete>
+
+    <select id="searchStudent" resultType="backend.model.entity.User">
+        select
+            User.*
+        from
+            User join Student
+            on User.id = Student.user_id
+        <where>
+            User.disabled = 1
+            <if test="valid != null"> and Student.valid = #{valid} </if>
+            <if test="user.id != null"> and User.id = #{user.id} </if>
+            <if test="user.email != null"> and User.email = #{user.email}</if>
+            <if test="user.name != null"> and User.name like concat('%', #{user.name}, '%') </if>
+        </where>
+    </select>
+
+
+    <select id="selectAllFiles" resultType="java.lang.String">
+        select avatar from User
+    </select>
+
 </mapper>

@@ -1,0 +1,114 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="backend.mapper.EnrollMapper">
+
+    <sql id="DynamicFields">
+        <trim suffixOverrides=",">
+            <if test="scope.id == true"> id, </if>
+            <if test="scope.sid == true"> sid, </if>
+            <if test="scope.tid == true"> tid, </if>
+            <if test="scope.year == true"> year, </if>
+            <if test="scope.disabled == true"> disabled, </if>
+            <if test="scope.mid == true"> mid, </if>
+        </trim>
+    </sql>
+
+    <sql id="DynamicWhere">
+        <where>
+            <if test="enroll.id != null"> and id = #{enroll.id} </if>
+            <if test="enroll.sid != null"> and sid = #{enroll.sid} </if>
+            <if test="enroll.tid != null"> and tid = #{enroll.tid} </if>
+            <if test="enroll.year != null"> and year = #{enroll.year} </if>
+            <if test="enroll.disabled != null"> and disabled = #{enroll.disabled} </if>
+            <if test="enroll.mid != null"> and mid = #{enroll.mid} </if>
+        </where>
+    </sql>
+
+    <insert id="insertEnroll" >
+        insert into Enroll
+        (
+            sid,
+            tid,
+            year,
+            disabled,
+            mid
+        )
+        values
+        (
+            #{sid},
+            #{tid},
+            #{year},
+            #{disabled},
+            #{mid}
+        )
+    </insert>
+
+    <select id="selectEnroll" resultType="backend.model.entity.Enroll">
+        select
+            <include refid="DynamicFields" />
+        from Enroll
+            <include refid="DynamicWhere" />
+    </select>
+
+    <select id="selectEnrollWithDept" resultType="backend.model.entity.Enroll">
+        select
+            e.id as "id",
+            e.sid as "sid",
+            e.mid as "mid",
+            e.tid as "tid",
+            e.year as "year",
+            e.disabled as "disabled"
+        from
+            Enroll as e
+            join Teacher as t
+            on e.tid = t.user_id
+        where
+            t.department = #{department}
+            and e.year = #{year}
+            and e.disabled = 1
+
+    </select>
+
+    <update id="updateEnroll">
+        update Enroll
+        <set>
+            <if test="enrollUpdate.sid != null"> sid = #{enrollUpdate.sid}, </if>
+            <if test="enrollUpdate.tid != null"> tid = #{enrollUpdate.tid}, </if>
+            <if test="enrollUpdate.year != null"> year = #{enrollUpdate.year}, </if>
+            <if test="enrollUpdate.disabled != null"> disabled = #{enrollUpdate.disabled}, </if>
+            <if test="enrollUpdate.mid != null"> mid = #{enrollUpdate.mid}, </if>
+        </set>
+        <where>
+            <if test="enrollQuery.id != null"> and id = #{enrollQuery.id} </if>
+            <if test="enrollQuery.sid != null"> and sid = #{enrollQuery.sid} </if>
+            <if test="enrollQuery.tid != null"> and tid = #{enrollQuery.tid} </if>
+            <if test="enrollQuery.year != null"> and year = #{enrollQuery.year} </if>
+            <if test="enrollQuery.disabled != null"> and disabled = #{enrollQuery.disabled} </if>
+            <if test="enrollQuery.mid != null"> and mid = #{enrollQuery.mid} </if>
+        </where>
+    </update>
+
+    <!--  Do not use the following in production  -->
+    <select id="selectEnrollWithDeptAndUser" resultType="backend.model.entity.Enroll">
+        select
+            e.id as "id",
+            e.sid as "sid",
+            e.mid as "mid",
+            e.tid as "tid",
+            e.year as "year",
+            e.disabled as "disabled"
+        from
+            Enroll as e
+            join Teacher as t on e.tid = t.user_id
+            join User as u on t.user_id = u.id
+        where
+            t.department = #{department}
+            and u.disabled = 1
+            and e.year = #{year}
+            and e.disabled = 1
+    </select>
+
+</mapper>

@@ -1,0 +1,11 @@
+spring:
+  datasource:
+    hikari:
+      minimum-idle: 5
+      maximum-pool-size: 15
+      auto-commit: true
+      idle-timeout: 30000
+      pool-name: HikariDBPool
+      max-lifetime: 30000
+      connection-timeout: 30000
+      connection-test-query: SELECT 1

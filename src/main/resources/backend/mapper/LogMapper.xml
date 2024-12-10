@@ -1,0 +1,49 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="backend.mapper.LogMapper">
+
+    <resultMap id="LogDTO" type="backend.model.DTO.LogDTO">
+        <result property="endpoint" column="endpoint"/>
+        <result property="operation" column="operation"/>
+        <result property="created" column="created"/>
+        <result property="uid" column="uid"/>
+        <result property="username" column="username"/>
+        <result property="avatar" column="avatar"/>
+        <result property="name" column="name"/>
+        <result property="email" column="email"/>
+        <result property="gender" column="gender"/>
+        <result property="phone" column="phone"/>
+    </resultMap>
+
+    <insert id="insertLog">
+        insert into Log
+        (user_id, endpoint, operation, created)
+        values
+        (#{userId}, #{endpoint}, #{operation}, #{created})
+    </insert>
+
+    <select id="selectLog" resultMap="LogDTO">
+        select * from LogView
+    </select>
+
+    <update id="updateLog">
+        update Log
+        <set>
+            <if test="logUpdate.userId != null"> user_id = #{logUpdate.userId}, </if>
+            <if test="logUpdate.endpoint != null"> endpoint = #{logUpdate.endpoint}, </if>
+            <if test="logUpdate.operation != null"> operation = #{logUpdate.operation}, </if>
+            <if test="logUpdate.created != null"> created = #{logUpdate.created}, </if>
+        </set>
+        <where>
+            <if test="logQuery.id != null"> and id = #{logQuery.id} </if>
+            <if test="logQuery.userId != null"> and user_id = #{logQuery.userId} </if>
+            <if test="logQuery.endpoint != null"> and endpoint = #{logQuery.endpoint} </if>
+            <if test="logQuery.operation != null"> and operation = #{logQuery.operation} </if>
+            <if test="logQuery.created != null"> and created = #{logQuery.created} </if>
+        </where>
+    </update>
+
+</mapper>

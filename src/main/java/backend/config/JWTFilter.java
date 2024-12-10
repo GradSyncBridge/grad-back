@@ -1,13 +1,17 @@
 package backend.config;
 
+import backend.model.entity.User;
 import com.fasterxml.jackson.databind.ObjectMapper;
+
 import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.ApplicationContext;
+import org.springframework.http.HttpStatus;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.core.userdetails.UserDetails;
@@ -32,25 +36,36 @@ public class JWTFilter extends OncePerRequestFilter {
     @Value("${jwt.token-name}")
     private String tokenName;
 
+    /**
+     * 过滤器，用于验证token
+     *
+     * @param request     请求
+     * @param response    响应
+     * @param filterChain 过滤链
+     * @throws ServletException 异常
+     * @throws IOException      异常
+     */
     @Override
     protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain filterChain)
             throws ServletException, IOException {
         String authHeader = request.getHeader(tokenName);
         String token = null;
-        String username = null;
+        Integer uid = null;
 
         if (authHeader != null && authHeader.startsWith("Bearer ")) {
             token = authHeader.substring(7);
             try {
-                username = jwtService.extractUserName(token);
-            }
-            catch (Exception e) {
-                response.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
+                // username = jwtService.extractUserName(token);
+                uid = jwtService.extractUid(token);
+            } catch (Exception e) {
+                response.setStatus(HttpStatus.OK.value());
                 response.setContentType("application/json");
 
                 Map<String, Object> responseMap = new HashMap<>();
-                responseMap.put("code", HttpServletResponse.SC_UNAUTHORIZED);
+                responseMap.put("code", 401);
                 responseMap.put("message", e.getMessage());
+                responseMap.put("time", System.currentTimeMillis() / 1000);
+                responseMap.put("data", null);
 
                 String jsonResponse = new ObjectMapper().writeValueAsString(responseMap);
                 response.getWriter().write(jsonResponse);
@@ -59,22 +74,28 @@ public class JWTFilter extends OncePerRequestFilter {
             }
         }
 
-        if (username != null && SecurityContextHolder.getContext().getAuthentication() == null) {
+        if (uid != null && SecurityContextHolder.getContext().getAuthentication() == null) {
             try {
-                UserDetails userDetails = context.getBean(UserDetailsServiceImpl.class).loadUserByUsername(username);
-                if (jwtService.validateToken(token, userDetails)) {
-                    UsernamePasswordAuthenticationToken authToken =
-                            new UsernamePasswordAuthenticationToken(userDetails,null, userDetails.getAuthorities());
+                User user = context.getBean(UserDetailsServiceImpl.class).loadUserById(uid);
+
+                if (user.getDisabled() == 0)
+                    throw new UsernameNotFoundException(String.format("User with [uid=%d] is disabled", user.getId()));
+
+                if (jwtService.validateTokenById(token, user)) {
+                    UsernamePasswordAuthenticationToken authToken = new UsernamePasswordAuthenticationToken(user, null,
+                            ((UserDetails) user).getAuthorities());
                     authToken.setDetails(new WebAuthenticationDetailsSource().buildDetails(request));
                     SecurityContextHolder.getContext().setAuthentication(authToken);
                 }
-            }catch (UsernameNotFoundException e){
-                response.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
+            } catch (UsernameNotFoundException e) {
+                response.setStatus(HttpStatus.OK.value());
                 response.setContentType("application/json");
 
                 Map<String, Object> responseMap = new HashMap<>();
-                responseMap.put("code", HttpServletResponse.SC_UNAUTHORIZED);
+                responseMap.put("code", 401);
                 responseMap.put("message", e.getMessage());
+                responseMap.put("time", System.currentTimeMillis() / 1000);
+                responseMap.put("data", null);
 
                 String jsonResponse = new ObjectMapper().writeValueAsString(responseMap);
                 response.getWriter().write(jsonResponse);

@@ -1,0 +1,125 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="backend.mapper.StudentGradeMapper">
+
+    <sql id="DynamicFields">
+        <trim suffixOverrides=",">
+            <if test="scope.id == true"> id, </if>
+            <if test="scope.userId == true"> user_id as "userId", </if>
+            <if test="scope.sid == true"> sid, </if>
+            <if test="scope.grade == true"> grade, </if>
+            <if test="scope.disabled == true"> disabled, </if>
+        </trim>
+    </sql>
+
+    <sql id="DynamicWhere">
+        <where>
+            <if test="studentGrade.id != null"> and id = #{studentGrade.id} </if>
+            <if test="studentGrade.userId != null"> and user_id = #{studentGrade.userId} </if>
+            <if test="studentGrade.sid != null"> and sid = #{studentGrade.sid} </if>
+            <if test="studentGrade.grade != null"> and grade = #{studentGrade.grade} </if>
+            <if test="studentGrade.disabled != null"> and disabled = #{studentGrade.disabled} </if>
+        </where>
+    </sql>
+
+    <insert id="insertStudentGrade">
+        insert into StudentGrade
+        (
+            user_id,
+            sid,
+            grade,
+            disabled
+        )
+        values
+        (
+            #{userId},
+            #{sid},
+            #{grade},
+            #{disabled}
+        )
+    </insert>
+
+    <select id="selectStudentGrade" resultType="backend.model.entity.StudentGrade">
+        select
+            <include refid="DynamicFields" />
+        from StudentGrade
+            <include refid="DynamicWhere" />
+    </select>
+
+    <select id="selectGradeWithSubject" resultType="backend.model.VO.student.GradeList">
+        select
+            g.id as "gradeID",
+            g.grade as "grade",
+            s.id as "subjectID",
+            s.sid as "subjectNum",
+            s.name as "name"
+        from
+            StudentGrade as g
+            join Subject as s
+            on g.sid = s.id
+        <where>
+            g.user_id = #{studentGrade.userId}
+            and g.disabled = #{studentGrade.disabled}
+            <if test="type == 0"> and (s.type = 1 or s.type = 0) </if>
+            <if test="type == 1"> and s.type = 2 </if>
+        </where>
+
+    </select>
+
+    <update id="updateStudentGrade">
+        update StudentGrade
+        <set>
+            <if test="studentGradeUpdate.userId != null"> user_id = #{studentGradeUpdate.userId}, </if>
+            <if test="studentGradeUpdate.sid != null"> sid = #{studentGradeUpdate.sid}, </if>
+            <if test="studentGradeUpdate.grade != null"> grade = #{studentGradeUpdate.grade}, </if>
+            <if test="studentGradeUpdate.disabled != null"> disabled = #{studentGradeUpdate.disabled}, </if>
+        </set>
+        <where>
+            <if test="studentGradeQuery.id != null"> and id = #{studentGradeQuery.id} </if>
+            <if test="studentGradeQuery.userId != null"> and user_id = #{studentGradeQuery.userId} </if>
+            <if test="studentGradeQuery.sid != null"> and sid = #{studentGradeQuery.sid} </if>
+            <if test="studentGradeQuery.grade != null"> and grade = #{studentGradeQuery.grade} </if>
+            <if test="studentGradeQuery.disabled != null"> and disabled = #{studentGradeQuery.disabled} </if>
+        </where>
+    </update>
+
+    <delete id="deleteStudentGradeByRole">
+        delete
+            from StudentGrade
+        where
+            user_id = #{studentId}
+            and sid in (
+                select id
+                    from Subject
+                where
+                    <if test="type == 1"> type = 2 </if>
+                    <if test="type == 0"> type != 2 </if>
+            )
+    </delete>
+
+    <!--  Do not use the following in production  -->
+    <select id="selectGradeWithSubjectAndUser" resultType="backend.model.VO.student.GradeList">
+        select
+            g.id as "gradeID",
+            g.grade as "grade",
+            s.id as "subjectID",
+            s.sid as "subjectNum",
+            s.name as "name"
+        from
+            StudentGrade as g
+            join Subject as s on g.sid = s.id
+            join User as u on u.id = g.user_id
+        <where>
+            g.user_id = #{studentGrade.userId}
+            and u.disabled = 1
+            and g.disabled = #{studentGrade.disabled}
+            <if test="type == 0"> and (s.type = 1 or s.type = 0) </if>
+            <if test="type == 1"> and s.type = 2 </if>
+        </where>
+
+    </select>
+
+</mapper>

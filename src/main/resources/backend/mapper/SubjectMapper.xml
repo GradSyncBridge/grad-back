@@ -1,0 +1,95 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="backend.mapper.SubjectMapper">
+
+    <resultMap id="subjectEntityMap" type="backend.model.VO.subject.SubjectVO">
+        <id property="subjectID" column="id" />
+        <result property="subjectNum" column="sid" />
+        <result property="name" column="name" />
+        <result property="type" column="type" />
+    </resultMap>
+
+    <sql id="DynamicFields">
+        <trim suffixOverrides=",">
+            <if test="scope.id == true"> id, </if>
+            <if test="scope.sid == true"> sid, </if>
+            <if test="scope.name == true"> name, </if>
+            <if test="scope.type == true"> type, </if>
+            <if test="scope.department == true"> department, </if>
+        </trim>
+    </sql>
+
+    <sql id="DynamicWhere">
+        <where>
+            <if test="subject.id != null"> and id = #{subject.id} </if>
+            <if test="subject.sid != null"> and sid = #{subject.sid} </if>
+            <if test="subject.name != null"> and name = #{subject.name} </if>
+            <if test="subject.type != null"> and type = #{subject.type} </if>
+            <if test="subject.department != null"> and department = #{subject.department} </if>
+        </where>
+    </sql>
+
+    <insert id="insertSubject">
+        insert into Subject
+        (
+            sid,
+            name,
+            type,
+            department
+        )
+        values
+        (
+            #{sid},
+            #{name},
+            #{type},
+            #{department}
+        )
+    </insert>
+
+    <select id="selectSubject" resultType="backend.model.entity.Subject">
+        select
+            <include refid="DynamicFields" /> 
+        from Subject
+            <include refid="DynamicWhere" />
+    </select>
+
+    <update id="updateSubject">
+        update Subject
+        <set>
+            <if test="subjectUpdate.sid != null"> sid = #{subjectUpdate.sid}, </if>
+            <if test="subjectUpdate.name != null"> name = #{subjectUpdate.name}, </if>
+            <if test="subjectUpdate.type != null"> type = #{subjectUpdate.type}, </if>
+            <if test="subjectUpdate.department != null"> department = #{subjectUpdate.department}, </if>
+        </set>
+        <where>
+            <if test="subjectQuery.id != null"> and id = #{subjectQuery.id} </if>
+            <if test="subjectQuery.sid != null"> and sid = #{subjectQuery.sid} </if>
+            <if test="subjectQuery.name != null"> and name = #{subjectQuery.name} </if>
+            <if test="subjectQuery.type != null"> and type = #{subjectQuery.type} </if>
+            <if test="subjectQuery.department != null"> and department = #{subjectQuery.department} </if>
+        </where>
+    </update>
+
+    <select id="selectSubjectForeach" resultMap="subjectEntityMap">
+        SELECT * FROM Subject
+        WHERE id IN
+        <foreach collection="ids" item="id" open="(" separator="," close=")">
+            #{id}
+        </foreach>
+    </select>
+
+    <select id="selectSubjectWithDept" resultMap="subjectEntityMap">
+        select * from Subject
+        <where>
+            <if test="type == 1">Subject.type = 2</if>
+            <if test="type == 0">
+                Subject.department = #{department}
+                or Subject.type = 0
+            </if>
+        </where>
+    </select>
+
+</mapper>

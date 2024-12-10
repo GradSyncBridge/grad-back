@@ -1,0 +1,96 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+
+<mapper namespace="backend.mapper.MessageContentMapper">
+
+    <sql id="DynamicFields">
+        <trim suffixOverrides=",">
+            <if test="scope.id == true"> id, </if>
+            <if test="scope.content == true"> content, </if>
+            <if test="scope.created == true"> created, </if>
+            <if test="scope.sender == true"> sender, </if>
+            <if test="scope.draft == true"> draft, </if>
+            <if test="scope.disabled == true"> disabled, </if>
+        </trim>
+    </sql>
+
+    <sql id="DynamicWhere">
+        <where>
+            <if test="messageContent.id != null"> and id = #{messageContent.id} </if>
+            <if test="messageContent.content != null"> and content = #{messageContent.content} </if>
+            <if test="messageContent.created != null"> and created = #{messageContent.created} </if>
+            <if test="messageContent.sender != null"> and sender = #{messageContent.sender} </if>
+            <if test="messageContent.draft != null"> and draft = #{messageContent.draft} </if>
+            <if test="messageContent.disabled != null"> and disabled = #{messageContent.disabled} </if>
+        </where>
+    </sql>
+
+    <insert id="insertMessageContent" keyColumn="id" parameterType="backend.model.entity.MessageContent">
+        insert into MessageContent
+        (
+            content,
+            created,
+            sender,
+            draft,
+            disabled
+        )
+        values
+        (
+            #{content},
+            #{created},
+            #{sender},
+            #{draft},
+            #{disabled}
+        )
+    </insert>
+
+    <select id="selectMessageContent" >
+        select
+            <include refid="DynamicFields" />
+        from MessageContent
+            <include refid="DynamicWhere" />
+    </select>
+
+    <update id="updateMessageContent">
+        update MessageContent
+        <set>
+            <if test="messageContentUpdate.content != null"> content = #{messageContentUpdate.content}, </if>
+            <if test="messageContentUpdate.created != null"> created = #{messageContentUpdate.created}, </if>
+            <if test="messageContentUpdate.sender != null"> sender = #{messageContentUpdate.sender}, </if>
+            <if test="messageContentUpdate.draft != null"> draft = #{messageContentUpdate.draft}, </if>
+            <if test="messageContentUpdate.disabled != null"> disabled = #{messageContentUpdate.disabled}, </if>
+        </set>
+        <where>
+            <if test="messageContentQuery.id != null"> and id = #{messageContentQuery.id} </if>
+            <if test="messageContentQuery.content != null"> and content = #{messageContentQuery.content} </if>
+            <if test="messageContentQuery.created != null"> and created = #{messageContentQuery.created} </if>
+            <if test="messageContentQuery.sender != null"> and sender = #{messageContentQuery.sender} </if>
+            <if test="messageContentQuery.draft != null"> and draft = #{messageContentQuery.draft} </if>
+            <if test="messageContentQuery.disabled != null"> and disabled = #{messageContentQuery.disabled} </if>
+        </where>
+    </update>
+
+
+    <insert id="insertContent" useGeneratedKeys="true" keyProperty="id">
+        insert into MessageContent
+                (
+                    content,
+                    created,
+                    sender,
+                    draft,
+                    disabled
+                )
+        values
+        (
+            #{content},
+            #{created},
+            #{sender},
+            #{draft},
+            #{disabled}
+        )
+    </insert>
+     
+</mapper>

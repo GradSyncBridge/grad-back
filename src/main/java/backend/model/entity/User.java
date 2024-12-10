@@ -1,14 +1,30 @@
 package backend.model.entity;
 
-import backend.annotation.UserValidation;
-import backend.annotation.group.UserGroup.EmailGroup;
-import backend.annotation.group.UserGroup.UsernameGroup;
+import backend.annotation.entity.UserValidation;
+import backend.annotation.entity.group.userGroup.EmailGroup;
+import backend.annotation.entity.group.userGroup.UsernameGroup;
 import lombok.*;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.core.userdetails.UserDetails;
+
 import java.util.Collection;
+
+/**
+ * 用户表
+ *
+ * @field id user id int
+ * @field username 用户昵称 unique int
+ * @field name 用户名 string
+ * @field password 用户密码 string
+ * @field email 用户邮箱 string
+ * @field avatar 用户头像 string
+ * @field role 用户角色 int (1 -- student, 2-- teacher)
+ * @field phone 用户电话 string
+ * @field gender 用户性别 string
+ * @field disabled 用户是否被禁用 int (1 -- active, 0 -- disabled)
+ */
 
 @Data
 @AllArgsConstructor
@@ -16,23 +32,39 @@ import java.util.Collection;
 @Builder
 @UserValidation(groups = EmailGroup.class)
 @UserValidation(groups = UsernameGroup.class)
-public class User implements UserDetails{
+public class User implements UserDetails {
 
     private Integer id;
 
     private String username;
 
+    private String name;
+
     private String password;
 
     private String email;
 
-    // 1 represent student, 2 represents teacher, 3 represents admin
+    private String avatar;
+
+    // 1 -- student, 2-- teacher
     private Integer role;
 
-    public static User getAuth(){
+    private String phone;
+
+    private Integer gender;
+
+    // 1 -- active, 0 -- disabled
+    private Integer disabled;
+
+    private Student student;
+
+    private Teacher teacher;
+
+    public static User getAuth() {
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
         return (User) authentication.getPrincipal();
     }
+
     @Override
     public Collection<? extends GrantedAuthority> getAuthorities() {
         return null;

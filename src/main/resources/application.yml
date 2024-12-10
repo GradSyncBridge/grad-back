@@ -1,9 +1,28 @@
 server:
   port: 8081
+  max-http-request-header-size: 1048576
 
 spring:
   profiles:
-    active: dev
+    active: dev,rs,pool,s3
+  pagehelper:
+    helperDialect: mysql
+    offsetAsPageNum: true
+    rowBoundsWithCount: true
+    reasonable: true
+  servlet:
+    multipart:
+      max-request-size: 300MB
+      max-file-size: 300MB
+    thymeleaf:
+      mode: HTML
+      cache: true
+      prefix: classpath:/templates/
+      encoding: UTF-8
+      suffix: .html
+      check-template-location: true
+      template-resolver-order: 1
+
 
 logging:
   file:

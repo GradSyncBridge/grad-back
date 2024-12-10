@@ -1,0 +1,161 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="backend.mapper.TeacherMapper">
+    <resultMap id="teacherEntityMap" type="backend.model.entity.Teacher">
+        <id property="id" column="id" />
+        <result property="title" column="title"/>
+        <result property="description" column="description"/>
+        <result property="identity" column="identity"/>
+        <result property="userId" column="user_id"/>
+        <result property="department" column="department"/>
+        <result property="total" column="total"/>
+        <result property="remnant" column="remnant"/>
+    </resultMap>
+
+    <sql id="DynamicFields">
+        <trim suffixOverrides=",">
+            <if test="scope.id == true"> id, </if>
+            <if test="scope.title == true"> title, </if>
+            <if test="scope.description == true"> description, </if>
+            <if test="scope.identity == true"> identity, </if>
+            <if test="scope.userId == true"> user_id as "userId", </if>
+            <if test="scope.department == true"> department, </if>
+            <if test="scope.total == true"> total, </if>
+            <if test="scope.remnant == true"> remnant, </if>
+        </trim>
+    </sql>
+
+    <sql id="DynamicWhere">
+        <where>
+            <if test="teacher.id != null"> and id = #{teacher.id} </if>
+            <if test="teacher.title != null"> and title = #{teacher.title} </if>
+            <if test="teacher.description != null"> and description = #{teacher.description} </if>
+            <if test="teacher.identity != null"> and identity = #{teacher.identity} </if>
+            <if test="teacher.userId != null"> and user_id = #{teacher.userId} </if>
+            <if test="teacher.department != null"> and department = #{teacher.department} </if>
+            <if test="teacher.total != null"> and total = #{teacher.total} </if>
+            <if test="teacher.remnant != null"> and remnant = #{teacher.remnant} </if>
+        </where>
+    </sql>
+
+    <insert id="insertTeacher">
+        insert into Teacher
+        (
+            title,
+            description,
+            identity,
+            user_id,
+            department,
+            total,
+            remnant
+        )
+        values
+        (
+            #{title},
+            #{description},
+            #{identity},
+            #{userId},
+            #{department},
+            #{total},
+            #{remnant}
+        )
+    </insert>
+
+    <select id="selectTeacher" resultType="backend.model.entity.Teacher">
+        select
+            <include refid="DynamicFields" />
+        from Teacher
+            <include refid="DynamicWhere" />
+    </select>
+
+    <update id="updateTeacher">
+        update Teacher
+        <set>
+            <if test="teacherUpdate.title != null"> title = #{teacherUpdate.title}, </if>
+            <if test="teacherUpdate.description != null"> description = #{teacherUpdate.description}, </if>
+            <if test="teacherUpdate.identity != null"> identity = #{teacherUpdate.identity}, </if>
+            <if test="teacherUpdate.userId != null"> user_id = #{teacherUpdate.userId}, </if>
+            <if test="teacherUpdate.department != null"> department = #{teacherUpdate.department}, </if>
+            <if test="teacherUpdate.total != null"> total = #{teacherUpdate.total}, </if>
+            <if test="teacherUpdate.remnant != null"> remnant = #{teacherUpdate.remnant}, </if>
+        </set>
+        <where>
+            <if test="teacherQuery.id != null"> and id = #{teacherQuery.id} </if>
+            <if test="teacherQuery.title != null"> and title = #{teacherQuery.title} </if>
+            <if test="teacherQuery.description != null"> and description = #{teacherQuery.description} </if>
+            <if test="teacherQuery.identity != null"> and identity = #{teacherQuery.identity} </if>
+            <if test="teacherQuery.userId != null"> and user_id = #{teacherQuery.userId} </if>
+            <if test="teacherQuery.department != null"> and department = #{teacherQuery.department} </if>
+            <if test="teacherQuery.total != null"> and total = #{teacherQuery.total} </if>
+            <if test="teacherQuery.remnant != null"> and remnant = #{teacherQuery.remnant} </if>
+        </where>
+
+    </update>
+
+    <select id="selectTeacherForeach" resultMap="teacherEntityMap">
+        SELECT * FROM Teacher
+        WHERE user_id IN
+        <foreach collection="majorToTeachers" item="majorToTeacher" open="(" separator="," close=")">
+            #{majorToTeacher.tid}
+        </foreach>
+    </select>
+
+    <select id="selectTeacherWithMetric" resultType="backend.model.VO.teacher.TeacherProfileVO" >
+        select
+            u.id as "uid",
+            u.username as "username",
+            u.avatar as "avatar",
+            u.name as "name",
+            u.email as "email",
+            u.gender as "gender",
+            u.phone as "phone",
+            t.department as "department",
+            t.title as "title",
+            t.description as "description",
+            t.total as "total",
+            t.remnant as "remnant",
+            t.identity as "identity"
+        from
+            Teacher as t
+            join User as u
+            on u.id = t.user_id
+        <where>
+            u.disabled = 1
+            and t.department = #{department}
+            <if test="remnant == 1"> and t.remnant > 0 </if>
+        </where>
+    </select>
+
+    <select id="selectTeacherWithoutEnroll">
+        select
+            u.id as "uid",
+            u.username as "username",
+            u.avatar as "avatar",
+            u.name as "name",
+            u.email as "email",
+            u.gender as "gender",
+            u.phone as "phone",
+            t.department as "department",
+            t.title as "title",
+            t.description as "description",
+            t.total as "total",
+            t.remnant as "remnant",
+            t.identity as "identity"
+        from
+            Teacher as t
+            join User as u
+            on u.id = t.user_id
+        where
+            u.disabled = 1
+            and t.department = #{department}
+            and not exists (
+                select 1
+                from Enroll as e
+                where e.tid = t.user_id
+            );
+    </select>
+
+</mapper>

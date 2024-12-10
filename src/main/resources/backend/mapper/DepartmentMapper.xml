@@ -1,0 +1,80 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="backend.mapper.DepartmentMapper">
+
+    <sql id="DynamicFields">
+        <trim suffixOverrides=",">
+            <if test="scope.id == true"> id, </if>
+            <if test="scope.did == true"> did, </if>
+            <if test="scope.name == true"> name, </if>
+            <if test="scope.description == true"> description, </if>
+            <if test="scope.logo == true"> logo, </if>
+        </trim>
+    </sql>
+
+    <sql id="DynamicWhere">
+        <where>
+            <if test="department.id != null"> and id = #{department.id} </if>
+            <if test="department.did != null"> and did = #{department.did} </if>
+            <if test="department.name != null"> and name = #{department.name} </if>
+            <if test="department.description != null"> and description = #{department.description}, </if>
+            <if test="department.logo != null"> and logo = #{department.logo}, </if>
+        </where>
+    </sql>
+
+    <insert id="insertDepartment">
+        insert into Department
+        (
+            did,
+            name,
+            description,
+            logo
+        )
+        values
+        (
+            #{did},
+            #{name},
+            #{description},
+            #{logo}
+        )
+    </insert>
+
+    <select id="selectDepartment" resultType="backend.model.entity.Department">
+        select
+            <include refid="DynamicFields" />
+        from Department
+            <include refid="DynamicWhere" />
+    </select>
+
+    <update id="updateDepartment">
+        update Department
+        <set>
+            <if test="departmentMapperUpdate.did != null"> did = #{departmentMapperUpdate.did}, </if>
+            <if test="departmentMapperUpdate.name != null"> name = #{departmentMapperUpdate.name}, </if>
+            <if test="departmentMapperUpdate.description != null"> name = #{departmentMapperUpdate.description}, </if>
+            <if test="departmentMapperUpdate.logo != null"> name = #{departmentMapperUpdate.logo}, </if>
+        </set>
+        <where>
+            <if test="departmentMapperQuery.id != null"> and id = #{departmentMapperQuery.id} </if>
+            <if test="departmentMapperQuery.did != null"> and did = #{departmentMapperQuery.did} </if>
+            <if test="departmentMapperQuery.name != null"> and name = #{departmentMapperQuery.name} </if>
+            <if test="departmentMapperQuery.description != null"> name = #{departmentMapperQuery.description}, </if>
+            <if test="departmentMapperQuery.logo != null"> name = #{departmentMapperQuery.logo}, </if>
+        </where>
+    </update>
+
+    <select id="selectAllDepartments" resultType="backend.model.entity.Department">
+        select *
+        from Department;
+    </select>
+
+
+    <select id="selectDepartmentDetail" resultType="backend.model.entity.Department">
+        select * 
+        from Department
+        where id = #{id}
+    </select>
+</mapper>
