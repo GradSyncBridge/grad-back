@@ -1,19 +1,17 @@
 package backend.model.DTO;
 
-import backend.annotation.DTO.AdminTeacherDTOValidation;
 
 import lombok.AllArgsConstructor;
+import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
 @Data
 @AllArgsConstructor
 @NoArgsConstructor
-@AdminTeacherDTOValidation
-public class AdminTeacherDTO {
+@Builder
+public class MajorTeacherAddDTO {
+    private Integer majorID;
     private Integer teacherID;
-
-    private Integer title;
-
-    private Integer identity;
+    private Integer total;
 }

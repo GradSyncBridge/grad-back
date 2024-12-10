@@ -4,17 +4,19 @@ import backend.enums.DeadlineEnum;
 
 import backend.exception.model.deadline.DeadlineNotFoundException;
 import backend.exception.model.deadline.DeadlineUnreachedException;
+import backend.exception.model.majorToTeacher.MajorToTeacherDuplicateException;
 import backend.exception.model.user.UserNotFoundException;
 
-import backend.mapper.DeadlineMapper;
-import backend.mapper.MajorMapper;
-import backend.mapper.StudentMapper;
-import backend.mapper.TeacherMapper;
+import backend.mapper.*;
 
 import backend.model.DTO.AdminDeadlineDTO;
 import backend.model.DTO.AdminTeacherDTO;
+import backend.model.DTO.MajorTeacherAddDTO;
+import backend.model.DTO.MajorTeacherModifyDTO;
+import backend.model.VO.majorToTeacher.MajorTeacherVO;
 import backend.model.VO.teacher.TeacherProfileVO;
 
+import backend.model.converter.MajorConverter;
 import backend.model.entity.*;
 
 import backend.service.AdminService;
@@ -41,17 +43,23 @@ public class AdminServiceImpl implements AdminService {
     private MajorMapper majorMapper;
 
     @Autowired
+    private MajorToTeacherMapper majorToTeacherMapper;
+
+    @Autowired
     private StudentMapper studentMapper;
+
+    @Autowired
+    private MajorConverter majorConverter;
 
     /**
      * 管理员筛选拟录取学生信息
      * PUT /admin/deadline
+     *
      * @param deadlineDTO 截至日期修改信息
-     * */
+     */
     @Override
     @Transactional
     public void adminModifyDeadline(AdminDeadlineDTO deadlineDTO) {
-        Integer userId = User.getAuth().getId();
         try {
             Deadline query = Deadline.builder().id(deadlineDTO.getDeadlineID()).build();
 
@@ -78,7 +86,7 @@ public class AdminServiceImpl implements AdminService {
     /**
      * 管理员获取仍有剩余名额的导师
      * GET /admin/teachers/remnant
-     * */
+     */
     @Override
     public List<TeacherProfileVO> getTeachersWithMetric() {
         try {
@@ -94,7 +102,7 @@ public class AdminServiceImpl implements AdminService {
     /**
      * 管理员获取所有教师信息
      * GET /admin/teachers
-     * */
+     */
     @Override
     public List<TeacherProfileVO> getAllTeachers() {
         try {
@@ -109,8 +117,8 @@ public class AdminServiceImpl implements AdminService {
 
     /**
      * 管理员修改教师信息
-     * GET /admin/teacher
-     * */
+     * PUT /admin/teacher
+     */
     @Override
     public void adminModifyTeacher(AdminTeacherDTO teacherDTO) {
         try {
@@ -123,10 +131,8 @@ public class AdminServiceImpl implements AdminService {
                 throw new UserNotFoundException();
 
             Teacher targetTeacher = teachers.getFirst();
-
             targetTeacher.setTitle(teacherDTO.getTitle());
             targetTeacher.setIdentity(teacherDTO.getIdentity());
-            targetTeacher.setTotal(teacherDTO.getTotal());
 
             teacherMapper.updateTeacher(
                     targetTeacher,
@@ -143,7 +149,7 @@ public class AdminServiceImpl implements AdminService {
     /**
      * 管理员获取所有无学生选择的教师
      * GET /admin/teachers/empty
-     * */
+     */
     @Override
     public List<TeacherProfileVO> getTeachersWithoutEnrolls() {
         try {
@@ -158,8 +164,9 @@ public class AdminServiceImpl implements AdminService {
     /**
      * 管理员按照比例筛选进入复试人员
      * POST /admin/filter-enroll
+     *
      * @param ratio 筛选比例
-     * */
+     */
     @Override
     @Transactional
     public void adminFilterEnrolls(Double ratio) {
@@ -210,8 +217,7 @@ public class AdminServiceImpl implements AdminService {
     /**
      * 管理员筛选拟录取学生信息
      * POST /admin/possible-enroll
-     *
-     * */
+     */
     @Override
     @Transactional
     public void adminFilterPossibleEnrolls() {
@@ -263,8 +269,7 @@ public class AdminServiceImpl implements AdminService {
     /**
      * 管理员筛选不接受调剂/未被录入的学生
      * POST /admin/final-enroll
-     *
-     * */
+     */
     @Override
     @Transactional
     public void adminFilterFinalEnrolls() {
@@ -276,6 +281,125 @@ public class AdminServiceImpl implements AdminService {
             if (!students.isEmpty())
                 studentMapper.invalidateStudent(students);
 
+        } catch (Exception e) {
+            throw new RuntimeException(e.getMessage());
+        }
+    }
+
+    @Override
+    public List<MajorTeacherVO> getMajorToTeacher(Integer teacher) {
+        try {
+            return majorToTeacherMapper.selectMajorToTeacher(
+                            MajorToTeacher.builder().tid(teacher).build(),
+                            FieldsGenerator.generateFields(MajorToTeacher.class)
+                    )
+                    .stream()
+                    .map(m -> {
+                        Major child = majorMapper.selectMajor(
+                                Major.builder().id(m.getMid()).build(),
+                                FieldsGenerator.generateFields(Major.class)
+                        ).getFirst();
+
+                        Major parent = majorMapper.selectMajor(
+                                Major.builder().id(child.getPid()).build(),
+                                FieldsGenerator.generateFields(Major.class)
+                        ).getFirst();
+
+                        return MajorTeacherVO
+                                .builder()
+                                .majorTeacherID(m.getId())
+                                .valid(m.getValid())
+                                .parent(majorConverter.MajorToMajorTeacher(parent))
+                                .child(majorConverter.MajorToMajorTeacher(child))
+                                .build();
+                    })
+                    .toList();
+
+        } catch (Exception e) {
+            throw new RuntimeException(e.getMessage());
+        }
+    }
+
+    private void updateTeacherMetric(Integer teacher) {
+        try {
+            Teacher query = Teacher.builder().userId(teacher).build();
+
+            Teacher target = teacherMapper.selectTeacher(
+                    query,
+                    FieldsGenerator.generateFields(Teacher.class)
+            ).getFirst();
+
+            Integer metric = majorToTeacherMapper.selectMajorToTeacher(
+                            MajorToTeacher.builder().tid(teacher).valid(1).build(),
+                            FieldsGenerator.generateFields(MajorToTeacher.class)
+                    )
+                    .stream()
+                    .mapToInt(MajorToTeacher::getMetric)
+                    .sum();
+
+            target.setTotal(metric);
+            target.setRemnant(metric);
+            teacherMapper.updateTeacher(target, query);
+        } catch (Exception e) {
+            throw new RuntimeException(e.getMessage());
+        }
+    }
+
+
+    @Override
+    public void adminModifyMajorToTeacher(MajorTeacherModifyDTO majorTeacher) {
+        try {
+            MajorToTeacher query = MajorToTeacher.builder().id(majorTeacher.getMajorTeacherID()).build();
+
+            MajorToTeacher target = majorToTeacherMapper.selectMajorToTeacher(
+                    query,
+                    FieldsGenerator.generateFields(MajorToTeacher.class)
+            ).getFirst();
+
+            Integer valid = majorTeacher.getValid();
+            target.setValid(valid);
+
+            if (valid == 1) {
+                target.setMetric(majorTeacher.getTotal());
+                target.setRemnant(majorTeacher.getTotal());
+            } else {
+                target.setMetric(0);
+                target.setRemnant(0);
+            }
+            majorToTeacherMapper.updateMajorToTeacher(target, query);
+
+            updateTeacherMetric(target.getTid());
+        } catch (Exception e) {
+            throw new RuntimeException(e.getMessage());
+        }
+    }
+
+    @Override
+    public void adminAddMajorToTeacher(MajorTeacherAddDTO majorTeacher) {
+        try {
+            List<MajorToTeacher> potential = majorToTeacherMapper.selectMajorToTeacher(
+                    MajorToTeacher.builder()
+                            .tid(majorTeacher.getTeacherID()).mid(majorTeacher.getMajorID()).build(),
+                    FieldsGenerator.generateFields(MajorToTeacher.class)
+            );
+
+            if (!potential.isEmpty())
+                throw new MajorToTeacherDuplicateException();
+
+            majorToTeacherMapper.insertMajorToTeacher(
+                    MajorToTeacher
+                            .builder()
+                            .mid(majorTeacher.getMajorID())
+                            .tid(majorTeacher.getTeacherID())
+                            .metric(majorTeacher.getTotal())
+                            .remnant(majorTeacher.getTotal())
+                            .valid(1)
+                            .build()
+            );
+
+            updateTeacherMetric(majorTeacher.getTeacherID());
+        } catch (MajorToTeacherDuplicateException exception) {
+            throw new MajorToTeacherDuplicateException(majorTeacher.getTeacherID(), majorTeacher.getMajorID());
         } catch (Exception e) {
             throw new RuntimeException(e.getMessage());
         }

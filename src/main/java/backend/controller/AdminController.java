@@ -3,6 +3,8 @@ package backend.controller;
 import backend.annotation.SysLog;
 import backend.model.DTO.AdminDeadlineDTO;
 import backend.model.DTO.AdminTeacherDTO;
+import backend.model.DTO.MajorTeacherAddDTO;
+import backend.model.DTO.MajorTeacherModifyDTO;
 import backend.service.AdminService;
 import backend.util.ResultEntity;
 
@@ -117,6 +119,45 @@ public class AdminController {
         return ResultEntity.success(
                 HttpStatus.OK.value(),
                 "Filter all students by first grade successfully",
+                null
+        );
+    }
+
+    @SysLog(value = "Get /admin/teacher-major - 管理员获取教师所有招生学科信息")
+    @GetMapping(value = "/teacher-major")
+    public ResponseEntity<ResultEntity<Object>> getMajorToTeacher(@RequestParam(value = "teacherID") Integer teacher) {
+
+        return ResultEntity.success(
+                HttpStatus.OK.value(),
+                "Get teacher-major list successfully",
+                adminService.getMajorToTeacher(teacher)
+        );
+    }
+
+    @SysLog(value = "PUT /admin/teacher-major - 管理员修改教师在某学科招生资质")
+    @PutMapping(value = "/teacher-major")
+    public ResponseEntity<ResultEntity<Object>> adminModifyMajorToTeacher(
+            @RequestBody  MajorTeacherModifyDTO majorTeacher
+    ) {
+        adminService.adminModifyMajorToTeacher(majorTeacher);
+
+        return ResultEntity.success(
+                HttpStatus.OK.value(),
+                "Modify majorToTeacher record successfully",
+                null
+        );
+    }
+
+    @SysLog(value = "POST /admin/teacher-major - 管理员新增教师在某学科招生资质")
+    @PostMapping(value = "/teacher-major")
+    public ResponseEntity<ResultEntity<Object>> adminAddMajorToTeacher(
+            @RequestBody MajorTeacherAddDTO majorTeacher
+    ) {
+        adminService.adminAddMajorToTeacher(majorTeacher);
+
+        return ResultEntity.success(
+                HttpStatus.OK.value(),
+                "Add majorToTeacher record successfully",
                 null
         );
     }
