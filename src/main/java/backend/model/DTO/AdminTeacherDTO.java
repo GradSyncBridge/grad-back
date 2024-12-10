@@ -13,8 +13,6 @@ import lombok.NoArgsConstructor;
 public class AdminTeacherDTO {
     private Integer teacherID;
 
-    private Integer total;
-
     private Integer title;
 
     private Integer identity;
